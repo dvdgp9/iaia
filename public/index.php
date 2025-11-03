@@ -13,7 +13,10 @@
         <div class="h-8 w-8 rounded bg-indigo-600"></div>
         <strong class="text-lg">Ebonia</strong>
       </div>
-      <div class="mb-3 text-sm text-gray-500">Conversaciones</div>
+      <div class="mb-2 flex items-center justify-between">
+        <div class="text-sm text-gray-500">Conversaciones</div>
+        <button id="new-conv-btn" class="text-xs px-2 py-1 rounded bg-indigo-600 text-white">Nueva</button>
+      </div>
       <ul id="conv-list" class="space-y-2 text-sm">
         <li class="text-gray-500">(vacío)</li>
       </ul>
@@ -45,8 +48,11 @@
     const loginBtn = document.getElementById('login-btn');
     const logoutBtn = document.getElementById('logout-btn');
     const sessionUser = document.getElementById('session-user');
+    const convListEl = document.getElementById('conv-list');
+    const newConvBtn = document.getElementById('new-conv-btn');
 
     let csrf = null;
+    let currentConversationId = null;
 
     function append(role, content){
       const wrap = document.createElement('div');
@@ -87,6 +93,7 @@
           sessionUser.textContent = `${data.user.first_name} ${data.user.last_name} (${data.user.email})`;
           loginBtn.disabled = true;
           logoutBtn.disabled = false;
+          await loadConversations();
         }
       } catch (_) {
         // no autenticado: dejar estado por defecto
@@ -115,8 +122,54 @@
         sessionUser.textContent = 'No autenticado';
         loginBtn.disabled = false;
         logoutBtn.disabled = true;
+        convListEl.innerHTML = '<li class="text-gray-500">(vacío)</li>';
+        currentConversationId = null;
+        messagesEl.innerHTML = '';
       } catch(e){
         alert('Logout error: ' + e.message);
+      }
+    });
+
+    async function loadConversations(){
+      const data = await api('/api/conversations/list.php');
+      const items = data.items || [];
+      if(items.length === 0){
+        convListEl.innerHTML = '<li class="text-gray-500">(vacío)</li>';
+        return;
+      }
+      convListEl.innerHTML = '';
+      for(const c of items){
+        const li = document.createElement('li');
+        li.className = 'flex items-center justify-between gap-2';
+        const btn = document.createElement('button');
+        btn.className = 'text-left flex-1 px-2 py-1 rounded hover:bg-gray-100';
+        btn.textContent = c.title || `Conversación ${c.id}`;
+        btn.addEventListener('click', async () => {
+          currentConversationId = c.id;
+          messagesEl.innerHTML = '';
+          await loadMessages(c.id);
+        });
+        li.appendChild(btn);
+        convListEl.appendChild(li);
+      }
+    }
+
+    async function loadMessages(conversationId){
+      const data = await api(`/api/messages/list.php?conversation_id=${encodeURIComponent(conversationId)}`);
+      messagesEl.innerHTML = '';
+      for(const m of (data.items || [])){
+        append(m.role, m.content);
+      }
+    }
+
+    newConvBtn.addEventListener('click', async ()=>{
+      try{
+        const res = await api('/api/conversations/create.php', { method: 'POST', body: {} });
+        currentConversationId = res.id;
+        await loadConversations();
+        messagesEl.innerHTML = '';
+      }catch(e){
+        alert('Error al crear conversación: ' + e.message);
       }
     });
 
@@ -127,7 +180,11 @@
       append('user', text);
       inputEl.value = '';
       try {
-        const data = await api('/api/chat.php', { method: 'POST', body: { conversation_id: null, message: text } });
+        const data = await api('/api/chat.php', { method: 'POST', body: { conversation_id: currentConversationId, message: text } });
+        if (!currentConversationId && data.conversation && data.conversation.id) {
+          currentConversationId = data.conversation.id;
+          await loadConversations();
+        }
         append('assistant', data.message.content);
       } catch(e){
         append('assistant', 'Error: ' + e.message);
