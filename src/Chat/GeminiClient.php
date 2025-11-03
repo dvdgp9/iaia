@@ -11,7 +11,15 @@ class GeminiClient {
     public function __construct(?string $apiKey = null, ?string $model = null)
     {
         $this->apiKey = $apiKey ?? (Env::get('GEMINI_API_KEY') ?? '');
-        $this->model = $model ?? (Env::get('GEMINI_MODEL') ?? 'gemini-1.5-flash');
+        $configured = $model ?? (Env::get('GEMINI_MODEL') ?? 'gemini-1.5-flash');
+        // Mapear nombres legacy a modelos soportados por v1beta
+        $this->model = match ($configured) {
+            'gemini-1.5-flash' => 'gemini-1.5-flash-001',
+            'gemini-1.5-pro' => 'gemini-1.5-pro-001',
+            'gemini-2.0-flash' => 'gemini-2.0-flash',
+            'gemini-2.0-pro' => 'gemini-2.0-pro',
+            default => $configured,
+        };
     }
 
     public function generateText(string $prompt): string
@@ -25,7 +33,10 @@ class GeminiClient {
         );
 
         $payload = [
-            'contents' => [ [ 'parts' => [ [ 'text' => $prompt ] ] ] ]
+            'contents' => [ [
+                'role' => 'user',
+                'parts' => [ [ 'text' => $prompt ] ]
+            ] ]
         ];
 
         $ch = curl_init($url);
