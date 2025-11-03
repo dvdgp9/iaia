@@ -87,33 +87,23 @@
     // Restaurar sesión al cargar (si existe cookie de sesión)
     (async function initSession(){
       try {
-        const data = await api('/api/auth/me.php');
-        csrf = data.csrf_token || null;
-        if (data.user) {
-          sessionUser.textContent = `${data.user.first_name} ${data.user.last_name} (${data.user.email})`;
-          loginBtn.disabled = true;
-          logoutBtn.disabled = false;
-          await loadConversations();
+        const res = await fetch('/api/auth/me.php', { credentials: 'include' });
+        if (res.status === 401) {
+          window.location.href = '/login.php';
+          return;
         }
-      } catch (_) {
-        // no autenticado: dejar estado por defecto
-      }
-    })();
-
-    loginBtn.addEventListener('click', async ()=>{
-      const email = prompt('Email', 'admin@example.com');
-      const password = prompt('Password', 'admin1234');
-      if(!email || !password) return;
-      try {
-        const data = await api('/api/auth/login.php', { method: 'POST', body: { email, password } });
-        csrf = data.csrf_token;
+        const data = await res.json();
+        csrf = data.csrf_token || null;
         sessionUser.textContent = `${data.user.first_name} ${data.user.last_name} (${data.user.email})`;
         loginBtn.disabled = true;
         logoutBtn.disabled = false;
-      } catch(e){
-        alert('Login error: ' + e.message);
+        await loadConversations();
+      } catch (_) {
+        window.location.href = '/login.php';
       }
-    });
+    })();
+
+    loginBtn.addEventListener('click', ()=>{ window.location.href = '/login.php'; });
 
     logoutBtn.addEventListener('click', async ()=>{
       try {
