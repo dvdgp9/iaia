@@ -141,15 +141,53 @@
       for(const c of items){
         const li = document.createElement('li');
         li.className = 'flex items-center justify-between gap-2';
+        if (currentConversationId === c.id) li.classList.add('bg-gray-100');
         const btn = document.createElement('button');
         btn.className = 'text-left flex-1 px-2 py-1 rounded hover:bg-gray-100';
         btn.textContent = c.title || `Conversación ${c.id}`;
         btn.addEventListener('click', async () => {
           currentConversationId = c.id;
+          await highlightActive();
           messagesEl.innerHTML = '';
           await loadMessages(c.id);
         });
+        const actions = document.createElement('div');
+        actions.className = 'flex items-center gap-1';
+        const renameBtn = document.createElement('button');
+        renameBtn.className = 'text-xs text-gray-500 hover:text-gray-800 px-1 py-0.5';
+        renameBtn.textContent = 'Renombrar';
+        renameBtn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          const title = prompt('Nuevo título', c.title || '');
+          if (!title) return;
+          try {
+            await api('/api/conversations/rename.php', { method: 'POST', body: { id: c.id, title } });
+            await loadConversations();
+          } catch (err) {
+            alert('Error al renombrar: ' + err.message);
+          }
+        });
+        const delBtn = document.createElement('button');
+        delBtn.className = 'text-xs text-red-600 hover:text-red-800 px-1 py-0.5';
+        delBtn.textContent = 'Borrar';
+        delBtn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          if (!confirm('¿Borrar conversación?')) return;
+          try {
+            await api('/api/conversations/delete.php', { method: 'POST', body: { id: c.id } });
+            if (currentConversationId === c.id) {
+              currentConversationId = null;
+              messagesEl.innerHTML = '';
+            }
+            await loadConversations();
+          } catch (err) {
+            alert('Error al borrar: ' + err.message);
+          }
+        });
+        actions.appendChild(renameBtn);
+        actions.appendChild(delBtn);
         li.appendChild(btn);
+        li.appendChild(actions);
         convListEl.appendChild(li);
       }
     }
@@ -190,6 +228,12 @@
         append('assistant', 'Error: ' + e.message);
       }
     });
+
+    async function highlightActive(){
+      const items = convListEl.querySelectorAll('li');
+      items.forEach(li => li.classList.remove('bg-gray-100'));
+      // volver a poner la clase sobre el seleccionado en el próximo render de lista
+    }
   </script>
 </body>
 </html>
