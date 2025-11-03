@@ -3,40 +3,47 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Ebonia — MVP</title>
+  <title>Ebonia — IA Corporativa</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-50 text-gray-900">
-  <div class="min-h-screen grid grid-cols-12">
-    <aside class="col-span-3 border-r bg-white p-4">
-      <div class="flex items-center gap-2 mb-4">
-        <div class="h-8 w-8 rounded bg-indigo-600"></div>
-        <strong class="text-lg">Ebonia</strong>
+<body class="bg-gradient-to-br from-slate-50 to-slate-100 text-slate-900">
+  <div class="min-h-screen flex">
+    <aside class="w-80 bg-white border-r border-slate-200 flex flex-col shadow-sm">
+      <div class="p-5 border-b border-slate-200">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="h-10 w-10 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-md">E</div>
+          <div>
+            <strong class="text-xl font-semibold text-slate-800">Ebonia</strong>
+            <div class="text-xs text-slate-500">IA Corporativa</div>
+          </div>
+        </div>
+        <button id="new-conv-btn" class="w-full py-2.5 px-4 rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-medium shadow-md hover:shadow-lg hover:from-violet-700 hover:to-indigo-700 transition-all duration-200 flex items-center justify-center gap-2">
+          <span class="text-lg">+</span> Nueva conversación
+        </button>
       </div>
-      <div class="mb-2 flex items-center justify-between">
-        <div class="text-sm text-gray-500">Conversaciones</div>
-        <button id="new-conv-btn" class="text-xs px-2 py-1 rounded bg-indigo-600 text-white">Nueva</button>
+      <div class="flex-1 overflow-y-auto p-3">
+        <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 px-2">Conversaciones</div>
+        <ul id="conv-list" class="space-y-1">
+          <li class="text-slate-400 text-sm px-3 py-2">(vacío)</li>
+        </ul>
       </div>
-      <ul id="conv-list" class="space-y-2 text-sm">
-        <li class="text-gray-500">(vacío)</li>
-      </ul>
     </aside>
-    <main class="col-span-9 flex flex-col">
-      <header class="p-4 border-b bg-white flex items-center justify-between">
+    <main class="flex-1 flex flex-col bg-white">
+      <header class="px-6 py-4 border-b border-slate-200 bg-white/80 backdrop-blur-sm flex items-center justify-between shadow-sm">
         <div>
-          <div class="text-sm text-gray-500">Sesión</div>
-          <div id="session-user" class="font-medium">No autenticado</div>
+          <div class="text-xs font-medium text-slate-500 uppercase tracking-wide">Usuario actual</div>
+          <div id="session-user" class="font-semibold text-slate-800 text-lg">No autenticado</div>
         </div>
         <div class="flex gap-2">
-          <button id="login-btn" class="px-3 py-1.5 bg-indigo-600 text-white rounded">Login</button>
-          <button id="logout-btn" disabled class="px-3 py-1.5 bg-gray-200 text-gray-700 rounded">Logout</button>
+          <button id="login-btn" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors">Iniciar sesión</button>
+          <button id="logout-btn" disabled class="px-4 py-2 bg-slate-100 text-slate-400 rounded-lg font-medium cursor-not-allowed">Cerrar sesión</button>
         </div>
       </header>
-      <section class="flex-1 p-4 overflow-auto" id="messages"></section>
-      <footer class="p-4 bg-white border-t">
-        <form id="chat-form" class="flex gap-2">
-          <input id="chat-input" class="flex-1 border rounded px-3 py-2" placeholder="Escribe un mensaje..." />
-          <button class="px-4 py-2 bg-indigo-600 text-white rounded">Enviar</button>
+      <section class="flex-1 p-6 overflow-auto bg-gradient-to-b from-slate-50/50 to-white" id="messages"></section>
+      <footer class="p-6 bg-white border-t border-slate-200 shadow-lg">
+        <form id="chat-form" class="flex gap-3">
+          <input id="chat-input" class="flex-1 border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-200 transition-all" placeholder="Escribe un mensaje..." />
+          <button class="px-6 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl font-medium shadow-md hover:shadow-lg hover:from-violet-700 hover:to-indigo-700 transition-all duration-200">Enviar</button>
         </form>
       </footer>
     </main>
@@ -56,14 +63,14 @@
 
     function append(role, content){
       const wrap = document.createElement('div');
-      wrap.className = 'mb-3';
-      const badge = document.createElement('div');
-      badge.className = 'text-xs text-gray-500';
-      badge.textContent = role === 'user' ? 'Tú' : 'Asistente';
+      wrap.className = 'mb-4 flex ' + (role === 'user' ? 'justify-end' : 'justify-start');
       const bubble = document.createElement('div');
-      bubble.className = role === 'user' ? 'inline-block bg-indigo-600 text-white px-3 py-2 rounded-lg' : 'inline-block bg-gray-200 text-gray-900 px-3 py-2 rounded-lg';
+      bubble.className = role === 'user' 
+        ? 'max-w-xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white px-4 py-3 rounded-2xl rounded-tr-sm shadow-md' 
+        : 'max-w-xl bg-white border border-slate-200 text-slate-800 px-4 py-3 rounded-2xl rounded-tl-sm shadow-sm';
+      bubble.style.whiteSpace = 'pre-wrap';
+      bubble.style.wordBreak = 'break-word';
       bubble.textContent = content;
-      wrap.appendChild(badge);
       wrap.appendChild(bubble);
       messagesEl.appendChild(wrap);
       messagesEl.scrollTop = messagesEl.scrollHeight;
@@ -108,13 +115,7 @@
     logoutBtn.addEventListener('click', async ()=>{
       try {
         await api('/api/auth/logout.php', { method: 'POST' });
-        csrf = null;
-        sessionUser.textContent = 'No autenticado';
-        loginBtn.disabled = false;
-        logoutBtn.disabled = true;
-        convListEl.innerHTML = '<li class="text-gray-500">(vacío)</li>';
-        currentConversationId = null;
-        messagesEl.innerHTML = '';
+        window.location.href = '/login.php';
       } catch(e){
         alert('Logout error: ' + e.message);
       }
@@ -124,28 +125,38 @@
       const data = await api('/api/conversations/list.php');
       const items = data.items || [];
       if(items.length === 0){
-        convListEl.innerHTML = '<li class="text-gray-500">(vacío)</li>';
+        convListEl.innerHTML = '<li class="text-slate-400 text-sm px-3 py-2">(vacío)</li>';
         return;
       }
       convListEl.innerHTML = '';
       for(const c of items){
         const li = document.createElement('li');
-        li.className = 'flex items-center justify-between gap-2';
-        if (currentConversationId === c.id) li.classList.add('bg-gray-100');
+        const isActive = currentConversationId === c.id;
+        li.className = 'group rounded-lg transition-all duration-200 ' + (isActive ? 'bg-gradient-to-r from-violet-50 to-indigo-50 shadow-sm' : 'hover:bg-slate-50');
+        const container = document.createElement('div');
+        container.className = 'flex items-center gap-2 p-2';
         const btn = document.createElement('button');
-        btn.className = 'text-left flex-1 px-2 py-1 rounded hover:bg-gray-100';
-        btn.textContent = c.title || `Conversación ${c.id}`;
+        btn.className = 'text-left flex-1 min-w-0';
+        const titleEl = document.createElement('div');
+        titleEl.className = 'font-medium text-sm truncate ' + (isActive ? 'text-violet-700' : 'text-slate-700 group-hover:text-slate-900');
+        titleEl.textContent = c.title || `Conversación ${c.id}`;
+        const timeEl = document.createElement('div');
+        timeEl.className = 'text-xs text-slate-400 mt-0.5';
+        timeEl.textContent = new Date(c.updated_at).toLocaleDateString('es-ES', {month: 'short', day: 'numeric'});
+        btn.appendChild(titleEl);
+        btn.appendChild(timeEl);
         btn.addEventListener('click', async () => {
           currentConversationId = c.id;
-          await highlightActive();
+          await loadConversations();
           messagesEl.innerHTML = '';
           await loadMessages(c.id);
         });
         const actions = document.createElement('div');
-        actions.className = 'flex items-center gap-1';
+        actions.className = 'flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity';
         const renameBtn = document.createElement('button');
-        renameBtn.className = 'text-xs text-gray-500 hover:text-gray-800 px-1 py-0.5';
-        renameBtn.textContent = 'Renombrar';
+        renameBtn.className = 'p-1.5 text-slate-400 hover:text-violet-600 hover:bg-violet-50 rounded transition-colors';
+        renameBtn.innerHTML = '✏️';
+        renameBtn.title = 'Renombrar';
         renameBtn.addEventListener('click', async (e) => {
           e.stopPropagation();
           const title = prompt('Nuevo título', c.title || '');
@@ -158,8 +169,9 @@
           }
         });
         const delBtn = document.createElement('button');
-        delBtn.className = 'text-xs text-red-600 hover:text-red-800 px-1 py-0.5';
-        delBtn.textContent = 'Borrar';
+        delBtn.className = 'p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors';
+        delBtn.innerHTML = '🗑️';
+        delBtn.title = 'Borrar';
         delBtn.addEventListener('click', async (e) => {
           e.stopPropagation();
           if (!confirm('¿Borrar conversación?')) return;
@@ -176,8 +188,9 @@
         });
         actions.appendChild(renameBtn);
         actions.appendChild(delBtn);
-        li.appendChild(btn);
-        li.appendChild(actions);
+        container.appendChild(btn);
+        container.appendChild(actions);
+        li.appendChild(container);
         convListEl.appendChild(li);
       }
     }

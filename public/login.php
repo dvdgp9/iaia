@@ -16,25 +16,34 @@ if ($user) {
   <title>Ebonia — Login</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen bg-gray-50 grid place-items-center">
-  <div class="w-full max-w-sm bg-white p-6 rounded-lg shadow border">
-    <div class="flex items-center gap-2 mb-4">
-      <div class="h-8 w-8 rounded bg-indigo-600"></div>
-      <strong class="text-lg">Ebonia</strong>
+<body class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 grid place-items-center p-4">
+  <div class="w-full max-w-md">
+    <div class="bg-white p-8 rounded-2xl shadow-xl border border-slate-200">
+      <div class="flex items-center gap-3 mb-8">
+        <div class="h-12 w-12 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-lg">E</div>
+        <div>
+          <strong class="text-2xl font-bold text-slate-800">Ebonia</strong>
+          <div class="text-sm text-slate-500">IA Corporativa</div>
+        </div>
+      </div>
+      <h1 class="text-2xl font-bold mb-2 text-slate-800">Iniciar sesión</h1>
+      <p class="text-slate-500 mb-6 text-sm">Accede a tu espacio de trabajo</p>
+      <form id="login-form" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-2">Email</label>
+          <input id="email" type="email" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-200 transition-all" placeholder="tu@empresa.com" required />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-2">Contraseña</label>
+          <input id="password" type="password" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-200 transition-all" placeholder="••••••••" required />
+        </div>
+        <button class="w-full py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl font-semibold shadow-md hover:shadow-lg hover:from-violet-700 hover:to-indigo-700 transition-all duration-200" id="submit-btn">Entrar</button>
+        <p id="error" class="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2 hidden"></p>
+      </form>
     </div>
-    <h1 class="text-xl font-semibold mb-4">Acceder</h1>
-    <form id="login-form" class="space-y-3">
-      <div>
-        <label class="block text-sm mb-1">Email</label>
-        <input id="email" type="email" class="w-full border rounded px-3 py-2" placeholder="tu@empresa.com" required />
-      </div>
-      <div>
-        <label class="block text-sm mb-1">Password</label>
-        <input id="password" type="password" class="w-full border rounded px-3 py-2" placeholder="••••••••" required />
-      </div>
-      <button class="w-full py-2 bg-indigo-600 text-white rounded" id="submit-btn">Entrar</button>
-      <p id="error" class="text-sm text-red-600 hidden"></p>
-    </form>
+    <p class="text-center text-slate-500 text-sm mt-6">
+      © 2025 Grupo Ebone. Todos los derechos reservados.
+    </p>
   </div>
   <script type="module">
     const form = document.getElementById('login-form');
