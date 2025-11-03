@@ -16,11 +16,30 @@ class Session {
             || strtolower($xfp) === 'https'
             || strtolower($schemeFromEnv) === 'https';
 
+        // Determinar dominio (opcional) para abarcar subdominios en prod
+        $host = $_SERVER['HTTP_HOST'] ?? '';
+        if (!$host && $appUrl) {
+            $parsed = parse_url($appUrl);
+            $host = $parsed['host'] ?? '';
+        }
+        $cookieDomain = '';
+        if ($host) {
+            // Extraer dominio base (e.g., ebonia.es) si hay subdominio
+            $parts = explode('.', $host);
+            if (count($parts) >= 2) {
+                $cookieDomain = $parts[count($parts)-2] . '.' . $parts[count($parts)-1];
+            }
+        }
+
+        // Evitar cache para respuestas con sesión
+        session_cache_limiter('nocache');
+
         // Fijar path global
         session_set_cookie_params([
             'lifetime' => 0,
             'path' => '/',
-            // No fijamos dominio para dejar que el navegador lo ajuste al host actual
+            // Fijar dominio base si se pudo calcular (permite www. y subdominios)
+            'domain' => $cookieDomain ?: '',
             'secure' => $isHttps,
             'httponly' => true,
             'samesite' => 'Lax',
