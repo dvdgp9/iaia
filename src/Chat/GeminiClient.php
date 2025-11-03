@@ -11,13 +11,11 @@ class GeminiClient {
     public function __construct(?string $apiKey = null, ?string $model = null)
     {
         $this->apiKey = $apiKey ?? (Env::get('GEMINI_API_KEY') ?? '');
-        $configured = $model ?? (Env::get('GEMINI_MODEL') ?? 'gemini-1.5-flash');
+        $configured = $model ?? (Env::get('GEMINI_MODEL') ?? 'gemini-1.5-flash-latest');
         // Mapear nombres legacy a modelos soportados por v1beta
         $this->model = match ($configured) {
-            'gemini-1.5-flash' => 'gemini-1.5-flash-001',
-            'gemini-1.5-pro' => 'gemini-1.5-pro-001',
-            'gemini-2.0-flash' => 'gemini-2.0-flash',
-            'gemini-2.0-pro' => 'gemini-2.0-pro',
+            'gemini-1.5-flash' => 'gemini-1.5-flash-latest',
+            'gemini-1.5-pro' => 'gemini-1.5-pro-latest',
             default => $configured,
         };
     }
@@ -28,7 +26,7 @@ class GeminiClient {
             Response::error('gemini_api_key_missing', 'Falta GEMINI_API_KEY en .env', 500);
         }
 
-        $url = sprintf('https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent?key=%s',
+        $url = sprintf('https://generativelanguage.googleapis.com/v1/models/%s:generateContent?key=%s',
             urlencode($this->model), urlencode($this->apiKey)
         );
 
