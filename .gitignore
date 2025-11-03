@@ -1,0 +1,19 @@
+# Environment
+.env
+.env.*
+!.env.example
+
+# OS
+.DS_Store
+
+# Logs and storage
+storage/
+*.log
+
+# Dependencies (if added later)
+vendor/
+node_modules/
+
+# IDE
+.idea/
+.vscode/
