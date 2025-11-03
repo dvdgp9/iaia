@@ -36,22 +36,63 @@
         </div>
         <div class="flex gap-2">
           <button id="login-btn" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors">Iniciar sesión</button>
-          <button id="logout-btn" disabled class="px-4 py-2 bg-slate-100 text-slate-400 rounded-lg font-medium cursor-not-allowed">Cerrar sesión</button>
+          <button id="logout-btn" class="px-4 py-2 bg-red-50 text-red-600 rounded-lg font-medium hover:bg-red-100 transition-colors">Cerrar sesión</button>
         </div>
       </header>
-      <section class="flex-1 p-6 overflow-auto bg-gradient-to-b from-slate-50/50 to-white" id="messages"></section>
-      <footer class="p-6 bg-white border-t border-slate-200 shadow-lg">
-        <form id="chat-form" class="flex gap-3">
+      <section class="flex-1 overflow-auto bg-gradient-to-b from-slate-50/50 to-white relative" id="messages-container">
+        <div id="empty-state" class="absolute inset-0 flex items-center justify-center p-8">
+          <div class="max-w-3xl w-full space-y-8">
+            <div class="text-center space-y-2">
+              <h2 class="text-4xl font-bold text-slate-800">¿En qué puedo ayudarte?</h2>
+              <p class="text-slate-500">Hazme cualquier pregunta o selecciona una opción</p>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <button class="prompt-suggestion p-4 bg-white border-2 border-slate-200 rounded-xl hover:border-violet-300 hover:shadow-md transition-all text-left group">
+                <div class="text-sm font-medium text-slate-700 group-hover:text-violet-700">💡 Resumir documento</div>
+                <div class="text-xs text-slate-500 mt-1">Analiza y extrae los puntos clave</div>
+              </button>
+              <button class="prompt-suggestion p-4 bg-white border-2 border-slate-200 rounded-xl hover:border-violet-300 hover:shadow-md transition-all text-left group">
+                <div class="text-sm font-medium text-slate-700 group-hover:text-violet-700">📊 Analizar datos</div>
+                <div class="text-xs text-slate-500 mt-1">Genera insights de tus datos</div>
+              </button>
+              <button class="prompt-suggestion p-4 bg-white border-2 border-slate-200 rounded-xl hover:border-violet-300 hover:shadow-md transition-all text-left group">
+                <div class="text-sm font-medium text-slate-700 group-hover:text-violet-700">✍️ Redactar contenido</div>
+                <div class="text-xs text-slate-500 mt-1">Crea textos profesionales</div>
+              </button>
+              <button class="prompt-suggestion p-4 bg-white border-2 border-slate-200 rounded-xl hover:border-violet-300 hover:shadow-md transition-all text-left group">
+                <div class="text-sm font-medium text-slate-700 group-hover:text-violet-700">🔍 Buscar información</div>
+                <div class="text-xs text-slate-500 mt-1">Encuentra respuestas rápidas</div>
+              </button>
+            </div>
+            <form id="chat-form-empty" class="max-w-2xl mx-auto">
+              <div class="relative">
+                <input id="chat-input-empty" class="w-full border-2 border-slate-300 rounded-2xl px-6 py-4 pr-14 text-lg focus:outline-none focus:border-violet-500 focus:ring-4 focus:ring-violet-100 transition-all shadow-lg" placeholder="Pregúntame lo que quieras..." />
+                <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl hover:shadow-lg transition-all">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div id="messages" class="hidden p-6"></div>
+      </section>
+      <footer id="chat-footer" class="hidden p-6 bg-white border-t border-slate-200 shadow-lg">
+        <form id="chat-form" class="max-w-4xl mx-auto flex gap-3">
           <input id="chat-input" class="flex-1 border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-200 transition-all" placeholder="Escribe un mensaje..." />
-          <button class="px-6 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl font-medium shadow-md hover:shadow-lg hover:from-violet-700 hover:to-indigo-700 transition-all duration-200">Enviar</button>
+          <button type="submit" class="px-6 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl font-medium shadow-md hover:shadow-lg hover:from-violet-700 hover:to-indigo-700 transition-all duration-200">Enviar</button>
         </form>
       </footer>
     </main>
   </div>
   <script type="module">
     const messagesEl = document.getElementById('messages');
+    const messagesContainer = document.getElementById('messages-container');
+    const emptyState = document.getElementById('empty-state');
+    const chatFooter = document.getElementById('chat-footer');
     const inputEl = document.getElementById('chat-input');
+    const inputEmptyEl = document.getElementById('chat-input-empty');
     const formEl = document.getElementById('chat-form');
+    const formEmptyEl = document.getElementById('chat-form-empty');
     const loginBtn = document.getElementById('login-btn');
     const logoutBtn = document.getElementById('logout-btn');
     const sessionUser = document.getElementById('session-user');
@@ -61,19 +102,26 @@
     let csrf = null;
     let currentConversationId = null;
 
+    function showChatMode(){
+      emptyState.classList.add('hidden');
+      messagesEl.classList.remove('hidden');
+      chatFooter.classList.remove('hidden');
+    }
+
     function append(role, content){
+      if(messagesEl.children.length === 0) showChatMode();
       const wrap = document.createElement('div');
       wrap.className = 'mb-4 flex ' + (role === 'user' ? 'justify-end' : 'justify-start');
       const bubble = document.createElement('div');
       bubble.className = role === 'user' 
-        ? 'max-w-xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white px-4 py-3 rounded-2xl rounded-tr-sm shadow-md' 
-        : 'max-w-xl bg-white border border-slate-200 text-slate-800 px-4 py-3 rounded-2xl rounded-tl-sm shadow-sm';
+        ? 'max-w-2xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white px-5 py-3 rounded-2xl rounded-tr-sm shadow-md' 
+        : 'max-w-2xl bg-white border border-slate-200 text-slate-800 px-5 py-3 rounded-2xl rounded-tl-sm shadow-sm';
       bubble.style.whiteSpace = 'pre-wrap';
       bubble.style.wordBreak = 'break-word';
       bubble.textContent = content;
       wrap.appendChild(bubble);
       messagesEl.appendChild(wrap);
-      messagesEl.scrollTop = messagesEl.scrollHeight;
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
     async function api(path, opts={}){
@@ -198,8 +246,16 @@
     async function loadMessages(conversationId){
       const data = await api(`/api/messages/list.php?conversation_id=${encodeURIComponent(conversationId)}`);
       messagesEl.innerHTML = '';
-      for(const m of (data.items || [])){
-        append(m.role, m.content);
+      const items = data.items || [];
+      if(items.length > 0){
+        showChatMode();
+        for(const m of items){
+          append(m.role, m.content);
+        }
+      } else {
+        emptyState.classList.remove('hidden');
+        messagesEl.classList.add('hidden');
+        chatFooter.classList.add('hidden');
       }
     }
 
@@ -214,12 +270,9 @@
       }
     });
 
-    formEl.addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      const text = inputEl.value.trim();
+    async function handleSubmit(text){
       if(!text) return;
       append('user', text);
-      inputEl.value = '';
       try {
         const data = await api('/api/chat.php', { method: 'POST', body: { conversation_id: currentConversationId, message: text } });
         if (!currentConversationId && data.conversation && data.conversation.id) {
@@ -230,6 +283,28 @@
       } catch(e){
         append('assistant', 'Error: ' + e.message);
       }
+    }
+
+    formEl.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const text = inputEl.value.trim();
+      inputEl.value = '';
+      await handleSubmit(text);
+    });
+
+    formEmptyEl.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const text = inputEmptyEl.value.trim();
+      inputEmptyEl.value = '';
+      await handleSubmit(text);
+    });
+
+    document.querySelectorAll('.prompt-suggestion').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const text = btn.querySelector('.text-sm').textContent.replace(/^[^\s]+\s/, ''); // remove emoji
+        inputEmptyEl.value = text;
+        await handleSubmit(text);
+      });
     });
 
     async function highlightActive(){
