@@ -78,6 +78,21 @@
       return data;
     }
 
+    // Restaurar sesión al cargar (si existe cookie de sesión)
+    (async function initSession(){
+      try {
+        const data = await api('/api/auth/me.php');
+        csrf = data.csrf_token || null;
+        if (data.user) {
+          sessionUser.textContent = `${data.user.first_name} ${data.user.last_name} (${data.user.email})`;
+          loginBtn.disabled = true;
+          logoutBtn.disabled = false;
+        }
+      } catch (_) {
+        // no autenticado: dejar estado por defecto
+      }
+    })();
+
     loginBtn.addEventListener('click', async ()=>{
       const email = prompt('Email', 'admin@example.com');
       const password = prompt('Password', 'admin1234');

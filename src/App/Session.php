@@ -4,12 +4,24 @@ namespace App;
 class Session {
     public static function start(): void {
         if (session_status() === PHP_SESSION_ACTIVE) return;
-        $cookieParams = session_get_cookie_params();
+        // Detectar HTTPS correctamente detrás de proxy/CDN
+        $xfp = $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '';
+        $appUrl = $_ENV['APP_URL'] ?? getenv('APP_URL') ?: '';
+        $schemeFromEnv = '';
+        if ($appUrl) {
+            $parsed = parse_url($appUrl);
+            $schemeFromEnv = $parsed['scheme'] ?? '';
+        }
+        $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+            || strtolower($xfp) === 'https'
+            || strtolower($schemeFromEnv) === 'https';
+
+        // Fijar path global
         session_set_cookie_params([
             'lifetime' => 0,
-            'path' => $cookieParams['path'] ?? '/',
-            'domain' => $cookieParams['domain'] ?? '',
-            'secure' => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'),
+            'path' => '/',
+            // No fijamos dominio para dejar que el navegador lo ajuste al host actual
+            'secure' => $isHttps,
             'httponly' => true,
             'samesite' => 'Lax',
         ]);
