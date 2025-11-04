@@ -54,6 +54,22 @@ if (!$user) {
     Response::error('not_found', 'Usuario no encontrado', 404);
 }
 
+// Evitar que un admin se quite a sí mismo el rol de superadmin
+if ($userId === (int)$currentUser['id'] && $user['is_superadmin'] && !$isSuperadmin) {
+    Response::error('validation_error', 'No puedes quitarte a ti mismo el rol de superadministrador', 400);
+}
+
+// Proteger al último superadmin activo
+if ($user['is_superadmin'] && !$isSuperadmin) {
+    $stmt = $repo->pdo->prepare('SELECT COUNT(*) FROM users WHERE is_superadmin = 1 AND status = "active"');
+    $stmt->execute();
+    $superadminCount = (int)$stmt->fetchColumn();
+    
+    if ($superadminCount <= 1) {
+        Response::error('validation_error', 'No puedes quitar el rol de superadministrador al último admin del sistema', 400);
+    }
+}
+
 // Verificar si el email cambió y si ya está en uso
 if ($email !== $user['email']) {
     $existing = $repo->findByEmail($email);
