@@ -13,12 +13,17 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $input = json_decode(file_get_contents('php://input'), true) ?? [];
 $email = trim($input['email'] ?? '');
 $password = (string)($input['password'] ?? '');
+$remember = !empty($input['remember']);
 
 if ($email === '' || $password === '') {
     Response::error('validation_error', 'Email y password son obligatorios', 400);
 }
 
 $user = AuthService::login($email, $password);
+
+if ($remember) {
+    Session::rememberDays(30);
+}
 
 Response::json([
     'user' => $user,

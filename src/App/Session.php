@@ -66,6 +66,48 @@ class Session {
         $_SESSION['user'] = $user;
     }
 
+    // Persistir la cookie de sesión durante N días (Recordarme)
+    public static function rememberDays(int $days): void {
+        if (session_status() !== PHP_SESSION_ACTIVE) return;
+        $seconds = max(1, $days) * 86400;
+        $expires = time() + $seconds;
+
+        // Recalcular flags como en start()
+        $xfp = $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '';
+        $appUrl = $_ENV['APP_URL'] ?? getenv('APP_URL') ?: '';
+        $schemeFromEnv = '';
+        if ($appUrl) {
+            $parsed = parse_url($appUrl);
+            $schemeFromEnv = $parsed['scheme'] ?? '';
+        }
+        $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+            || strtolower($xfp) === 'https'
+            || strtolower($schemeFromEnv) === 'https';
+
+        $host = $_SERVER['HTTP_HOST'] ?? '';
+        if (!$host && $appUrl) {
+            $parsed = parse_url($appUrl);
+            $host = $parsed['host'] ?? '';
+        }
+        $cookieDomain = '';
+        if ($host) {
+            $parts = explode('.', $host);
+            if (count($parts) >= 2) {
+                $cookieDomain = $parts[count($parts)-2] . '.' . $parts[count($parts)-1];
+            }
+        }
+
+        // Reescribir cookie con expiración
+        setcookie(session_name(), session_id(), [
+            'expires' => $expires,
+            'path' => '/',
+            'domain' => $cookieDomain ?: '',
+            'secure' => $isHttps,
+            'httponly' => true,
+            'samesite' => 'Lax',
+        ]);
+    }
+
     public static function logout(): void {
         $_SESSION = [];
         if (ini_get('session.use_cookies')) {

@@ -37,6 +37,10 @@ if ($user) {
           <label class="block text-sm font-medium text-slate-700 mb-2">Contraseña</label>
           <input id="password" type="password" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-200 transition-all" placeholder="••••••••" required />
         </div>
+        <label class="flex items-center gap-2 text-sm text-slate-600 select-none">
+          <input id="remember" type="checkbox" class="h-4 w-4 rounded border-slate-300 text-violet-600 focus:ring-violet-500" />
+          Recordarme durante 30 días
+        </label>
         <button class="w-full py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl font-semibold shadow-md hover:shadow-lg hover:from-violet-700 hover:to-indigo-700 transition-all duration-200" id="submit-btn">Entrar</button>
         <p id="error" class="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2 hidden"></p>
       </form>
@@ -51,6 +55,7 @@ if ($user) {
     const password = document.getElementById('password');
     const errorEl = document.getElementById('error');
     const submitBtn = document.getElementById('submit-btn');
+    const rememberEl = document.getElementById('remember');
 
     async function api(path, opts={}){
       const res = await fetch(path, {
@@ -70,7 +75,7 @@ if ($user) {
       submitBtn.disabled = true;
       submitBtn.textContent = 'Entrando...';
       try {
-        await api('/api/auth/login.php', { method: 'POST', body: { email: email.value.trim(), password: password.value } });
+        await api('/api/auth/login.php', { method: 'POST', body: { email: email.value.trim(), password: password.value, remember: !!rememberEl.checked } });
         window.location.href = '/';
       } catch(err){
         errorEl.textContent = err.message;
