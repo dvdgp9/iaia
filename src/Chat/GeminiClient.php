@@ -11,10 +11,20 @@ class GeminiClient {
     public function __construct(?string $apiKey = null, ?string $model = null)
     {
         $this->apiKey = $apiKey ?? (Env::get('GEMINI_API_KEY') ?? '');
-        $this->model = $model ?? (Env::get('GEMINI_MODEL') ?? 'gemini-1.5-flash-latest');
+        $this->model = $model ?? (Env::get('GEMINI_MODEL') ?? 'gemini-2.5-flash');
     }
 
     public function generateText(string $prompt): string
+    {
+        return $this->generateWithMessages([
+            [ 'role' => 'user', 'content' => $prompt ]
+        ]);
+    }
+
+    /**
+     * @param array<int, array{role:string, content:string}> $messages
+     */
+    public function generateWithMessages(array $messages): string
     {
         if (!$this->apiKey) {
             Response::error('gemini_api_key_missing', 'Falta GEMINI_API_KEY en .env', 500);
@@ -24,12 +34,17 @@ class GeminiClient {
             urlencode($this->model), urlencode($this->apiKey)
         );
 
-        $payload = [
-            'contents' => [ [
-                'role' => 'user',
-                'parts' => [ [ 'text' => $prompt ] ]
-            ] ]
-        ];
+        // Mapear roles internos ('user'|'assistant') a Gemini ('user'|'model')
+        $contents = [];
+        foreach ($messages as $m) {
+            $role = $m['role'] === 'assistant' ? 'model' : 'user';
+            $contents[] = [
+                'role' => $role,
+                'parts' => [ [ 'text' => (string)$m['content'] ] ]
+            ];
+        }
+
+        $payload = [ 'contents' => $contents ];
 
         $ch = curl_init($url);
         curl_setopt_array($ch, [

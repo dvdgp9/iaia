@@ -12,9 +12,15 @@ class ChatService {
     public function reply(string $userMessage): array
     {
         $answer = $this->client->generateText($userMessage);
-        return [
-            'role' => 'assistant',
-            'content' => $answer,
-        ];
+        return [ 'role' => 'assistant', 'content' => $answer ];
+    }
+
+    /**
+     * @param array<int, array{role:string, content:string}> $history
+     */
+    public function replyWithHistory(array $history): array
+    {
+        $answer = $this->client->generateWithMessages($history);
+        return [ 'role' => 'assistant', 'content' => $answer ];
     }
 }

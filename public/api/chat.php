@@ -42,7 +42,12 @@ $userMsgId = $msgs->create($conversationId, (int)$user['id'], 'user', $message, 
 $convos->autoTitle($conversationId, $message);
 
 $svc = new ChatService();
-$assistantMsg = $svc->reply($message);
+// Construir historial: incluir todos los mensajes de la conversación (ya incluye el del usuario)
+$history = [];
+foreach ($msgs->listByConversation($conversationId) as $m) {
+    $history[] = [ 'role' => $m['role'], 'content' => $m['content'] ];
+}
+$assistantMsg = $svc->replyWithHistory($history);
 
 // Guardar respuesta de asistente
 $assistantMsgId = $msgs->create($conversationId, null, 'assistant', $assistantMsg['content'], getenv('GEMINI_MODEL') ?: null, null, null);
