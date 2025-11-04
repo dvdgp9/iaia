@@ -46,23 +46,24 @@ if ($user) {
     }
   </style>
 </head>
-<body class="min-h-screen bg-gray-100 flex">
-  <!-- Lado izquierdo - Gradiente -->
-  <div class="hidden lg:flex lg:w-1/2 gradient-bg items-center justify-center p-12 relative">
-    <div class="absolute top-12 left-12">
-      <!-- Logo Grupo Ebone (blanco) - aquí irá tu logo -->
-      <img src="/assets/images/grupo-ebone-white.png" alt="Grupo Ebone" class="h-16" />
+<body class="min-h-screen bg-gray-100 flex items-center justify-center p-8">
+  <div class="w-full max-w-7xl flex items-center justify-center gap-12">
+    <!-- Lado izquierdo - Gradiente redondeado -->
+    <div class="hidden lg:flex gradient-bg items-center justify-center p-12 relative rounded-[2.5rem] shadow-2xl" style="width: 520px; height: 560px;">
+      <div class="absolute top-12 left-12">
+        <!-- Logo Grupo Ebone (blanco) - aquí irá tu logo -->
+        <img src="/assets/images/grupo-ebone-white.png" alt="Grupo Ebone" class="h-16" />
+      </div>
+      
+      <div class="text-white text-center max-w-md px-6">
+        <h2 class="text-4xl font-bold leading-tight">
+          El latido inteligente de un grupo que respira unido.
+        </h2>
+      </div>
     </div>
-    
-    <div class="text-white text-center max-w-md">
-      <h2 class="text-4xl font-bold leading-tight">
-        El latido inteligente de un grupo que respira unido.
-      </h2>
-    </div>
-  </div>
 
-  <!-- Lado derecho - Formulario -->
-  <div class="w-full lg:w-1/2 flex items-center justify-center p-8">
+    <!-- Lado derecho - Formulario -->
+    <div class="w-full lg:w-auto flex items-center justify-center">
     <div class="w-full max-w-md">
       <!-- Logo Ebonia (colores) - aquí irá tu logo -->
       <div class="text-center mb-8">
@@ -118,6 +119,7 @@ if ($user) {
 
         <p id="error" class="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2 hidden text-center"></p>
       </form>
+    </div>
     </div>
   </div>
 
