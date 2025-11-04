@@ -114,6 +114,27 @@
       chatFooter.classList.remove('hidden');
     }
 
+    function escapeHtml(str){
+      return str.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    }
+
+    function mdToHtml(md){
+      // escape first
+      let s = escapeHtml(md);
+      // headings
+      s = s.replace(/^###\s+(.+)$/gm, '<h3 class="font-semibold text-base mb-1">$1<\/h3>');
+      s = s.replace(/^##\s+(.+)$/gm, '<h2 class="font-semibold text-lg mb-1">$1<\/h2>');
+      s = s.replace(/^#\s+(.+)$/gm, '<h1 class="font-semibold text-xl mb-1">$1<\/h1>');
+      // bold and italics (basic)
+      s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1<\/strong>');
+      s = s.replace(/\*(.+?)\*/g, '<em>$1<\/em>');
+      // inline code
+      s = s.replace(/`([^`]+)`/g, '<code class="px-1 py-0.5 bg-slate-100 rounded">$1<\/code>');
+      // line breaks
+      s = s.replace(/\n/g, '<br>');
+      return s;
+    }
+
     function append(role, content){
       if(messagesEl.children.length === 0) showChatMode();
       const wrap = document.createElement('div');
@@ -122,9 +143,12 @@
       bubble.className = role === 'user' 
         ? 'max-w-2xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white px-5 py-3 rounded-2xl rounded-tr-sm shadow-md' 
         : 'max-w-2xl bg-white border border-slate-200 text-slate-800 px-5 py-3 rounded-2xl rounded-tl-sm shadow-sm';
-      bubble.style.whiteSpace = 'pre-wrap';
       bubble.style.wordBreak = 'break-word';
-      bubble.textContent = content;
+      if (role === 'assistant') {
+        bubble.innerHTML = mdToHtml(content);
+      } else {
+        bubble.textContent = content;
+      }
       wrap.appendChild(bubble);
       messagesEl.appendChild(wrap);
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
