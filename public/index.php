@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Ebonia — IA Corporativa</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/iconoir-icons/iconoir@main/css/iconoir.css">
 </head>
 <body class="bg-gradient-to-br from-slate-50 to-slate-100 text-slate-900">
   <div class="min-h-screen flex">
@@ -54,19 +55,31 @@
             </div>
             <div class="grid grid-cols-2 gap-3">
               <button class="prompt-suggestion p-4 bg-white border-2 border-slate-200 rounded-xl hover:border-violet-300 hover:shadow-md transition-all text-left group">
-                <div class="text-sm font-medium text-slate-700 group-hover:text-violet-700">💡 Resumir documento</div>
+                <div class="flex items-center gap-2 text-sm font-medium text-slate-700 group-hover:text-violet-700">
+                  <i class="iconoir-light-bulb text-lg"></i>
+                  <span>Resumir documento</span>
+                </div>
                 <div class="text-xs text-slate-500 mt-1">Analiza y extrae los puntos clave</div>
               </button>
               <button class="prompt-suggestion p-4 bg-white border-2 border-slate-200 rounded-xl hover:border-violet-300 hover:shadow-md transition-all text-left group">
-                <div class="text-sm font-medium text-slate-700 group-hover:text-violet-700">📊 Analizar datos</div>
+                <div class="flex items-center gap-2 text-sm font-medium text-slate-700 group-hover:text-violet-700">
+                  <i class="iconoir-graph-up text-lg"></i>
+                  <span>Analizar datos</span>
+                </div>
                 <div class="text-xs text-slate-500 mt-1">Genera insights de tus datos</div>
               </button>
               <button class="prompt-suggestion p-4 bg-white border-2 border-slate-200 rounded-xl hover:border-violet-300 hover:shadow-md transition-all text-left group">
-                <div class="text-sm font-medium text-slate-700 group-hover:text-violet-700">✍️ Redactar contenido</div>
+                <div class="flex items-center gap-2 text-sm font-medium text-slate-700 group-hover:text-violet-700">
+                  <i class="iconoir-edit-pencil text-lg"></i>
+                  <span>Redactar contenido</span>
+                </div>
                 <div class="text-xs text-slate-500 mt-1">Crea textos profesionales</div>
               </button>
               <button class="prompt-suggestion p-4 bg-white border-2 border-slate-200 rounded-xl hover:border-violet-300 hover:shadow-md transition-all text-left group">
-                <div class="text-sm font-medium text-slate-700 group-hover:text-violet-700">🔍 Buscar información</div>
+                <div class="flex items-center gap-2 text-sm font-medium text-slate-700 group-hover:text-violet-700">
+                  <i class="iconoir-search text-lg"></i>
+                  <span>Buscar información</span>
+                </div>
                 <div class="text-xs text-slate-500 mt-1">Encuentra respuestas rápidas</div>
               </button>
             </div>
@@ -232,7 +245,7 @@
         actions.className = 'flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity';
         const renameBtn = document.createElement('button');
         renameBtn.className = 'p-1.5 text-slate-400 hover:text-violet-600 hover:bg-violet-50 rounded transition-colors';
-        renameBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 17.5L6.5 20 19 7.5 16.5 5 4 17.5Z"></path><path d="M14.5 5L19 9.5"></path></svg>';
+        renameBtn.innerHTML = '<i class="iconoir-edit-pencil"></i>';
         renameBtn.title = 'Renombrar';
         renameBtn.addEventListener('click', async (e) => {
           e.stopPropagation();
@@ -247,7 +260,7 @@
         });
         const delBtn = document.createElement('button');
         delBtn.className = 'p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors';
-        delBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12"></path><path d="M9 7v11"></path><path d="M15 7v11"></path><path d="M4 7l1 13a2 2 0 002 2h10a2 2 0 002-2l1-13"></path><path d="M9 4h6l1 3H8l1-3Z"></path></svg>';
+        delBtn.innerHTML = '<i class="iconoir-trash"></i>';
         delBtn.title = 'Borrar';
         delBtn.addEventListener('click', async (e) => {
           e.stopPropagation();
@@ -330,7 +343,7 @@
 
     document.querySelectorAll('.prompt-suggestion').forEach(btn => {
       btn.addEventListener('click', async () => {
-        const text = btn.querySelector('.text-sm').textContent.replace(/^[^\s]+\s/, ''); // remove emoji
+        const text = btn.querySelector('span').textContent.trim();
         inputEmptyEl.value = text;
         await handleSubmit(text);
       });

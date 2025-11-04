@@ -15,6 +15,7 @@ if ($user) {
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Ebonia — Login</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/iconoir-icons/iconoir@main/css/iconoir.css">
 </head>
 <body class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 grid place-items-center p-4">
   <div class="w-full max-w-md">
