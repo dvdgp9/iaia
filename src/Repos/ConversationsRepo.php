@@ -14,10 +14,17 @@ class ConversationsRepo {
 
     public function listByUser(int $userId, string $sort = 'updated_at'): array
     {
-        $allowed = ['updated_at', 'created_at', 'title'];
+        $allowed = ['updated_at', 'created_at', 'title', 'favorite'];
         $orderBy = in_array($sort, $allowed) ? $sort : 'updated_at';
-        $direction = $sort === 'title' ? 'ASC' : 'DESC';
-        $stmt = $this->pdo->prepare("SELECT id, title, status, created_at, updated_at FROM conversations WHERE user_id = ? ORDER BY {$orderBy} {$direction}");
+        
+        if ($orderBy === 'favorite') {
+            $sql = "SELECT id, title, status, is_favorite, created_at, updated_at FROM conversations WHERE user_id = ? ORDER BY is_favorite DESC, updated_at DESC";
+        } else {
+            $direction = $sort === 'title' ? 'ASC' : 'DESC';
+            $sql = "SELECT id, title, status, is_favorite, created_at, updated_at FROM conversations WHERE user_id = ? ORDER BY {$orderBy} {$direction}";
+        }
+        
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$userId]);
         return $stmt->fetchAll() ?: [];
     }
@@ -76,5 +83,21 @@ class ConversationsRepo {
         $now = date('Y-m-d H:i:s');
         $stmt = $this->pdo->prepare('UPDATE conversations SET title = ?, updated_at = ? WHERE id = ?');
         $stmt->execute([$title, $now, $conversationId]);
+    }
+
+    public function toggleFavorite(int $userId, int $conversationId): bool
+    {
+        // Obtener estado actual y verificar ownership
+        $stmt = $this->pdo->prepare('SELECT is_favorite FROM conversations WHERE id = ? AND user_id = ? LIMIT 1');
+        $stmt->execute([$conversationId, $userId]);
+        $row = $stmt->fetch();
+        if (!$row) {
+            return false;
+        }
+        $newValue = $row['is_favorite'] ? 0 : 1;
+        $now = date('Y-m-d H:i:s');
+        $upd = $this->pdo->prepare('UPDATE conversations SET is_favorite = ?, updated_at = ? WHERE id = ? AND user_id = ?');
+        $upd->execute([$newValue, $now, $conversationId, $userId]);
+        return true;
     }
 }

@@ -133,6 +133,7 @@ Conversación de un usuario con un asistente (voz) y/o gesto.
 - `company_id` BIGINT UNSIGNED NULL -- para filtrar contexto futuro
 - `title` VARCHAR(200) NOT NULL
 - `status` ENUM('active','archived') NOT NULL DEFAULT 'active'
+- `is_favorite` TINYINT(1) NOT NULL DEFAULT 0 -- marcada como favorita por el usuario
 - `metadata` JSON NULL -- datos auxiliares (p.ej., tags)
 - `created_at` DATETIME NOT NULL
 - `updated_at` DATETIME NOT NULL
@@ -141,6 +142,7 @@ Conversación de un usuario con un asistente (voz) y/o gesto.
 - `KEY conversations_user_id_idx (user_id)`
 - `KEY conversations_folder_id_idx (folder_id)`
 - `KEY conversations_voice_id_idx (voice_id)`
+- `KEY conversations_user_favorite_idx (user_id, is_favorite)`
 
 ## Tabla: `messages`
 Mensajes dentro de una conversación.

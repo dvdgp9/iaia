@@ -27,6 +27,7 @@
           <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Conversaciones</div>
           <select id="sort-select" class="text-xs border border-slate-200 rounded px-2 py-1 bg-white focus:outline-none focus:border-violet-400">
             <option value="updated_at">Recientes</option>
+            <option value="favorite">Favoritos</option>
             <option value="created_at">Creación</option>
             <option value="title">Alfabético</option>
           </select>
@@ -243,15 +244,38 @@
         const container = document.createElement('div');
         container.className = 'flex items-center gap-2 p-2';
         const btn = document.createElement('button');
-        btn.className = 'text-left flex-1 min-w-0';
+        btn.className = 'text-left flex-1 min-w-0 flex items-center gap-2';
+        
+        // Icono de estrella favorito
+        const starBtn = document.createElement('button');
+        starBtn.className = 'flex-shrink-0 transition-colors';
+        starBtn.innerHTML = c.is_favorite 
+          ? '<i class="iconoir-star-solid text-amber-500"></i>'
+          : '<i class="iconoir-star text-slate-300 group-hover:text-slate-400"></i>';
+        starBtn.title = c.is_favorite ? 'Quitar de favoritos' : 'Añadir a favoritos';
+        starBtn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          try {
+            await api('/api/conversations/toggle_favorite.php', { method: 'POST', body: { id: c.id } });
+            await loadConversations();
+          } catch (err) {
+            alert('Error al cambiar favorito: ' + err.message);
+          }
+        });
+        
+        const textContainer = document.createElement('div');
+        textContainer.className = 'flex-1 min-w-0';
         const titleEl = document.createElement('div');
         titleEl.className = 'font-medium text-sm truncate ' + (isActive ? 'text-violet-700' : 'text-slate-700 group-hover:text-slate-900');
         titleEl.textContent = c.title || `Conversación ${c.id}`;
         const timeEl = document.createElement('div');
         timeEl.className = 'text-xs text-slate-400 mt-0.5';
         timeEl.textContent = new Date(c.updated_at).toLocaleDateString('es-ES', {month: 'short', day: 'numeric'});
-        btn.appendChild(titleEl);
-        btn.appendChild(timeEl);
+        textContainer.appendChild(titleEl);
+        textContainer.appendChild(timeEl);
+        
+        btn.appendChild(starBtn);
+        btn.appendChild(textContainer);
         btn.addEventListener('click', async () => {
           currentConversationId = c.id;
           await loadConversations();
