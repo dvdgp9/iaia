@@ -38,13 +38,40 @@
       </div>
     </aside>
     <main class="flex-1 flex flex-col bg-white">
-      <header class="px-6 py-4 border-b border-slate-200 bg-white/80 backdrop-blur-sm flex items-center justify-between shadow-sm">
-        <div>
-          <div class="text-xs font-medium text-slate-500 uppercase tracking-wide">Usuario actual</div>
-          <div id="session-user" class="font-semibold text-slate-800 text-lg">No autenticado</div>
+      <header class="h-[52px] px-6 border-b border-slate-200 bg-white/95 backdrop-blur-sm flex items-center justify-between shadow-sm sticky top-0 z-10">
+        <!-- Logo -->
+        <div class="flex items-center gap-4 min-w-0">
+          <div class="text-base font-semibold text-slate-800 whitespace-nowrap">Ebonia</div>
+          <!-- Título conversación activa -->
+          <div id="conv-title" class="hidden text-sm text-slate-500 truncate max-w-md"></div>
         </div>
-        <div>
-          <button id="logout-btn" class="px-4 py-2 bg-red-50 text-red-600 rounded-lg font-medium hover:bg-red-100 transition-colors">Cerrar sesión</button>
+        
+        <!-- Acciones derecha -->
+        <div class="flex items-center gap-3">
+          <!-- Búsqueda (preparado futuro) -->
+          <button class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-colors" title="Buscar (próximamente)">
+            <i class="iconoir-search text-xl"></i>
+          </button>
+          
+          <!-- Avatar + Dropdown -->
+          <div class="relative" id="profile-dropdown-container">
+            <button id="profile-btn" class="flex items-center gap-2 p-1.5 hover:bg-slate-50 rounded-lg transition-colors">
+              <div class="h-8 w-8 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white text-sm font-semibold" id="user-avatar">?</div>
+              <i class="iconoir-nav-arrow-down text-slate-400 text-sm"></i>
+            </button>
+            
+            <!-- Dropdown menu -->
+            <div id="profile-dropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-slate-200 py-2 z-50">
+              <div class="px-4 py-3 border-b border-slate-100">
+                <div id="session-user" class="font-semibold text-slate-800 text-sm">Cargando...</div>
+                <div id="session-meta" class="text-xs text-slate-500 mt-0.5"></div>
+              </div>
+              <button id="logout-btn" class="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2">
+                <i class="iconoir-log-out"></i>
+                <span>Cerrar sesión</span>
+              </button>
+            </div>
+          </div>
         </div>
       </header>
       <section class="flex-1 overflow-auto bg-gradient-to-b from-slate-50/50 to-white relative" id="messages-container">
@@ -122,6 +149,11 @@
     const formEmptyEl = document.getElementById('chat-form-empty');
     const logoutBtn = document.getElementById('logout-btn');
     const sessionUser = document.getElementById('session-user');
+    const sessionMeta = document.getElementById('session-meta');
+    const userAvatar = document.getElementById('user-avatar');
+    const profileBtn = document.getElementById('profile-btn');
+    const profileDropdown = document.getElementById('profile-dropdown');
+    const convTitleEl = document.getElementById('conv-title');
     const convListEl = document.getElementById('conv-list');
     const newConvBtn = document.getElementById('new-conv-btn');
     const sortSelect = document.getElementById('sort-select');
@@ -129,6 +161,8 @@
     let csrf = null;
     let currentConversationId = null;
     let emptyConversationId = null; // id de conversación sin mensajes aún
+    let currentUser = null;
+    let currentConvTitle = null;
 
     function showChatMode(){
       emptyState.classList.add('hidden');
@@ -142,6 +176,7 @@
       chatFooter.classList.add('hidden');
       messagesEl.innerHTML = '';
       document.getElementById('context-warning').classList.add('hidden');
+      convTitleEl.classList.add('hidden');
       inputEmptyEl?.focus();
     }
 
@@ -210,16 +245,41 @@
         }
         const data = await res.json();
         csrf = data.csrf_token || null;
-        sessionUser.textContent = `${data.user.first_name} ${data.user.last_name} (${data.user.email})`;
+        currentUser = data.user;
+        
+        // Actualizar UI de perfil
+        const fullName = `${data.user.first_name} ${data.user.last_name}`;
+        sessionUser.textContent = fullName;
+        sessionMeta.textContent = data.user.email;
+        
+        // Avatar con iniciales
+        const initials = `${data.user.first_name[0]}${data.user.last_name[0]}`.toUpperCase();
+        userAvatar.textContent = initials;
+        
         await loadConversations();
       } catch (_) {
         window.location.href = '/login.php';
       }
     })();
 
+    // Toggle dropdown perfil
+    profileBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      profileDropdown.classList.toggle('hidden');
+    });
+    
+    // Cerrar dropdown al hacer clic fuera
+    document.addEventListener('click', (e) => {
+      if (!profileDropdown.classList.contains('hidden') && 
+          !e.target.closest('#profile-dropdown-container')) {
+        profileDropdown.classList.add('hidden');
+      }
+    });
+    
     sortSelect.addEventListener('change', () => loadConversations());
 
-    logoutBtn.addEventListener('click', async ()=>{
+    logoutBtn.addEventListener('click', async (e)=>{
+      e.stopPropagation();
       try {
         await api('/api/auth/logout.php', { method: 'POST' });
         window.location.href = '/login.php';
@@ -278,6 +338,7 @@
         btn.appendChild(textContainer);
         btn.addEventListener('click', async () => {
           currentConversationId = c.id;
+          updateConvTitle(c.title);
           await loadConversations();
           messagesEl.innerHTML = '';
           await loadMessages(c.id);
@@ -294,6 +355,10 @@
           if (!title) return;
           try {
             await api('/api/conversations/rename.php', { method: 'POST', body: { id: c.id, title } });
+            // Actualizar título en header si es la conversación activa
+            if (currentConversationId === c.id) {
+              updateConvTitle(title);
+            }
             await loadConversations();
           } catch (err) {
             alert('Error al renombrar: ' + err.message);
@@ -311,6 +376,8 @@
             if (currentConversationId === c.id) {
               currentConversationId = null;
               messagesEl.innerHTML = '';
+              updateConvTitle(null);
+              showEmptyMode();
             }
             await loadConversations();
           } catch (err) {
@@ -342,12 +409,24 @@
         emptyConversationId = conversationId;
       }
     }
+    
+    function updateConvTitle(title) {
+      if (title && title !== 'Nueva conversación') {
+        currentConvTitle = title;
+        convTitleEl.textContent = title;
+        convTitleEl.classList.remove('hidden');
+      } else {
+        currentConvTitle = null;
+        convTitleEl.classList.add('hidden');
+      }
+    }
 
     newConvBtn.addEventListener('click', async ()=>{
       try{
         // Si ya hay una conversación vacía sin mensajes, reutilizarla
         if (emptyConversationId) {
           currentConversationId = emptyConversationId;
+          updateConvTitle(null);
           await loadConversations();
           showEmptyMode();
           return;
@@ -355,6 +434,7 @@
         const res = await api('/api/conversations/create.php', { method: 'POST', body: {} });
         currentConversationId = res.id;
         emptyConversationId = res.id;
+        updateConvTitle(null);
         await loadConversations();
         showEmptyMode();
       }catch(e){
@@ -370,6 +450,12 @@
         if (!currentConversationId && data.conversation && data.conversation.id) {
           currentConversationId = data.conversation.id;
           await loadConversations();
+        }
+        // Actualizar título tras auto-title
+        if (data.conversation && data.conversation.id === currentConversationId) {
+          const convData = await api(`/api/conversations/list.php`);
+          const conv = convData.items?.find(c => c.id === currentConversationId);
+          if (conv) updateConvTitle(conv.title);
         }
         // Al enviar el primer mensaje, ya no es conversación vacía
         if (emptyConversationId === currentConversationId) emptyConversationId = null;
