@@ -35,6 +35,17 @@ if (!$user) {
     Response::error('not_found', 'Usuario no encontrado', 404);
 }
 
+// Proteger al último superadmin
+if ($user['is_superadmin']) {
+    $stmt = $repo->pdo->prepare('SELECT COUNT(*) FROM users WHERE is_superadmin = 1 AND status = "active"');
+    $stmt->execute();
+    $superadminCount = (int)$stmt->fetchColumn();
+    
+    if ($superadminCount <= 1) {
+        Response::error('validation_error', 'No puedes eliminar al último superadministrador del sistema', 400);
+    }
+}
+
 // Eliminar usuario
 $repo->delete($userId);
 
