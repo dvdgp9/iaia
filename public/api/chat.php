@@ -31,18 +31,28 @@ if ($message === '') {
 $convos = new ConversationsRepo();
 $msgs = new MessagesRepo();
 
+$isNew = false;
 if ($conversationId <= 0) {
     $conversationId = $convos->create((int)$user['id'], null);
+    $isNew = true;
 }
 
 // Guardar mensaje de usuario
 $userMsgId = $msgs->create($conversationId, (int)$user['id'], 'user', $message, null, null, null);
+
+// Auto-titular si es el primer mensaje
+if ($isNew) {
+    $convos->autoTitle($conversationId, $message);
+}
 
 $svc = new ChatService();
 $assistantMsg = $svc->reply($message);
 
 // Guardar respuesta de asistente
 $assistantMsgId = $msgs->create($conversationId, null, 'assistant', $assistantMsg['content'], getenv('GEMINI_MODEL') ?: null, null, null);
+
+// Actualizar updated_at de la conversación
+$convos->touch($conversationId);
 
 Response::json([
     'conversation' => [ 'id' => $conversationId ],

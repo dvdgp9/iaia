@@ -22,7 +22,14 @@
         </button>
       </div>
       <div class="flex-1 overflow-y-auto p-3">
-        <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 px-2">Conversaciones</div>
+        <div class="flex items-center justify-between mb-2 px-2">
+          <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Conversaciones</div>
+          <select id="sort-select" class="text-xs border border-slate-200 rounded px-2 py-1 bg-white focus:outline-none focus:border-violet-400">
+            <option value="updated_at">Recientes</option>
+            <option value="created_at">Creación</option>
+            <option value="title">Alfabético</option>
+          </select>
+        </div>
         <ul id="conv-list" class="space-y-1">
           <li class="text-slate-400 text-sm px-3 py-2">(vacío)</li>
         </ul>
@@ -34,8 +41,7 @@
           <div class="text-xs font-medium text-slate-500 uppercase tracking-wide">Usuario actual</div>
           <div id="session-user" class="font-semibold text-slate-800 text-lg">No autenticado</div>
         </div>
-        <div class="flex gap-2">
-          <button id="login-btn" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors">Iniciar sesión</button>
+        <div>
           <button id="logout-btn" class="px-4 py-2 bg-red-50 text-red-600 rounded-lg font-medium hover:bg-red-100 transition-colors">Cerrar sesión</button>
         </div>
       </header>
@@ -93,11 +99,11 @@
     const inputEmptyEl = document.getElementById('chat-input-empty');
     const formEl = document.getElementById('chat-form');
     const formEmptyEl = document.getElementById('chat-form-empty');
-    const loginBtn = document.getElementById('login-btn');
     const logoutBtn = document.getElementById('logout-btn');
     const sessionUser = document.getElementById('session-user');
     const convListEl = document.getElementById('conv-list');
     const newConvBtn = document.getElementById('new-conv-btn');
+    const sortSelect = document.getElementById('sort-select');
 
     let csrf = null;
     let currentConversationId = null;
@@ -150,15 +156,13 @@
         const data = await res.json();
         csrf = data.csrf_token || null;
         sessionUser.textContent = `${data.user.first_name} ${data.user.last_name} (${data.user.email})`;
-        loginBtn.disabled = true;
-        logoutBtn.disabled = false;
         await loadConversations();
       } catch (_) {
         window.location.href = '/login.php';
       }
     })();
 
-    loginBtn.addEventListener('click', ()=>{ window.location.href = '/login.php'; });
+    sortSelect.addEventListener('change', () => loadConversations());
 
     logoutBtn.addEventListener('click', async ()=>{
       try {
@@ -170,7 +174,8 @@
     });
 
     async function loadConversations(){
-      const data = await api('/api/conversations/list.php');
+      const sort = sortSelect.value || 'updated_at';
+      const data = await api(`/api/conversations/list.php?sort=${encodeURIComponent(sort)}`);
       const items = data.items || [];
       if(items.length === 0){
         convListEl.innerHTML = '<li class="text-slate-400 text-sm px-3 py-2">(vacío)</li>';

@@ -12,8 +12,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
 }
 
 $user = AuthService::requireAuth();
+$sort = isset($_GET['sort']) ? trim($_GET['sort']) : 'updated_at';
 
 $repo = new ConversationsRepo();
-$list = $repo->listByUser((int)$user['id']);
+$list = $repo->listByUser((int)$user['id'], $sort);
 
 Response::json(['items' => $list]);
