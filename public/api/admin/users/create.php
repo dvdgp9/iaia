@@ -1,0 +1,53 @@
+<?php
+require_once __DIR__ . '/../../../../src/App/bootstrap.php';
+require_once __DIR__ . '/../../../../src/Auth/AdminGuard.php';
+require_once __DIR__ . '/../../../../src/Repos/UsersRepo.php';
+
+use App\Response;
+use App\Session;
+use Auth\AdminGuard;
+use Repos\UsersRepo;
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    Response::error('method_not_allowed', 'Sólo POST', 405);
+}
+
+Session::requireCsrf();
+AdminGuard::requireSuperadmin();
+
+$input = json_decode(file_get_contents('php://input'), true) ?? [];
+$email = trim($input['email'] ?? '');
+$password = (string)($input['password'] ?? '');
+$firstName = trim($input['first_name'] ?? '');
+$lastName = trim($input['last_name'] ?? '');
+$departmentId = isset($input['department_id']) && $input['department_id'] !== '' ? (int)$input['department_id'] : null;
+$isSuperadmin = !empty($input['is_superadmin']);
+
+// Validaciones
+if ($email === '' || $firstName === '' || $lastName === '' || $password === '') {
+    Response::error('validation_error', 'Email, nombre, apellidos y contraseña son obligatorios', 400);
+}
+
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    Response::error('validation_error', 'Email inválido', 400);
+}
+
+if (strlen($password) < 8) {
+    Response::error('validation_error', 'La contraseña debe tener al menos 8 caracteres', 400);
+}
+
+// Verificar si el email ya existe
+$repo = new UsersRepo();
+$existing = $repo->findByEmail($email);
+if ($existing) {
+    Response::error('validation_error', 'El email ya está en uso', 400);
+}
+
+// Crear usuario
+$passwordHash = password_hash($password, PASSWORD_ARGON2ID);
+$userId = $repo->create($email, $passwordHash, $firstName, $lastName, $departmentId, $isSuperadmin);
+
+Response::json([
+    'success' => true,
+    'user_id' => $userId
+]);

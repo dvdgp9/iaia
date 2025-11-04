@@ -70,7 +70,11 @@
                 <i class="iconoir-user"></i>
                 <span>Mi cuenta</span>
               </a>
-              <button id="logout-btn" class="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2">
+              <a href="/admin/users.php" id="admin-link" class="hidden w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2 border-t border-slate-100">
+                <i class="iconoir-settings"></i>
+                <span>Gestión de usuarios</span>
+              </a>
+              <button id="logout-btn" class="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2 border-t border-slate-100">
                 <i class="iconoir-log-out"></i>
                 <span>Cerrar sesión</span>
               </button>
@@ -259,6 +263,11 @@
         // Avatar con iniciales
         const initials = `${data.user.first_name[0]}${data.user.last_name[0]}`.toUpperCase();
         userAvatar.textContent = initials;
+        
+        // Mostrar enlace admin si es superadmin
+        if (data.user.roles && data.user.roles.includes('admin')) {
+          document.getElementById('admin-link').classList.remove('hidden');
+        }
         
         await loadConversations();
       } catch (_) {
