@@ -15,48 +15,113 @@ if ($user) {
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Ebonia — Login</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/iconoir-icons/iconoir@main/css/iconoir.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    
+    .gradient-bg {
+      background: linear-gradient(135deg, #23AAC5 0%, #115c6c 100%);
+    }
+    
+    .btn-gradient {
+      background: linear-gradient(90deg, #23AAC5 0%, #115c6c 100%);
+    }
+    
+    input[type="text"],
+    input[type="password"] {
+      border: 2px solid #23AAC5;
+      border-radius: 50px;
+      padding: 12px 24px;
+      transition: all 0.3s ease;
+    }
+    
+    input[type="text"]:focus,
+    input[type="password"]:focus {
+      outline: none;
+      border-color: #115c6c;
+      box-shadow: 0 0 0 3px rgba(35, 170, 197, 0.1);
+    }
+  </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 grid place-items-center p-4">
-  <div class="w-full max-w-md">
-    <div class="bg-white p-8 rounded-2xl shadow-xl border border-slate-200">
-      <div class="flex items-center gap-3 mb-8">
-        <div class="h-12 w-12 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-lg">E</div>
-        <div>
-          <strong class="text-2xl font-bold text-slate-800">Ebonia</strong>
-          <div class="text-sm text-slate-500">IA Corporativa</div>
-        </div>
-      </div>
-      <h1 class="text-2xl font-bold mb-2 text-slate-800">Iniciar sesión</h1>
-      <p class="text-slate-500 mb-6 text-sm">Accede a tu espacio de trabajo</p>
-      <form id="login-form" class="space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-slate-700 mb-2">Email</label>
-          <input id="email" type="email" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-200 transition-all" placeholder="tu@empresa.com" required />
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-slate-700 mb-2">Contraseña</label>
-          <input id="password" type="password" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-200 transition-all" placeholder="••••••••" required />
-        </div>
-        <label class="flex items-center gap-2 text-sm text-slate-600 select-none">
-          <input id="remember" type="checkbox" class="h-4 w-4 rounded border-slate-300 text-violet-600 focus:ring-violet-500" />
-          Recordarme durante 30 días
-        </label>
-        <button class="w-full py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl font-semibold shadow-md hover:shadow-lg hover:from-violet-700 hover:to-indigo-700 transition-all duration-200" id="submit-btn">Entrar</button>
-        <p id="error" class="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2 hidden"></p>
-      </form>
+<body class="min-h-screen bg-gray-100 flex">
+  <!-- Lado izquierdo - Gradiente -->
+  <div class="hidden lg:flex lg:w-1/2 gradient-bg items-center justify-center p-12 relative">
+    <div class="absolute top-12 left-12">
+      <!-- Logo Grupo Ebone (blanco) - aquí irá tu logo -->
+      <img src="/assets/images/grupo-ebone-white.svg" alt="Grupo Ebone" class="h-16" />
     </div>
-    <p class="text-center text-slate-500 text-sm mt-6">
-      © 2025 Grupo Ebone. Todos los derechos reservados.
-    </p>
+    
+    <div class="text-white text-center max-w-md">
+      <h2 class="text-4xl font-bold leading-tight">
+        El latido inteligente de un grupo que respira unido.
+      </h2>
+    </div>
   </div>
+
+  <!-- Lado derecho - Formulario -->
+  <div class="w-full lg:w-1/2 flex items-center justify-center p-8">
+    <div class="w-full max-w-md">
+      <!-- Logo Ebonia (colores) - aquí irá tu logo -->
+      <div class="text-center mb-8">
+        <img src="/assets/images/ebonia-logo.svg" alt="Ebonia" class="h-16 mx-auto" />
+      </div>
+      
+      <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">LOGIN</h1>
+      </div>
+
+      <form id="login-form" class="space-y-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-900 mb-2">Nombre de usuario:</label>
+          <input 
+            id="email" 
+            type="text" 
+            class="w-full bg-white" 
+            required 
+            autocomplete="username"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-900 mb-2">Contraseña</label>
+          <input 
+            id="password" 
+            type="password" 
+            class="w-full bg-white" 
+            required
+            autocomplete="current-password"
+          />
+        </div>
+
+        <button 
+          type="submit" 
+          id="submit-btn"
+          class="w-full btn-gradient text-white font-semibold py-3 rounded-full hover:opacity-90 transition-all duration-200 shadow-md hover:shadow-lg"
+        >
+          Entrar ahora
+        </button>
+
+        <p id="error" class="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2 hidden text-center"></p>
+      </form>
+
+      <div class="text-center mt-6">
+        <p class="text-sm text-gray-700">
+          ¿Olvidaste tu contraseña?<br>
+          <a href="#" class="font-semibold text-gray-900 underline hover:text-[#23AAC5] transition-colors">Crea una nueva aquí</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
   <script type="module">
     const form = document.getElementById('login-form');
     const email = document.getElementById('email');
     const password = document.getElementById('password');
     const errorEl = document.getElementById('error');
     const submitBtn = document.getElementById('submit-btn');
-    const rememberEl = document.getElementById('remember');
 
     async function api(path, opts={}){
       const res = await fetch(path, {
@@ -75,17 +140,28 @@ if ($user) {
       errorEl.classList.add('hidden');
       submitBtn.disabled = true;
       submitBtn.textContent = 'Entrando...';
+      
       try {
-        await api('/api/auth/login.php', { method: 'POST', body: { email: email.value.trim(), password: password.value, remember: !!rememberEl.checked } });
+        await api('/api/auth/login.php', { 
+          method: 'POST', 
+          body: { 
+            email: email.value.trim(), 
+            password: password.value,
+            remember: true // Siempre recordar sesión por defecto
+          } 
+        });
         window.location.href = '/';
       } catch(err){
         errorEl.textContent = err.message;
         errorEl.classList.remove('hidden');
       } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Entrar';
+        submitBtn.textContent = 'Entrar ahora';
       }
     });
+
+    // Focus en el primer campo al cargar
+    email.focus();
   </script>
 </body>
 </html>
