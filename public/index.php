@@ -232,7 +232,7 @@
         actions.className = 'flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity';
         const renameBtn = document.createElement('button');
         renameBtn.className = 'p-1.5 text-slate-400 hover:text-violet-600 hover:bg-violet-50 rounded transition-colors';
-        renameBtn.innerHTML = '✏️';
+        renameBtn.innerHTML = '<img src="https://cdn.jsdelivr.net/gh/iconoir-icons/iconoir/icons/edit-pencil.svg" alt="Renombrar" class="w-4 h-4" />';
         renameBtn.title = 'Renombrar';
         renameBtn.addEventListener('click', async (e) => {
           e.stopPropagation();
@@ -247,7 +247,7 @@
         });
         const delBtn = document.createElement('button');
         delBtn.className = 'p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors';
-        delBtn.innerHTML = '🗑️';
+        delBtn.innerHTML = '<img src="https://cdn.jsdelivr.net/gh/iconoir-icons/iconoir/icons/trash.svg" alt="Borrar" class="w-4 h-4" />';
         delBtn.title = 'Borrar';
         delBtn.addEventListener('click', async (e) => {
           e.stopPropagation();
