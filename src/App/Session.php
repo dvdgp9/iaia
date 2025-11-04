@@ -34,6 +34,11 @@ class Session {
         // Evitar cache para respuestas con sesión
         session_cache_limiter('nocache');
 
+        // Configurar duración de sesión en servidor (30 días máximo)
+        // Esto evita que el garbage collector borre sesiones activas prematuramente
+        ini_set('session.gc_maxlifetime', 30 * 86400); // 30 días
+        ini_set('session.cookie_lifetime', 0); // Por defecto, expira al cerrar navegador (se modifica si remember=true)
+
         // Fijar path global
         session_set_cookie_params([
             'lifetime' => 0,

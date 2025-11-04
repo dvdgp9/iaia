@@ -96,6 +96,18 @@ if ($user) {
           />
         </div>
 
+        <div class="flex items-center">
+          <input 
+            id="remember" 
+            type="checkbox" 
+            class="h-4 w-4 rounded border-gray-300 text-[#23AAC5] focus:ring-[#23AAC5]"
+            checked
+          />
+          <label for="remember" class="ml-2 text-sm text-gray-700">
+            Recordar por 30 días
+          </label>
+        </div>
+
         <button 
           type="submit" 
           id="submit-btn"
@@ -106,13 +118,6 @@ if ($user) {
 
         <p id="error" class="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2 hidden text-center"></p>
       </form>
-
-      <div class="text-center mt-6">
-        <p class="text-sm text-gray-700">
-          ¿Olvidaste tu contraseña?<br>
-          <a href="#" class="font-semibold text-gray-900 underline hover:text-[#23AAC5] transition-colors">Crea una nueva aquí</a>
-        </p>
-      </div>
     </div>
   </div>
 
@@ -122,6 +127,7 @@ if ($user) {
     const password = document.getElementById('password');
     const errorEl = document.getElementById('error');
     const submitBtn = document.getElementById('submit-btn');
+    const rememberEl = document.getElementById('remember');
 
     async function api(path, opts={}){
       const res = await fetch(path, {
@@ -147,7 +153,7 @@ if ($user) {
           body: { 
             email: email.value.trim(), 
             password: password.value,
-            remember: true // Siempre recordar sesión por defecto
+            remember: rememberEl.checked
           } 
         });
         window.location.href = '/';
