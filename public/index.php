@@ -66,6 +66,10 @@
                 <div id="session-user" class="font-semibold text-slate-800 text-sm">Cargando...</div>
                 <div id="session-meta" class="text-xs text-slate-500 mt-0.5"></div>
               </div>
+              <a href="/account.php" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2">
+                <i class="iconoir-user"></i>
+                <span>Mi cuenta</span>
+              </a>
               <button id="logout-btn" class="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2">
                 <i class="iconoir-log-out"></i>
                 <span>Cerrar sesión</span>
