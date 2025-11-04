@@ -51,7 +51,7 @@ if ($user) {
   <div class="hidden lg:flex lg:w-1/2 gradient-bg items-center justify-center p-12 relative">
     <div class="absolute top-12 left-12">
       <!-- Logo Grupo Ebone (blanco) - aquí irá tu logo -->
-      <img src="/assets/images/grupo-ebone-white.svg" alt="Grupo Ebone" class="h-16" />
+      <img src="/assets/images/grupo-ebone-white.png" alt="Grupo Ebone" class="h-16" />
     </div>
     
     <div class="text-white text-center max-w-md">
@@ -66,7 +66,7 @@ if ($user) {
     <div class="w-full max-w-md">
       <!-- Logo Ebonia (colores) - aquí irá tu logo -->
       <div class="text-center mb-8">
-        <img src="/assets/images/ebonia-logo.svg" alt="Ebonia" class="h-16 mx-auto" />
+        <img src="/assets/images/ebonia-logo.png" alt="Ebonia" class="h-16 mx-auto" />
       </div>
       
       <div class="text-center mb-8">
