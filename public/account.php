@@ -64,13 +64,8 @@ if (!$user) {
           <div class="mt-1 text-slate-800 font-medium"><?php echo htmlspecialchars($user['email']); ?></div>
         </div>
         <div>
-          <label class="text-xs font-medium text-slate-500 uppercase tracking-wider">Estado</label>
-          <div class="mt-1">
-            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200">
-              <span class="h-1.5 w-1.5 rounded-full bg-green-500"></span>
-              Activo
-            </span>
-          </div>
+          <label class="text-xs font-medium text-slate-500 uppercase tracking-wider">Departamento</label>
+          <div class="mt-1 text-slate-800 font-medium"><?php echo htmlspecialchars($user['department_name'] ?? 'Sin asignar'); ?></div>
         </div>
       </div>
 
@@ -85,6 +80,20 @@ if (!$user) {
             <label class="text-xs font-medium text-slate-500 uppercase tracking-wider block mb-2">Apellidos</label>
             <input type="text" id="edit-last-name" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-violet-400 transition-colors" required>
           </div>
+          <div>
+            <label class="text-xs font-medium text-slate-500 uppercase tracking-wider block mb-2">Email</label>
+            <input type="email" value="<?php echo htmlspecialchars($user['email']); ?>" class="w-full px-3 py-2 border border-slate-200 rounded-lg bg-slate-50 text-slate-600 cursor-not-allowed" disabled>
+          </div>
+          <div>
+            <label class="text-xs font-medium text-slate-500 uppercase tracking-wider block mb-2">Departamento</label>
+            <input type="text" value="<?php echo htmlspecialchars($user['department_name'] ?? 'Sin asignar'); ?>" class="w-full px-3 py-2 border border-slate-200 rounded-lg bg-slate-50 text-slate-600 cursor-not-allowed" disabled>
+          </div>
+        </div>
+        <div class="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 flex items-start gap-3">
+          <i class="iconoir-info-circle text-blue-600 text-lg flex-shrink-0 mt-0.5"></i>
+          <p class="text-sm text-blue-800">
+            Si necesitas modificar tu email o departamento, contacta con <a href="mailto:it@ebone.es" class="font-semibold underline hover:text-blue-900">it@ebone.es</a>
+          </p>
         </div>
         <div class="flex gap-3 pt-2">
           <button type="submit" class="px-4 py-2 bg-violet-600 text-white rounded-lg font-medium hover:bg-violet-700 transition-colors text-sm">

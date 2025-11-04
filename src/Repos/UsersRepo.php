@@ -14,7 +14,13 @@ class UsersRepo {
 
     public function findByEmail(string $email): ?array
     {
-        $stmt = $this->pdo->prepare('SELECT id, email, password_hash, first_name, last_name, status, is_superadmin FROM users WHERE email = ? LIMIT 1');
+        $stmt = $this->pdo->prepare('
+            SELECT u.id, u.email, u.password_hash, u.first_name, u.last_name, u.status, u.is_superadmin, u.department_id, d.name as department_name
+            FROM users u
+            LEFT JOIN departments d ON d.id = u.department_id
+            WHERE u.email = ? 
+            LIMIT 1
+        ');
         $stmt->execute([$email]);
         $row = $stmt->fetch();
         return $row ?: null;
