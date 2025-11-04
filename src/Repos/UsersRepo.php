@@ -139,4 +139,17 @@ class UsersRepo {
         $stmt = $this->pdo->prepare('UPDATE users SET email = ?, updated_at = ? WHERE id = ?');
         $stmt->execute([$email, $now, $userId]);
     }
+
+    public function delete(int $userId): void
+    {
+        // Eliminar conversaciones y mensajes asociados (cascada manual si no está en BD)
+        $this->pdo->prepare('DELETE FROM messages WHERE user_id = ?')->execute([$userId]);
+        $this->pdo->prepare('DELETE FROM conversations WHERE user_id = ?')->execute([$userId]);
+        
+        // Eliminar roles asociados
+        $this->pdo->prepare('DELETE FROM user_roles WHERE user_id = ?')->execute([$userId]);
+        
+        // Eliminar usuario
+        $this->pdo->prepare('DELETE FROM users WHERE id = ?')->execute([$userId]);
+    }
 }

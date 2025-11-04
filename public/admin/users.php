@@ -92,6 +92,36 @@ if (!$isSuperadmin) {
     </div>
   </div>
 
+  <!-- Modal confirmación eliminar -->
+  <div id="delete-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="h-12 w-12 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+          <i class="iconoir-warning-triangle text-red-600 text-2xl"></i>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold text-slate-800">Eliminar usuario</h3>
+          <p class="text-sm text-slate-600 mt-0.5">Esta acción no se puede deshacer</p>
+        </div>
+      </div>
+
+      <p class="text-slate-700 mb-6">
+        ¿Estás seguro de que deseas eliminar al usuario <strong id="delete-user-name" class="text-slate-900"></strong>?
+        <br><br>
+        Se eliminarán todas sus conversaciones, mensajes y datos asociados de forma permanente.
+      </p>
+
+      <div class="flex gap-3">
+        <button id="confirm-delete-btn" class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors text-sm">
+          Sí, eliminar usuario
+        </button>
+        <button id="cancel-delete-btn" class="px-4 py-2 border border-slate-200 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-colors text-sm">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal crear/editar usuario -->
   <div id="user-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
     <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
@@ -281,10 +311,16 @@ if (!$isSuperadmin) {
             <td class="px-6 py-4">${statusBadge}</td>
             <td class="px-6 py-4 text-sm text-slate-600">${lastLogin}</td>
             <td class="px-6 py-4 text-right">
-              <button onclick="editUser(${u.id})" class="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-violet-600 hover:text-violet-700 hover:bg-violet-50 rounded-lg transition-colors">
-                <i class="iconoir-edit-pencil"></i>
-                <span>Editar</span>
-              </button>
+              <div class="flex items-center justify-end gap-2">
+                <button onclick="editUser(${u.id})" class="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-violet-600 hover:text-violet-700 hover:bg-violet-50 rounded-lg transition-colors">
+                  <i class="iconoir-edit-pencil"></i>
+                  <span>Editar</span>
+                </button>
+                <button onclick="confirmDeleteUser(${u.id}, '${escapeHtml(u.first_name)} ${escapeHtml(u.last_name)}')" class="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors">
+                  <i class="iconoir-trash"></i>
+                  <span>Eliminar</span>
+                </button>
+              </div>
             </td>
           </tr>
         `;
@@ -394,6 +430,52 @@ if (!$isSuperadmin) {
       } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = isEditMode ? 'Guardar cambios' : 'Crear usuario';
+      }
+    });
+
+    // Eliminar usuario
+    let userToDelete = null;
+    
+    window.confirmDeleteUser = function(userId, userName) {
+      userToDelete = userId;
+      document.getElementById('delete-user-name').textContent = userName;
+      document.getElementById('delete-modal').classList.remove('hidden');
+    };
+
+    document.getElementById('cancel-delete-btn').addEventListener('click', () => {
+      document.getElementById('delete-modal').classList.add('hidden');
+      userToDelete = null;
+    });
+
+    // Cerrar modal al hacer clic fuera
+    document.getElementById('delete-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'delete-modal') {
+        document.getElementById('delete-modal').classList.add('hidden');
+        userToDelete = null;
+      }
+    });
+
+    document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
+      if (!userToDelete) return;
+
+      const btn = document.getElementById('confirm-delete-btn');
+      btn.disabled = true;
+      btn.textContent = 'Eliminando...';
+
+      try {
+        await api('/api/admin/users/delete.php', {
+          method: 'POST',
+          body: { id: userToDelete }
+        });
+
+        document.getElementById('delete-modal').classList.add('hidden');
+        userToDelete = null;
+        await loadUsers();
+      } catch (err) {
+        alert('Error al eliminar usuario: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Sí, eliminar usuario';
       }
     });
 
