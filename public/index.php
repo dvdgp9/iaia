@@ -232,7 +232,7 @@
         actions.className = 'flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity';
         const renameBtn = document.createElement('button');
         renameBtn.className = 'p-1.5 text-slate-400 hover:text-violet-600 hover:bg-violet-50 rounded transition-colors';
-        renameBtn.innerHTML = '<img src="https://unpkg.com/iconoir/icons/edit-pencil.svg" alt="Renombrar" aria-label="Renombrar" class="w-4 h-4" />';
+        renameBtn.innerHTML = '<img src="https://cdn.jsdelivr.net/npm/iconoir@latest/icons/edit-pencil.svg" alt="Renombrar" aria-label="Renombrar" class="w-4 h-4" onerror="this.outerHTML=\'<svg xmlns=\"http://www.w3.org/2000/svg\" class=\"w-4 h-4\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><path d=\"M4 17.5L6.5 20 19 7.5 16.5 5 4 17.5Z\"></path><path d=\"M14.5 5L19 9.5\"></path></svg>\'" />';
         renameBtn.title = 'Renombrar';
         renameBtn.addEventListener('click', async (e) => {
           e.stopPropagation();
@@ -247,7 +247,7 @@
         });
         const delBtn = document.createElement('button');
         delBtn.className = 'p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors';
-        delBtn.innerHTML = '<img src="https://unpkg.com/iconoir/icons/trash.svg" alt="Borrar" aria-label="Borrar" class="w-4 h-4" />';
+        delBtn.innerHTML = '<img src="https://cdn.jsdelivr.net/npm/iconoir@latest/icons/trash.svg" alt="Borrar" aria-label="Borrar" class="w-4 h-4" onerror="this.outerHTML=\'<svg xmlns=\"http://www.w3.org/2000/svg\" class=\"w-4 h-4\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><path d=\"M6 7h12\"></path><path d=\"M9 7v11\"></path><path d=\"M15 7v11\"></path><path d=\"M4 7l1 13a2 2 0 002 2h10a2 2 0 002-2l1-13\"></path><path d=\"M9 4h6l1 3H8l1-3Z\"></path></svg>\'" />';
         delBtn.title = 'Borrar';
         delBtn.addEventListener('click', async (e) => {
           e.stopPropagation();
