@@ -43,10 +43,36 @@ $convos->autoTitle($conversationId, $message);
 
 $svc = new ChatService();
 // Construir historial: incluir todos los mensajes de la conversación (ya incluye el del usuario)
+$allMessages = $msgs->listByConversation($conversationId);
 $history = [];
-foreach ($msgs->listByConversation($conversationId) as $m) {
+foreach ($allMessages as $m) {
     $history[] = [ 'role' => $m['role'], 'content' => $m['content'] ];
 }
+
+// Limitar contexto para no exceder límites de Gemini (250k tokens → ~1M chars)
+// Dejamos margen: ~150k chars de historial (~37.5k tokens estimados)
+$contextTruncated = false;
+if (count($history) > 20) {
+    $totalChars = array_sum(array_map(fn($m) => mb_strlen($m['content']), $history));
+    $maxContextChars = 150000;
+    
+    if ($totalChars > $maxContextChars) {
+        $contextTruncated = true;
+        // Mantener mensajes recientes hasta alcanzar límite
+        $truncated = [];
+        $chars = 0;
+        for ($i = count($history) - 1; $i >= 0; $i--) {
+            $len = mb_strlen($history[$i]['content']);
+            if ($chars + $len > $maxContextChars && count($truncated) >= 20) {
+                break;
+            }
+            array_unshift($truncated, $history[$i]);
+            $chars += $len;
+        }
+        $history = $truncated;
+    }
+}
+
 $assistantMsg = $svc->replyWithHistory($history);
 
 // Guardar respuesta de asistente
@@ -62,5 +88,6 @@ Response::json([
         'role' => $assistantMsg['role'],
         'content' => $assistantMsg['content'],
         'model' => getenv('GEMINI_MODEL') ?: null
-    ]
+    ],
+    'context_truncated' => $contextTruncated
 ]);

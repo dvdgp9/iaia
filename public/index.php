@@ -47,6 +47,13 @@
         </div>
       </header>
       <section class="flex-1 overflow-auto bg-gradient-to-b from-slate-50/50 to-white relative" id="messages-container">
+        <div id="context-warning" class="hidden mx-6 mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
+          <i class="iconoir-info-circle text-amber-600 text-lg mt-0.5"></i>
+          <div class="flex-1 text-sm">
+            <div class="font-medium text-amber-900">Conversación muy larga</div>
+            <div class="text-amber-700 mt-0.5">Para optimizar el rendimiento, solo se envían los mensajes más recientes al asistente. El historial completo permanece guardado.</div>
+          </div>
+        </div>
         <div id="empty-state" class="absolute inset-0 flex items-center justify-center p-8">
           <div class="max-w-3xl w-full space-y-8">
             <div class="text-center space-y-2">
@@ -133,6 +140,7 @@
       messagesEl.classList.add('hidden');
       chatFooter.classList.add('hidden');
       messagesEl.innerHTML = '';
+      document.getElementById('context-warning').classList.add('hidden');
       inputEmptyEl?.focus();
     }
 
@@ -297,6 +305,7 @@
     async function loadMessages(conversationId){
       const data = await api(`/api/messages/list.php?conversation_id=${encodeURIComponent(conversationId)}`);
       messagesEl.innerHTML = '';
+      document.getElementById('context-warning').classList.add('hidden');
       const items = data.items || [];
       if(items.length > 0){
         showChatMode();
@@ -340,6 +349,13 @@
         }
         // Al enviar el primer mensaje, ya no es conversación vacía
         if (emptyConversationId === currentConversationId) emptyConversationId = null;
+        // Mostrar/ocultar aviso de truncamiento
+        const warning = document.getElementById('context-warning');
+        if (data.context_truncated) {
+          warning.classList.remove('hidden');
+        } else {
+          warning.classList.add('hidden');
+        }
         append('assistant', data.message.content);
       } catch(e){
         append('assistant', 'Error: ' + e.message);
