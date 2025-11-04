@@ -31,19 +31,15 @@ if ($message === '') {
 $convos = new ConversationsRepo();
 $msgs = new MessagesRepo();
 
-$isNew = false;
 if ($conversationId <= 0) {
     $conversationId = $convos->create((int)$user['id'], null);
-    $isNew = true;
 }
 
 // Guardar mensaje de usuario
 $userMsgId = $msgs->create($conversationId, (int)$user['id'], 'user', $message, null, null, null);
 
-// Auto-titular si es el primer mensaje
-if ($isNew) {
-    $convos->autoTitle($conversationId, $message);
-}
+// Auto-titular si el título sigue siendo el genérico
+$convos->autoTitle($conversationId, $message);
 
 $svc = new ChatService();
 $assistantMsg = $svc->reply($message);
