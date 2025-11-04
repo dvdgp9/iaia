@@ -120,11 +120,20 @@
 
     let csrf = null;
     let currentConversationId = null;
+    let emptyConversationId = null; // id de conversación sin mensajes aún
 
     function showChatMode(){
       emptyState.classList.add('hidden');
       messagesEl.classList.remove('hidden');
       chatFooter.classList.remove('hidden');
+    }
+
+    function showEmptyMode(){
+      emptyState.classList.remove('hidden');
+      messagesEl.classList.add('hidden');
+      chatFooter.classList.add('hidden');
+      messagesEl.innerHTML = '';
+      inputEmptyEl?.focus();
     }
 
     function escapeHtml(str){
@@ -294,19 +303,27 @@
         for(const m of items){
           append(m.role, m.content);
         }
+        emptyConversationId = null;
       } else {
-        emptyState.classList.remove('hidden');
-        messagesEl.classList.add('hidden');
-        chatFooter.classList.add('hidden');
+        showEmptyMode();
+        emptyConversationId = conversationId;
       }
     }
 
     newConvBtn.addEventListener('click', async ()=>{
       try{
+        // Si ya hay una conversación vacía sin mensajes, reutilizarla
+        if (emptyConversationId) {
+          currentConversationId = emptyConversationId;
+          await loadConversations();
+          showEmptyMode();
+          return;
+        }
         const res = await api('/api/conversations/create.php', { method: 'POST', body: {} });
         currentConversationId = res.id;
+        emptyConversationId = res.id;
         await loadConversations();
-        messagesEl.innerHTML = '';
+        showEmptyMode();
       }catch(e){
         alert('Error al crear conversación: ' + e.message);
       }
@@ -321,6 +338,8 @@
           currentConversationId = data.conversation.id;
           await loadConversations();
         }
+        // Al enviar el primer mensaje, ya no es conversación vacía
+        if (emptyConversationId === currentConversationId) emptyConversationId = null;
         append('assistant', data.message.content);
       } catch(e){
         append('assistant', 'Error: ' + e.message);
