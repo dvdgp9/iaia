@@ -162,62 +162,175 @@
             <div class="text-amber-700 mt-0.5">Para optimizar el rendimiento, solo se envían los mensajes más recientes al asistente. El historial completo permanece guardado.</div>
           </div>
         </div>
-        <div id="empty-state" class="absolute inset-0 flex items-center justify-center p-8">
-          <div class="max-w-3xl w-full space-y-8">
-            <div class="text-center space-y-2">
-              <div class="inline-flex items-center justify-center w-14 h-14 rounded-full gradient-brand mb-3 shadow-lg">
-                <i class="iconoir-chat-bubble text-2xl text-white"></i>
-              </div>
-              <h2 class="text-3xl font-bold text-slate-900">¿En qué puedo ayudarte?</h2>
-              <p class="text-sm text-slate-600">Soy tu asistente de IA corporativa. Puedo ayudarte con análisis, redacción, búsqueda y mucho más</p>
+        <div id="empty-state" class="absolute inset-0 overflow-auto p-6">
+          <div class="max-w-6xl mx-auto py-8">
+            
+            <!-- Hero Input Section -->
+            <div class="text-center mb-8">
+              <h2 class="text-2xl font-bold text-slate-900 mb-2">¿Qué quieres hacer hoy?</h2>
+              <p class="text-sm text-slate-600 mb-6">Escribe una pregunta, elige una voz o inicia una acción rápida</p>
+              
+              <!-- Input principal -->
+              <form id="chat-form-empty" class="max-w-2xl mx-auto mb-4">
+                <div class="relative">
+                  <input id="chat-input-empty" class="w-full border-2 border-slate-300 rounded-2xl px-5 py-4 pr-14 focus:outline-none focus:border-[#23AAC5] focus:ring-4 focus:ring-[#23AAC5]/20 transition-all shadow-lg bg-white" placeholder="Escribe tu pregunta o solicitud..." />
+                  <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 gradient-brand-btn text-white rounded-xl hover:shadow-lg hover:opacity-90 transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                  </button>
+                </div>
+              </form>
             </div>
-            <div class="grid grid-cols-2 gap-3">
-              <button class="prompt-suggestion p-4 bg-white border-2 border-slate-200 rounded-xl hover:border-[#23AAC5] hover:shadow-md hover:scale-[1.01] transition-all text-left group">
-                <div class="flex items-center gap-2.5 mb-1.5">
-                  <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#23AAC5]/10 to-[#115c6c]/10 flex items-center justify-center group-hover:from-[#23AAC5]/20 group-hover:to-[#115c6c]/20 transition-colors">
-                    <i class="iconoir-light-bulb text-xl text-[#23AAC5]"></i>
-                  </div>
-                  <span class="font-semibold text-slate-800 group-hover:text-[#23AAC5] transition-colors">Resumir documento</span>
-                </div>
-                <div class="text-xs text-slate-600 pl-11">Analiza y extrae los puntos clave</div>
-              </button>
-              <button class="prompt-suggestion p-4 bg-white border-2 border-slate-200 rounded-xl hover:border-[#23AAC5] hover:shadow-md hover:scale-[1.01] transition-all text-left group">
-                <div class="flex items-center gap-2.5 mb-1.5">
-                  <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#23AAC5]/10 to-[#115c6c]/10 flex items-center justify-center group-hover:from-[#23AAC5]/20 group-hover:to-[#115c6c]/20 transition-colors">
-                    <i class="iconoir-graph-up text-xl text-[#23AAC5]"></i>
-                  </div>
-                  <span class="font-semibold text-slate-800 group-hover:text-[#23AAC5] transition-colors">Analizar datos</span>
-                </div>
-                <div class="text-xs text-slate-600 pl-11">Genera insights de tus datos</div>
-              </button>
-              <button class="prompt-suggestion p-4 bg-white border-2 border-slate-200 rounded-xl hover:border-[#23AAC5] hover:shadow-md hover:scale-[1.01] transition-all text-left group">
-                <div class="flex items-center gap-2.5 mb-1.5">
-                  <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#23AAC5]/10 to-[#115c6c]/10 flex items-center justify-center group-hover:from-[#23AAC5]/20 group-hover:to-[#115c6c]/20 transition-colors">
-                    <i class="iconoir-edit-pencil text-xl text-[#23AAC5]"></i>
-                  </div>
-                  <span class="font-semibold text-slate-800 group-hover:text-[#23AAC5] transition-colors">Redactar contenido</span>
-                </div>
-                <div class="text-xs text-slate-600 pl-11">Crea textos profesionales</div>
-              </button>
-              <button class="prompt-suggestion p-4 bg-white border-2 border-slate-200 rounded-xl hover:border-[#23AAC5] hover:shadow-md hover:scale-[1.01] transition-all text-left group">
-                <div class="flex items-center gap-2.5 mb-1.5">
-                  <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#23AAC5]/10 to-[#115c6c]/10 flex items-center justify-center group-hover:from-[#23AAC5]/20 group-hover:to-[#115c6c]/20 transition-colors">
-                    <i class="iconoir-search text-xl text-[#23AAC5]"></i>
-                  </div>
-                  <span class="font-semibold text-slate-800 group-hover:text-[#23AAC5] transition-colors">Buscar información</span>
-                </div>
-                <div class="text-xs text-slate-600 pl-11">Encuentra respuestas rápidas</div>
-              </button>
+
+            <!-- Divisor con "o" -->
+            <div class="flex items-center gap-4 max-w-2xl mx-auto mb-8">
+              <div class="flex-1 h-px bg-slate-200"></div>
+              <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">O elige una opción</span>
+              <div class="flex-1 h-px bg-slate-200"></div>
             </div>
-            <form id="chat-form-empty" class="max-w-2xl mx-auto">
-              <div class="relative">
-                <input id="chat-input-empty" class="w-full border-2 border-slate-300 rounded-2xl px-5 py-4 pr-14 focus:outline-none focus:border-[#23AAC5] focus:ring-4 focus:ring-[#23AAC5]/20 transition-all shadow-lg" placeholder="Escribe tu pregunta aquí..." />
-                <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 gradient-brand-btn text-white rounded-xl hover:shadow-lg hover:opacity-90 transition-all">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
-                </button>
+
+            <!-- Grid de opciones: Voces y Gestos -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-5xl mx-auto">
+              
+              <!-- Sección Voces -->
+              <div class="bg-white rounded-2xl border-2 border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex items-center gap-2.5 mb-4">
+                  <div class="w-10 h-10 rounded-xl gradient-brand flex items-center justify-center shadow-sm">
+                    <i class="iconoir-voice-square text-xl text-white"></i>
+                  </div>
+                  <div>
+                    <h3 class="font-bold text-slate-900">Hablar con una voz</h3>
+                    <p class="text-xs text-slate-500">Personalidades únicas para distintas tareas</p>
+                  </div>
+                </div>
+                
+                <div class="space-y-2">
+                  <button class="voice-option w-full p-3 bg-slate-50 hover:bg-[#23AAC5]/5 border border-slate-200 hover:border-[#23AAC5] rounded-xl transition-all text-left group" data-voice="cubo">
+                    <div class="flex items-center gap-3">
+                      <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">C</div>
+                      <div class="flex-1 min-w-0">
+                        <div class="font-semibold text-slate-800 text-sm group-hover:text-[#23AAC5] transition-colors">Cubo</div>
+                        <div class="text-xs text-slate-500">Analítico y estructurado</div>
+                      </div>
+                      <i class="iconoir-arrow-right text-slate-400 group-hover:text-[#23AAC5] transition-colors"></i>
+                    </div>
+                  </button>
+
+                  <button class="voice-option w-full p-3 bg-slate-50 hover:bg-[#23AAC5]/5 border border-slate-200 hover:border-[#23AAC5] rounded-xl transition-all text-left group" data-voice="lex">
+                    <div class="flex items-center gap-3">
+                      <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">L</div>
+                      <div class="flex-1 min-w-0">
+                        <div class="font-semibold text-slate-800 text-sm group-hover:text-[#23AAC5] transition-colors">Lex</div>
+                        <div class="text-xs text-slate-500">Creativo y dinámico</div>
+                      </div>
+                      <i class="iconoir-arrow-right text-slate-400 group-hover:text-[#23AAC5] transition-colors"></i>
+                    </div>
+                  </button>
+
+                  <button class="voice-option w-full p-3 bg-slate-50 hover:bg-[#23AAC5]/5 border border-slate-200 hover:border-[#23AAC5] rounded-xl transition-all text-left group" data-voice="uniges">
+                    <div class="flex items-center gap-3">
+                      <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">U</div>
+                      <div class="flex-1 min-w-0">
+                        <div class="font-semibold text-slate-800 text-sm group-hover:text-[#23AAC5] transition-colors">Uniges</div>
+                        <div class="text-xs text-slate-500">Profesional y técnico</div>
+                      </div>
+                      <i class="iconoir-arrow-right text-slate-400 group-hover:text-[#23AAC5] transition-colors"></i>
+                    </div>
+                  </button>
+
+                  <button class="voice-option w-full p-3 bg-slate-50 hover:bg-[#23AAC5]/5 border border-slate-200 hover:border-[#23AAC5] rounded-xl transition-all text-left group" data-voice="atlas">
+                    <div class="flex items-center gap-3">
+                      <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">A</div>
+                      <div class="flex-1 min-w-0">
+                        <div class="font-semibold text-slate-800 text-sm group-hover:text-[#23AAC5] transition-colors">Atlas</div>
+                        <div class="text-xs text-slate-500">Sabio y reflexivo</div>
+                      </div>
+                      <i class="iconoir-arrow-right text-slate-400 group-hover:text-[#23AAC5] transition-colors"></i>
+                    </div>
+                  </button>
+                </div>
               </div>
-              <p class="text-center text-xs text-slate-500 mt-2">Presiona Enter para enviar</p>
-            </form>
+
+              <!-- Sección Gestos -->
+              <div class="bg-white rounded-2xl border-2 border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex items-center gap-2.5 mb-4">
+                  <div class="w-10 h-10 rounded-xl gradient-brand flex items-center justify-center shadow-sm">
+                    <i class="iconoir-magic-wand text-xl text-white"></i>
+                  </div>
+                  <div>
+                    <h3 class="font-bold text-slate-900">Acciones rápidas</h3>
+                    <p class="text-xs text-slate-500">Plantillas optimizadas para tareas específicas</p>
+                  </div>
+                </div>
+                
+                <div class="space-y-2">
+                  <button class="gesture-option w-full p-3 bg-slate-50 hover:bg-[#23AAC5]/5 border border-slate-200 hover:border-[#23AAC5] rounded-xl transition-all text-left group" data-gesture="write-document">
+                    <div class="flex items-center gap-3">
+                      <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#23AAC5]/20 to-[#115c6c]/20 flex items-center justify-center flex-shrink-0">
+                        <i class="iconoir-page text-lg text-[#23AAC5]"></i>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <div class="font-semibold text-slate-800 text-sm group-hover:text-[#23AAC5] transition-colors">Escribir documento</div>
+                        <div class="text-xs text-slate-500">Artículos, informes, ensayos</div>
+                      </div>
+                      <i class="iconoir-arrow-right text-slate-400 group-hover:text-[#23AAC5] transition-colors"></i>
+                    </div>
+                  </button>
+
+                  <button class="gesture-option w-full p-3 bg-slate-50 hover:bg-[#23AAC5]/5 border border-slate-200 hover:border-[#23AAC5] rounded-xl transition-all text-left group" data-gesture="translate">
+                    <div class="flex items-center gap-3">
+                      <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#23AAC5]/20 to-[#115c6c]/20 flex items-center justify-center flex-shrink-0">
+                        <i class="iconoir-translate text-lg text-[#23AAC5]"></i>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <div class="font-semibold text-slate-800 text-sm group-hover:text-[#23AAC5] transition-colors">Traducir texto</div>
+                        <div class="text-xs text-slate-500">Múltiples idiomas disponibles</div>
+                      </div>
+                      <i class="iconoir-arrow-right text-slate-400 group-hover:text-[#23AAC5] transition-colors"></i>
+                    </div>
+                  </button>
+
+                  <button class="gesture-option w-full p-3 bg-slate-50 hover:bg-[#23AAC5]/5 border border-slate-200 hover:border-[#23AAC5] rounded-xl transition-all text-left group" data-gesture="brand-names">
+                    <div class="flex items-center gap-3">
+                      <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#23AAC5]/20 to-[#115c6c]/20 flex items-center justify-center flex-shrink-0">
+                        <i class="iconoir-light-bulb text-lg text-[#23AAC5]"></i>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <div class="font-semibold text-slate-800 text-sm group-hover:text-[#23AAC5] transition-colors">Crear nombres para marcas</div>
+                        <div class="text-xs text-slate-500">Creatividad y branding</div>
+                      </div>
+                      <i class="iconoir-arrow-right text-slate-400 group-hover:text-[#23AAC5] transition-colors"></i>
+                    </div>
+                  </button>
+
+                  <button class="gesture-option w-full p-3 bg-slate-50 hover:bg-[#23AAC5]/5 border border-slate-200 hover:border-[#23AAC5] rounded-xl transition-all text-left group" data-gesture="summarize">
+                    <div class="flex items-center gap-3">
+                      <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#23AAC5]/20 to-[#115c6c]/20 flex items-center justify-center flex-shrink-0">
+                        <i class="iconoir-compress text-lg text-[#23AAC5]"></i>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <div class="font-semibold text-slate-800 text-sm group-hover:text-[#23AAC5] transition-colors">Resumir contenido</div>
+                        <div class="text-xs text-slate-500">Extrae lo más importante</div>
+                      </div>
+                      <i class="iconoir-arrow-right text-slate-400 group-hover:text-[#23AAC5] transition-colors"></i>
+                    </div>
+                  </button>
+
+                  <button class="gesture-option w-full p-3 bg-slate-50 hover:bg-[#23AAC5]/5 border border-slate-200 hover:border-[#23AAC5] rounded-xl transition-all text-left group" data-gesture="analyze-data">
+                    <div class="flex items-center gap-3">
+                      <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#23AAC5]/20 to-[#115c6c]/20 flex items-center justify-center flex-shrink-0">
+                        <i class="iconoir-graph-up text-lg text-[#23AAC5]"></i>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <div class="font-semibold text-slate-800 text-sm group-hover:text-[#23AAC5] transition-colors">Analizar datos</div>
+                        <div class="text-xs text-slate-500">Insights y visualizaciones</div>
+                      </div>
+                      <i class="iconoir-arrow-right text-slate-400 group-hover:text-[#23AAC5] transition-colors"></i>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+            </div>
           </div>
         </div>
         <div id="messages" class="hidden p-8 space-y-2"></div>
@@ -635,11 +748,43 @@
       await handleSubmit(text);
     });
 
-    document.querySelectorAll('.prompt-suggestion').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const text = btn.querySelector('span').textContent.trim();
-        inputEmptyEl.value = text;
-        await handleSubmit(text);
+    // Manejar clics en voces
+    document.querySelectorAll('.voice-option').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const voice = btn.getAttribute('data-voice');
+        const voiceName = btn.querySelector('.font-semibold').textContent;
+        
+        // Mostrar mensaje temporal (próximamente)
+        const tempMsg = document.createElement('div');
+        tempMsg.className = 'fixed top-20 left-1/2 -translate-x-1/2 bg-[#23AAC5] text-white px-6 py-3 rounded-xl shadow-lg z-50 flex items-center gap-2';
+        tempMsg.innerHTML = `<i class="iconoir-voice-square"></i><span>Conversación con <strong>${voiceName}</strong> disponible próximamente</span>`;
+        document.body.appendChild(tempMsg);
+        
+        setTimeout(() => {
+          tempMsg.style.opacity = '0';
+          tempMsg.style.transition = 'opacity 0.3s';
+          setTimeout(() => tempMsg.remove(), 300);
+        }, 2000);
+      });
+    });
+
+    // Manejar clics en gestos
+    document.querySelectorAll('.gesture-option').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const gesture = btn.getAttribute('data-gesture');
+        const gestureName = btn.querySelector('.font-semibold').textContent;
+        
+        // Mostrar mensaje temporal (próximamente)
+        const tempMsg = document.createElement('div');
+        tempMsg.className = 'fixed top-20 left-1/2 -translate-x-1/2 bg-[#23AAC5] text-white px-6 py-3 rounded-xl shadow-lg z-50 flex items-center gap-2';
+        tempMsg.innerHTML = `<i class="iconoir-magic-wand"></i><span>Acción <strong>${gestureName}</strong> disponible próximamente</span>`;
+        document.body.appendChild(tempMsg);
+        
+        setTimeout(() => {
+          tempMsg.style.opacity = '0';
+          tempMsg.style.transition = 'opacity 0.3s';
+          setTimeout(() => tempMsg.remove(), 300);
+        }, 2000);
       });
     });
 
