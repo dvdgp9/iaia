@@ -109,10 +109,8 @@
     </aside>
     <main class="flex-1 flex flex-col bg-white">
       <header class="h-[60px] px-6 border-b border-slate-200 bg-white/95 backdrop-blur-sm flex items-center justify-between shadow-sm sticky top-0 z-10">
-        <!-- Logo + Título conversación -->
+        <!-- Título conversación -->
         <div class="flex items-center gap-3 min-w-0">
-          <div class="text-lg font-bold text-slate-900 whitespace-nowrap">Ebonia</div>
-          <div class="h-5 w-px bg-slate-300"></div>
           <!-- Título conversación activa -->
           <div id="conv-title" class="hidden flex items-center gap-2">
             <i class="iconoir-chat-bubble text-[#23AAC5]"></i>
@@ -165,60 +163,60 @@
           </div>
         </div>
         <div id="empty-state" class="absolute inset-0 flex items-center justify-center p-8">
-          <div class="max-w-4xl w-full space-y-10">
-            <div class="text-center space-y-3">
-              <div class="inline-flex items-center justify-center w-16 h-16 rounded-full gradient-brand mb-4 shadow-lg">
-                <i class="iconoir-chat-bubble text-3xl text-white"></i>
+          <div class="max-w-3xl w-full space-y-8">
+            <div class="text-center space-y-2">
+              <div class="inline-flex items-center justify-center w-14 h-14 rounded-full gradient-brand mb-3 shadow-lg">
+                <i class="iconoir-chat-bubble text-2xl text-white"></i>
               </div>
-              <h2 class="text-5xl font-bold text-slate-900">¿En qué puedo ayudarte?</h2>
-              <p class="text-lg text-slate-600">Soy tu asistente de IA corporativa. Puedo ayudarte con análisis, redacción, búsqueda y mucho más</p>
+              <h2 class="text-3xl font-bold text-slate-900">¿En qué puedo ayudarte?</h2>
+              <p class="text-sm text-slate-600">Soy tu asistente de IA corporativa. Puedo ayudarte con análisis, redacción, búsqueda y mucho más</p>
             </div>
-            <div class="grid grid-cols-2 gap-4">
-              <button class="prompt-suggestion p-5 bg-white border-2 border-slate-200 rounded-2xl hover:border-[#23AAC5] hover:shadow-lg hover:scale-[1.02] transition-all text-left group">
-                <div class="flex items-center gap-3 mb-2">
-                  <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-[#23AAC5]/10 to-[#115c6c]/10 flex items-center justify-center group-hover:from-[#23AAC5]/20 group-hover:to-[#115c6c]/20 transition-colors">
-                    <i class="iconoir-light-bulb text-2xl text-[#23AAC5]"></i>
+            <div class="grid grid-cols-2 gap-3">
+              <button class="prompt-suggestion p-4 bg-white border-2 border-slate-200 rounded-xl hover:border-[#23AAC5] hover:shadow-md hover:scale-[1.01] transition-all text-left group">
+                <div class="flex items-center gap-2.5 mb-1.5">
+                  <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#23AAC5]/10 to-[#115c6c]/10 flex items-center justify-center group-hover:from-[#23AAC5]/20 group-hover:to-[#115c6c]/20 transition-colors">
+                    <i class="iconoir-light-bulb text-xl text-[#23AAC5]"></i>
                   </div>
                   <span class="font-semibold text-slate-800 group-hover:text-[#23AAC5] transition-colors">Resumir documento</span>
                 </div>
-                <div class="text-sm text-slate-600">Analiza y extrae los puntos clave</div>
+                <div class="text-xs text-slate-600 pl-11">Analiza y extrae los puntos clave</div>
               </button>
-              <button class="prompt-suggestion p-5 bg-white border-2 border-slate-200 rounded-2xl hover:border-[#23AAC5] hover:shadow-lg hover:scale-[1.02] transition-all text-left group">
-                <div class="flex items-center gap-3 mb-2">
-                  <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-[#23AAC5]/10 to-[#115c6c]/10 flex items-center justify-center group-hover:from-[#23AAC5]/20 group-hover:to-[#115c6c]/20 transition-colors">
-                    <i class="iconoir-graph-up text-2xl text-[#23AAC5]"></i>
+              <button class="prompt-suggestion p-4 bg-white border-2 border-slate-200 rounded-xl hover:border-[#23AAC5] hover:shadow-md hover:scale-[1.01] transition-all text-left group">
+                <div class="flex items-center gap-2.5 mb-1.5">
+                  <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#23AAC5]/10 to-[#115c6c]/10 flex items-center justify-center group-hover:from-[#23AAC5]/20 group-hover:to-[#115c6c]/20 transition-colors">
+                    <i class="iconoir-graph-up text-xl text-[#23AAC5]"></i>
                   </div>
                   <span class="font-semibold text-slate-800 group-hover:text-[#23AAC5] transition-colors">Analizar datos</span>
                 </div>
-                <div class="text-sm text-slate-600">Genera insights de tus datos</div>
+                <div class="text-xs text-slate-600 pl-11">Genera insights de tus datos</div>
               </button>
-              <button class="prompt-suggestion p-5 bg-white border-2 border-slate-200 rounded-2xl hover:border-[#23AAC5] hover:shadow-lg hover:scale-[1.02] transition-all text-left group">
-                <div class="flex items-center gap-3 mb-2">
-                  <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-[#23AAC5]/10 to-[#115c6c]/10 flex items-center justify-center group-hover:from-[#23AAC5]/20 group-hover:to-[#115c6c]/20 transition-colors">
-                    <i class="iconoir-edit-pencil text-2xl text-[#23AAC5]"></i>
+              <button class="prompt-suggestion p-4 bg-white border-2 border-slate-200 rounded-xl hover:border-[#23AAC5] hover:shadow-md hover:scale-[1.01] transition-all text-left group">
+                <div class="flex items-center gap-2.5 mb-1.5">
+                  <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#23AAC5]/10 to-[#115c6c]/10 flex items-center justify-center group-hover:from-[#23AAC5]/20 group-hover:to-[#115c6c]/20 transition-colors">
+                    <i class="iconoir-edit-pencil text-xl text-[#23AAC5]"></i>
                   </div>
                   <span class="font-semibold text-slate-800 group-hover:text-[#23AAC5] transition-colors">Redactar contenido</span>
                 </div>
-                <div class="text-sm text-slate-600">Crea textos profesionales</div>
+                <div class="text-xs text-slate-600 pl-11">Crea textos profesionales</div>
               </button>
-              <button class="prompt-suggestion p-5 bg-white border-2 border-slate-200 rounded-2xl hover:border-[#23AAC5] hover:shadow-lg hover:scale-[1.02] transition-all text-left group">
-                <div class="flex items-center gap-3 mb-2">
-                  <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-[#23AAC5]/10 to-[#115c6c]/10 flex items-center justify-center group-hover:from-[#23AAC5]/20 group-hover:to-[#115c6c]/20 transition-colors">
-                    <i class="iconoir-search text-2xl text-[#23AAC5]"></i>
+              <button class="prompt-suggestion p-4 bg-white border-2 border-slate-200 rounded-xl hover:border-[#23AAC5] hover:shadow-md hover:scale-[1.01] transition-all text-left group">
+                <div class="flex items-center gap-2.5 mb-1.5">
+                  <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#23AAC5]/10 to-[#115c6c]/10 flex items-center justify-center group-hover:from-[#23AAC5]/20 group-hover:to-[#115c6c]/20 transition-colors">
+                    <i class="iconoir-search text-xl text-[#23AAC5]"></i>
                   </div>
                   <span class="font-semibold text-slate-800 group-hover:text-[#23AAC5] transition-colors">Buscar información</span>
                 </div>
-                <div class="text-sm text-slate-600">Encuentra respuestas rápidas</div>
+                <div class="text-xs text-slate-600 pl-11">Encuentra respuestas rápidas</div>
               </button>
             </div>
-            <form id="chat-form-empty" class="max-w-3xl mx-auto">
+            <form id="chat-form-empty" class="max-w-2xl mx-auto">
               <div class="relative">
-                <input id="chat-input-empty" class="w-full border-2 border-slate-300 rounded-2xl px-6 py-5 pr-16 text-lg focus:outline-none focus:border-[#23AAC5] focus:ring-4 focus:ring-[#23AAC5]/20 transition-all shadow-xl" placeholder="Escribe tu pregunta aquí..." />
-                <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 p-3 gradient-brand-btn text-white rounded-xl hover:shadow-lg hover:opacity-90 transition-all">
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                <input id="chat-input-empty" class="w-full border-2 border-slate-300 rounded-2xl px-5 py-4 pr-14 focus:outline-none focus:border-[#23AAC5] focus:ring-4 focus:ring-[#23AAC5]/20 transition-all shadow-lg" placeholder="Escribe tu pregunta aquí..." />
+                <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 gradient-brand-btn text-white rounded-xl hover:shadow-lg hover:opacity-90 transition-all">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
                 </button>
               </div>
-              <p class="text-center text-sm text-slate-500 mt-3">Presiona Enter para enviar</p>
+              <p class="text-center text-xs text-slate-500 mt-2">Presiona Enter para enviar</p>
             </form>
           </div>
         </div>
