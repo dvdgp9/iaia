@@ -6,86 +6,26 @@
   <title>Ebonia — IA Corporativa</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/iconoir-icons/iconoir@main/css/iconoir.css">
-  <style>
-    .gradient-brand {
-      background: linear-gradient(135deg, #23AAC5 0%, #115c6c 100%);
-    }
-    .gradient-brand-btn {
-      background: linear-gradient(90deg, #23AAC5 0%, #115c6c 100%);
-    }
-    .tab-item {
-      position: relative;
-      transition: all 0.2s ease;
-    }
-    .tab-item:hover {
-      background: rgba(35, 170, 197, 0.1);
-    }
-    .tab-item.active {
-      background: rgba(35, 170, 197, 0.15);
-    }
-    .tab-item.active::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 3px;
-      height: 32px;
-      background: #23AAC5;
-      border-radius: 0 2px 2px 0;
-    }
-  </style>
 </head>
-<body class="bg-gray-100 text-slate-900 overflow-hidden">
-  <div class="min-h-screen flex h-screen">
-    <!-- Barra de tabs lateral izquierda -->
-    <aside class="w-[70px] gradient-brand flex flex-col items-center py-6 gap-2">
-      <!-- Tab Conversaciones -->
-      <button data-tab="conversations" class="tab-item active w-full py-4 flex flex-col items-center gap-1.5 text-white/80 hover:text-white" title="Conversaciones">
-        <i class="iconoir-chat-bubble text-2xl"></i>
-        <span class="text-[10px] font-medium">Chat</span>
-      </button>
-      
-      <!-- Tab Voces -->
-      <button data-tab="voices" class="tab-item w-full py-4 flex flex-col items-center gap-1.5 text-white/60 hover:text-white/80" title="Voces (próximamente)">
-        <i class="iconoir-voice-square text-2xl"></i>
-        <span class="text-[10px] font-medium">Voces</span>
-      </button>
-      
-      <!-- Tab Gestos -->
-      <button data-tab="gestures" class="tab-item w-full py-4 flex flex-col items-center gap-1.5 text-white/60 hover:text-white/80" title="Gestos (próximamente)">
-        <i class="iconoir-magic-wand text-2xl"></i>
-        <span class="text-[10px] font-medium">Gestos</span>
-      </button>
-      
-      <!-- Spacer -->
-      <div class="flex-1"></div>
-      
-      <!-- Tab Mi cuenta -->
-      <a href="/account.php" class="tab-item w-full py-4 flex flex-col items-center gap-1.5 text-white/60 hover:text-white/80" title="Mi cuenta">
-        <i class="iconoir-user text-2xl"></i>
-        <span class="text-[10px] font-medium">Cuenta</span>
-      </a>
-    </aside>
-
-    <!-- Sidebar conversaciones -->
-    <aside id="conversations-sidebar" class="w-80 bg-white border-r border-slate-200 flex flex-col shadow-sm">
+<body class="bg-gradient-to-br from-slate-50 to-slate-100 text-slate-900">
+  <div class="min-h-screen flex">
+    <aside class="w-80 bg-white border-r border-slate-200 flex flex-col shadow-sm">
       <div class="p-5 border-b border-slate-200">
         <div class="flex items-center gap-3 mb-6">
-          <div class="h-10 w-10 rounded-xl gradient-brand flex items-center justify-center text-white font-bold text-lg shadow-md">E</div>
+          <div class="h-10 w-10 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-md">E</div>
           <div>
             <strong class="text-xl font-semibold text-slate-800">Ebonia</strong>
             <div class="text-xs text-slate-500">IA Corporativa</div>
           </div>
         </div>
-        <button id="new-conv-btn" class="w-full py-2.5 px-4 rounded-lg gradient-brand-btn text-white font-medium shadow-md hover:shadow-lg hover:opacity-90 transition-all duration-200 flex items-center justify-center gap-2">
+        <button id="new-conv-btn" class="w-full py-2.5 px-4 rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-medium shadow-md hover:shadow-lg hover:from-violet-700 hover:to-indigo-700 transition-all duration-200 flex items-center justify-center gap-2">
           <span class="text-lg">+</span> Nueva conversación
         </button>
       </div>
       <div class="flex-1 overflow-y-auto p-3">
         <div class="flex items-center justify-between mb-2 px-2">
           <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Conversaciones</div>
-          <select id="sort-select" class="text-xs border border-slate-200 rounded px-2 py-1 bg-white focus:outline-none focus:border-[#23AAC5]">
+          <select id="sort-select" class="text-xs border border-slate-200 rounded px-2 py-1 bg-white focus:outline-none focus:border-violet-400">
             <option value="updated_at">Recientes</option>
             <option value="favorite">Favoritos</option>
             <option value="created_at">Creación</option>
@@ -188,8 +128,8 @@
             </div>
             <form id="chat-form-empty" class="max-w-2xl mx-auto">
               <div class="relative">
-                <input id="chat-input-empty" class="w-full border-2 border-slate-300 rounded-2xl px-6 py-4 pr-14 text-lg focus:outline-none focus:border-[#23AAC5] focus:ring-4 focus:ring-[#23AAC5]/20 transition-all shadow-lg" placeholder="Pregúntame lo que quieras..." />
-                <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 gradient-brand-btn text-white rounded-xl hover:shadow-lg hover:opacity-90 transition-all">
+                <input id="chat-input-empty" class="w-full border-2 border-slate-300 rounded-2xl px-6 py-4 pr-14 text-lg focus:outline-none focus:border-violet-500 focus:ring-4 focus:ring-violet-100 transition-all shadow-lg" placeholder="Pregúntame lo que quieras..." />
+                <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl hover:shadow-lg transition-all">
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
                 </button>
               </div>
@@ -200,8 +140,8 @@
       </section>
       <footer id="chat-footer" class="hidden p-6 bg-white border-t border-slate-200 shadow-lg">
         <form id="chat-form" class="max-w-4xl mx-auto flex gap-3">
-          <input id="chat-input" class="flex-1 border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-all" placeholder="Escribe un mensaje..." />
-          <button type="submit" class="px-6 py-3 gradient-brand-btn text-white rounded-xl font-medium shadow-md hover:shadow-lg hover:opacity-90 transition-all duration-200">Enviar</button>
+          <input id="chat-input" class="flex-1 border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-200 transition-all" placeholder="Escribe un mensaje..." />
+          <button type="submit" class="px-6 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl font-medium shadow-md hover:shadow-lg hover:from-violet-700 hover:to-indigo-700 transition-all duration-200">Enviar</button>
         </form>
       </footer>
     </main>
@@ -275,7 +215,7 @@
       wrap.className = 'mb-4 flex ' + (role === 'user' ? 'justify-end' : 'justify-start');
       const bubble = document.createElement('div');
       bubble.className = role === 'user' 
-        ? 'max-w-2xl gradient-brand text-white px-5 py-3 rounded-2xl rounded-tr-sm shadow-md' 
+        ? 'max-w-2xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white px-5 py-3 rounded-2xl rounded-tr-sm shadow-md' 
         : 'max-w-2xl bg-white border border-slate-200 text-slate-800 px-5 py-3 rounded-2xl rounded-tl-sm shadow-sm';
       bubble.style.wordBreak = 'break-word';
       if (role === 'assistant') {
@@ -572,55 +512,6 @@
       items.forEach(li => li.classList.remove('bg-gray-100'));
       // volver a poner la clase sobre el seleccionado en el próximo render de lista
     }
-
-    // Manejo de tabs laterales
-    const tabButtons = document.querySelectorAll('[data-tab]');
-    const conversationsSidebar = document.getElementById('conversations-sidebar');
-    
-    tabButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const tab = btn.getAttribute('data-tab');
-        
-        // Actualizar estado activo de tabs
-        tabButtons.forEach(b => {
-          b.classList.remove('active', 'text-white/80');
-          b.classList.add('text-white/60');
-        });
-        btn.classList.add('active', 'text-white/80');
-        btn.classList.remove('text-white/60');
-        
-        // Mostrar/ocultar sidebars según tab
-        if (tab === 'conversations') {
-          conversationsSidebar.classList.remove('hidden');
-        } else {
-          conversationsSidebar.classList.add('hidden');
-          // Aquí se añadirán las sidebars de Voces y Gestos en el futuro
-          if (tab === 'voices' || tab === 'gestures') {
-            // Mostrar mensaje "próximamente"
-            const main = document.querySelector('main');
-            if (main && !main.querySelector('.coming-soon')) {
-              const comingSoon = document.createElement('div');
-              comingSoon.className = 'coming-soon absolute inset-0 flex items-center justify-center bg-white/95 z-50';
-              comingSoon.innerHTML = `
-                <div class="text-center">
-                  <i class="iconoir-hourglass text-6xl text-[#23AAC5] mb-4"></i>
-                  <h2 class="text-2xl font-bold text-gray-900 mb-2">${tab === 'voices' ? 'Voces' : 'Gestos'}</h2>
-                  <p class="text-gray-600">Función disponible próximamente</p>
-                </div>
-              `;
-              main.style.position = 'relative';
-              main.appendChild(comingSoon);
-              
-              // Remover después de 2 segundos y volver a conversaciones
-              setTimeout(() => {
-                comingSoon.remove();
-                document.querySelector('[data-tab="conversations"]').click();
-              }, 2000);
-            }
-          }
-        }
-      });
-    });
   </script>
 </body>
 </html>
