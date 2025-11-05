@@ -116,7 +116,7 @@
           <!-- Avatar + Dropdown -->
           <div class="relative" id="profile-dropdown-container">
             <button id="profile-btn" class="flex items-center gap-2 p-1.5 hover:bg-slate-50 rounded-lg transition-colors">
-              <div class="h-8 w-8 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white text-sm font-semibold" id="user-avatar">?</div>
+              <div class="h-8 w-8 rounded-full gradient-brand flex items-center justify-center text-white text-sm font-semibold" id="user-avatar">?</div>
               <i class="iconoir-nav-arrow-down text-slate-400 text-sm"></i>
             </button>
             
@@ -157,29 +157,29 @@
               <p class="text-slate-500">Hazme cualquier pregunta o selecciona una opción</p>
             </div>
             <div class="grid grid-cols-2 gap-3">
-              <button class="prompt-suggestion p-4 bg-white border-2 border-slate-200 rounded-xl hover:border-violet-300 hover:shadow-md transition-all text-left group">
-                <div class="flex items-center gap-2 text-sm font-medium text-slate-700 group-hover:text-violet-700">
+              <button class="prompt-suggestion p-4 bg-white border-2 border-slate-200 rounded-xl hover:border-[#23AAC5] hover:shadow-md transition-all text-left group">
+                <div class="flex items-center gap-2 text-sm font-medium text-slate-700 group-hover:text-[#23AAC5]">
                   <i class="iconoir-light-bulb text-lg"></i>
                   <span>Resumir documento</span>
                 </div>
                 <div class="text-xs text-slate-500 mt-1">Analiza y extrae los puntos clave</div>
               </button>
-              <button class="prompt-suggestion p-4 bg-white border-2 border-slate-200 rounded-xl hover:border-violet-300 hover:shadow-md transition-all text-left group">
-                <div class="flex items-center gap-2 text-sm font-medium text-slate-700 group-hover:text-violet-700">
+              <button class="prompt-suggestion p-4 bg-white border-2 border-slate-200 rounded-xl hover:border-[#23AAC5] hover:shadow-md transition-all text-left group">
+                <div class="flex items-center gap-2 text-sm font-medium text-slate-700 group-hover:text-[#23AAC5]">
                   <i class="iconoir-graph-up text-lg"></i>
                   <span>Analizar datos</span>
                 </div>
                 <div class="text-xs text-slate-500 mt-1">Genera insights de tus datos</div>
               </button>
-              <button class="prompt-suggestion p-4 bg-white border-2 border-slate-200 rounded-xl hover:border-violet-300 hover:shadow-md transition-all text-left group">
-                <div class="flex items-center gap-2 text-sm font-medium text-slate-700 group-hover:text-violet-700">
+              <button class="prompt-suggestion p-4 bg-white border-2 border-slate-200 rounded-xl hover:border-[#23AAC5] hover:shadow-md transition-all text-left group">
+                <div class="flex items-center gap-2 text-sm font-medium text-slate-700 group-hover:text-[#23AAC5]">
                   <i class="iconoir-edit-pencil text-lg"></i>
                   <span>Redactar contenido</span>
                 </div>
                 <div class="text-xs text-slate-500 mt-1">Crea textos profesionales</div>
               </button>
-              <button class="prompt-suggestion p-4 bg-white border-2 border-slate-200 rounded-xl hover:border-violet-300 hover:shadow-md transition-all text-left group">
-                <div class="flex items-center gap-2 text-sm font-medium text-slate-700 group-hover:text-violet-700">
+              <button class="prompt-suggestion p-4 bg-white border-2 border-slate-200 rounded-xl hover:border-[#23AAC5] hover:shadow-md transition-all text-left group">
+                <div class="flex items-center gap-2 text-sm font-medium text-slate-700 group-hover:text-[#23AAC5]">
                   <i class="iconoir-search text-lg"></i>
                   <span>Buscar información</span>
                 </div>
@@ -373,7 +373,7 @@
       for(const c of items){
         const li = document.createElement('li');
         const isActive = currentConversationId === c.id;
-        li.className = 'group rounded-lg transition-all duration-200 ' + (isActive ? 'bg-gradient-to-r from-violet-50 to-indigo-50 shadow-sm' : 'hover:bg-slate-50');
+        li.className = 'group rounded-lg transition-all duration-200 ' + (isActive ? 'bg-gradient-to-r from-[#23AAC5]/10 to-[#115c6c]/10 shadow-sm' : 'hover:bg-slate-50');
         const container = document.createElement('div');
         container.className = 'flex items-center gap-2 p-2';
         const btn = document.createElement('button');
@@ -399,7 +399,7 @@
         const textContainer = document.createElement('div');
         textContainer.className = 'flex-1 min-w-0';
         const titleEl = document.createElement('div');
-        titleEl.className = 'font-medium text-sm truncate ' + (isActive ? 'text-violet-700' : 'text-slate-700 group-hover:text-slate-900');
+        titleEl.className = 'font-medium text-sm truncate ' + (isActive ? 'text-[#115c6c]' : 'text-slate-700 group-hover:text-slate-900');
         titleEl.textContent = c.title || `Conversación ${c.id}`;
         const timeEl = document.createElement('div');
         timeEl.className = 'text-xs text-slate-400 mt-0.5';
@@ -419,7 +419,7 @@
         const actions = document.createElement('div');
         actions.className = 'flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity';
         const renameBtn = document.createElement('button');
-        renameBtn.className = 'p-1.5 text-slate-400 hover:text-violet-600 hover:bg-violet-50 rounded transition-colors';
+        renameBtn.className = 'p-1.5 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded transition-colors';
         renameBtn.innerHTML = '<i class="iconoir-edit-pencil"></i>';
         renameBtn.title = 'Renombrar';
         renameBtn.addEventListener('click', async (e) => {
