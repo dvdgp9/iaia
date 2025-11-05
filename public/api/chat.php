@@ -24,8 +24,24 @@ Session::requireCsrf();
 $input = json_decode(file_get_contents('php://input'), true) ?? [];
 $message = trim((string)($input['message'] ?? ''));
 $conversationId = isset($input['conversation_id']) ? (int)$input['conversation_id'] : 0;
-if ($message === '') {
-    Response::error('validation_error', 'El campo message es obligatorio', 400);
+$file = $input['file'] ?? null;
+
+// Validar que haya mensaje o archivo
+if ($message === '' && !$file) {
+    Response::error('validation_error', 'Se requiere un mensaje o archivo', 400);
+}
+
+// Validar archivo si existe
+if ($file) {
+    if (!isset($file['mime_type']) || !isset($file['data'])) {
+        Response::error('validation_error', 'Datos de archivo inválidos', 400);
+    }
+    
+    // Validar tipo MIME
+    $allowedTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/gif', 'image/webp'];
+    if (!in_array($file['mime_type'], $allowedTypes)) {
+        Response::error('validation_error', 'Tipo de archivo no soportado', 400);
+    }
 }
 
 $convos = new ConversationsRepo();
@@ -46,7 +62,16 @@ $svc = new ChatService();
 $allMessages = $msgs->listByConversation($conversationId);
 $history = [];
 foreach ($allMessages as $m) {
-    $history[] = [ 'role' => $m['role'], 'content' => $m['content'] ];
+    $historyItem = [ 'role' => $m['role'], 'content' => $m['content'] ];
+    $history[] = $historyItem;
+}
+
+// Si hay archivo, agregarlo al último mensaje de usuario
+if ($file && count($history) > 0) {
+    $lastIdx = count($history) - 1;
+    if ($history[$lastIdx]['role'] === 'user') {
+        $history[$lastIdx]['file'] = $file;
+    }
 }
 
 // Limitar contexto para no exceder límites de Gemini (250k tokens → ~1M chars)

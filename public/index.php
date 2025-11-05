@@ -348,9 +348,31 @@
         </div>
       </section>
       <footer id="chat-footer" class="hidden p-6 bg-white border-t border-slate-200 shadow-lg">
-        <form id="chat-form" class="max-w-4xl mx-auto flex gap-3">
-          <input id="chat-input" class="flex-1 border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-all" placeholder="Escribe un mensaje..." />
-          <button type="submit" class="px-6 py-3 gradient-brand-btn text-white rounded-xl font-medium shadow-md hover:shadow-lg hover:opacity-90 transition-all duration-200">Enviar</button>
+        <form id="chat-form" class="max-w-4xl mx-auto">
+          <!-- Preview de archivo adjunto -->
+          <div id="file-preview" class="hidden mb-3 p-3 bg-slate-50 border border-slate-200 rounded-lg flex items-center gap-3">
+            <div class="flex-1 flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-[#23AAC5]/10 to-[#115c6c]/10 flex items-center justify-center flex-shrink-0">
+                <i id="file-icon" class="iconoir-page text-xl text-[#23AAC5]"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div id="file-name" class="text-sm font-medium text-slate-800 truncate"></div>
+                <div id="file-size" class="text-xs text-slate-500"></div>
+              </div>
+            </div>
+            <button type="button" id="remove-file" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+              <i class="iconoir-xmark"></i>
+            </button>
+          </div>
+          
+          <div class="flex gap-3">
+            <input type="file" id="file-input" class="hidden" accept=".pdf,.png,.jpg,.jpeg,.gif,.webp" />
+            <button type="button" id="attach-btn" class="p-3 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/5 rounded-xl transition-all border-2 border-slate-200 hover:border-[#23AAC5]" title="Adjuntar archivo">
+              <i class="iconoir-attachment text-xl"></i>
+            </button>
+            <input id="chat-input" class="flex-1 border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-all" placeholder="Escribe un mensaje..." />
+            <button type="submit" class="px-6 py-3 gradient-brand-btn text-white rounded-xl font-medium shadow-md hover:shadow-lg hover:opacity-90 transition-all duration-200">Enviar</button>
+          </div>
         </form>
       </footer>
     </main>
@@ -375,12 +397,20 @@
     const newConvBtn = document.getElementById('new-conv-btn');
     const sortSelect = document.getElementById('sort-select');
     const typingIndicator = document.getElementById('typing-indicator');
+    const fileInput = document.getElementById('file-input');
+    const attachBtn = document.getElementById('attach-btn');
+    const filePreview = document.getElementById('file-preview');
+    const fileName = document.getElementById('file-name');
+    const fileSize = document.getElementById('file-size');
+    const fileIcon = document.getElementById('file-icon');
+    const removeFileBtn = document.getElementById('remove-file');
 
     let csrf = null;
     let currentConversationId = null;
     let emptyConversationId = null; // id de conversación sin mensajes aún
     let currentUser = null;
     let currentConvTitle = null;
+    let currentFile = null; // archivo adjunto actual
 
     function showChatMode(){
       emptyState.classList.add('hidden');
@@ -694,16 +724,37 @@
       }
     });
 
-    async function handleSubmit(text){
-      if(!text) return;
-      append('user', text);
+    async function handleSubmit(text, file = null){
+      if(!text && !file) return;
+      
+      // Mostrar mensaje del usuario con archivo si existe
+      let userMessage = text || '';
+      if (file) {
+        userMessage += file ? ` 📎 ${file.name}` : '';
+      }
+      append('user', userMessage);
       
       // Mostrar indicador de escritura
       typingIndicator.classList.remove('hidden');
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
       
       try {
-        const data = await api('/api/chat.php', { method: 'POST', body: { conversation_id: currentConversationId, message: text } });
+        const body = {
+          conversation_id: currentConversationId,
+          message: text || (file ? '¿Qué puedes decirme sobre este archivo?' : '')
+        };
+
+        // Si hay archivo, convertir a base64
+        if (file) {
+          const base64 = await fileToBase64(file);
+          body.file = {
+            mime_type: file.type,
+            data: base64,
+            name: file.name
+          };
+        }
+
+        const data = await api('/api/chat.php', { method: 'POST', body });
         
         // Ocultar indicador de escritura
         typingIndicator.classList.add('hidden');
@@ -734,11 +785,89 @@
       }
     }
 
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          // Quitar el prefijo "data:mime/type;base64,"
+          const base64 = reader.result.split(',')[1];
+          resolve(base64);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // Manejar adjuntar archivo
+    attachBtn.addEventListener('click', () => {
+      fileInput.click();
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      // Validar tamaño (10MB máximo)
+      const maxSize = 10 * 1024 * 1024;
+      if (file.size > maxSize) {
+        alert('El archivo es demasiado grande. Máximo 10MB.');
+        fileInput.value = '';
+        return;
+      }
+
+      // Validar tipo
+      const validTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/gif', 'image/webp'];
+      if (!validTypes.includes(file.type)) {
+        alert('Tipo de archivo no soportado. Solo PDF e imágenes.');
+        fileInput.value = '';
+        return;
+      }
+
+      currentFile = file;
+      showFilePreview(file);
+    });
+
+    removeFileBtn.addEventListener('click', () => {
+      currentFile = null;
+      fileInput.value = '';
+      filePreview.classList.add('hidden');
+    });
+
+    function showFilePreview(file) {
+      fileName.textContent = file.name;
+      fileSize.textContent = formatFileSize(file.size);
+      
+      // Cambiar icono según tipo
+      if (file.type === 'application/pdf') {
+        fileIcon.className = 'iconoir-page text-xl text-red-500';
+      } else if (file.type.startsWith('image/')) {
+        fileIcon.className = 'iconoir-media-image text-xl text-[#23AAC5]';
+      }
+      
+      filePreview.classList.remove('hidden');
+    }
+
+    function formatFileSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
     formEl.addEventListener('submit', async (e)=>{
       e.preventDefault();
       const text = inputEl.value.trim();
+      
+      if (!text && !currentFile) return;
+      
       inputEl.value = '';
-      await handleSubmit(text);
+      await handleSubmit(text, currentFile);
+      
+      // Limpiar archivo después de enviar
+      if (currentFile) {
+        currentFile = null;
+        fileInput.value = '';
+        filePreview.classList.add('hidden');
+      }
     });
 
     formEmptyEl.addEventListener('submit', async (e)=>{

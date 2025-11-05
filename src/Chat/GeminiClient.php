@@ -22,7 +22,7 @@ class GeminiClient {
     }
 
     /**
-     * @param array<int, array{role:string, content:string}> $messages
+     * @param array<int, array{role:string, content:string, file?:array}> $messages
      */
     public function generateWithMessages(array $messages): string
     {
@@ -38,9 +38,27 @@ class GeminiClient {
         $contents = [];
         foreach ($messages as $m) {
             $role = $m['role'] === 'assistant' ? 'model' : 'user';
+            $parts = [];
+            
+            // Agregar archivo si existe (solo para mensajes de usuario)
+            if (isset($m['file']) && $role === 'user') {
+                $file = $m['file'];
+                $parts[] = [
+                    'inline_data' => [
+                        'mime_type' => $file['mime_type'],
+                        'data' => $file['data']
+                    ]
+                ];
+            }
+            
+            // Agregar texto si no está vacío
+            if (!empty($m['content'])) {
+                $parts[] = [ 'text' => (string)$m['content'] ];
+            }
+            
             $contents[] = [
                 'role' => $role,
-                'parts' => [ [ 'text' => (string)$m['content'] ] ]
+                'parts' => $parts
             ];
         }
 
