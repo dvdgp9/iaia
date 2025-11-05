@@ -34,6 +34,16 @@
       background: #23AAC5;
       border-radius: 0 2px 2px 0;
     }
+    /* Custom font sizes */
+    .text-xs {
+      font-size: 0.65rem !important;
+    }
+    .text-sm {
+      font-size: 0.84rem !important;
+    }
+    .text-conversation {
+      font-size: 15px;
+    }
   </style>
 </head>
 <body class="bg-gray-100 text-slate-900 overflow-hidden">
@@ -320,8 +330,8 @@
       // Burbuja
       const bubble = document.createElement('div');
       bubble.className = role === 'user' 
-        ? 'gradient-brand text-white px-5 py-3.5 rounded-2xl rounded-tr-sm shadow-md' 
-        : 'bg-white border border-slate-200 text-slate-800 px-5 py-3.5 rounded-2xl rounded-tl-sm shadow-sm';
+        ? 'gradient-brand text-white px-5 py-3.5 rounded-2xl rounded-tr-sm shadow-md text-conversation' 
+        : 'bg-white border border-slate-200 text-slate-800 px-5 py-3.5 rounded-2xl rounded-tl-sm shadow-sm text-conversation';
       bubble.style.wordBreak = 'break-word';
       
       if (role === 'assistant') {
@@ -459,7 +469,7 @@
         titleEl.className = 'font-medium text-sm truncate ' + (isActive ? 'text-[#115c6c]' : 'text-slate-700 group-hover:text-slate-900');
         titleEl.textContent = c.title || `Conversación ${c.id}`;
         const timeEl = document.createElement('div');
-        timeEl.className = 'text-xs text-slate-400 mt-0.5';
+        timeEl.className = 'text-xs text-slate-400';
         timeEl.textContent = new Date(c.updated_at).toLocaleDateString('es-ES', {month: 'short', day: 'numeric'});
         textContainer.appendChild(titleEl);
         textContainer.appendChild(timeEl);
