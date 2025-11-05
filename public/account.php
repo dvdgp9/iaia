@@ -31,7 +31,7 @@ if (!$user) {
         </a>
         <h1 class="text-3xl font-bold text-slate-800">Mi cuenta</h1>
       </div>
-      <div class="h-16 w-16 rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white text-2xl font-bold shadow-lg" id="avatar-big">
+      <div class="h-16 w-16 rounded-2xl bg-gradient-to-br from-[#23AAC5] to-[#115c6c] flex items-center justify-center text-white text-2xl font-bold shadow-lg" id="avatar-big">
         <?php 
           $initials = strtoupper(substr($user['first_name'], 0, 1) . substr($user['last_name'], 0, 1));
           echo htmlspecialchars($initials);
@@ -43,7 +43,7 @@ if (!$user) {
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
       <div class="flex items-center justify-between mb-6">
         <h2 class="text-lg font-semibold text-slate-800">Información personal</h2>
-        <button id="edit-toggle-btn" class="text-sm text-violet-600 hover:text-violet-700 font-medium flex items-center gap-1">
+        <button id="edit-toggle-btn" class="text-sm text-[#23AAC5] hover:text-[#115c6c] font-medium flex items-center gap-1">
           <i class="iconoir-edit-pencil"></i>
           <span>Editar</span>
         </button>
@@ -74,11 +74,11 @@ if (!$user) {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label class="text-xs font-medium text-slate-500 uppercase tracking-wider block mb-2">Nombre</label>
-            <input type="text" id="edit-first-name" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-violet-400 transition-colors" required>
+            <input type="text" id="edit-first-name" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-colors" required>
           </div>
           <div>
             <label class="text-xs font-medium text-slate-500 uppercase tracking-wider block mb-2">Apellidos</label>
-            <input type="text" id="edit-last-name" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-violet-400 transition-colors" required>
+            <input type="text" id="edit-last-name" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-colors" required>
           </div>
           <div>
             <label class="text-xs font-medium text-slate-500 uppercase tracking-wider block mb-2">Email</label>
@@ -96,7 +96,7 @@ if (!$user) {
           </p>
         </div>
         <div class="flex gap-3 pt-2">
-          <button type="submit" class="px-4 py-2 bg-violet-600 text-white rounded-lg font-medium hover:bg-violet-700 transition-colors text-sm">
+          <button type="submit" class="px-4 py-2 bg-gradient-to-r from-[#23AAC5] to-[#115c6c] text-white rounded-lg font-medium hover:opacity-90 transition-all text-sm shadow-md">
             Guardar cambios
           </button>
           <button type="button" id="cancel-edit-btn" class="px-4 py-2 border border-slate-200 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-colors text-sm">
@@ -126,14 +126,14 @@ if (!$user) {
       <h2 class="text-lg font-semibold text-slate-800 mb-6">Actividad reciente</h2>
       
       <div id="activity-loading" class="text-center py-8">
-        <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-violet-600 border-r-transparent"></div>
+        <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#23AAC5] border-r-transparent"></div>
         <p class="text-sm text-slate-500 mt-3">Cargando estadísticas...</p>
       </div>
 
       <div id="activity-content" class="hidden space-y-4">
         <div class="flex items-start gap-3 py-3 border-b border-slate-100 last:border-0">
-          <div class="h-10 w-10 rounded-lg bg-violet-50 flex items-center justify-center flex-shrink-0">
-            <i class="iconoir-chat-bubble text-violet-600"></i>
+          <div class="h-10 w-10 rounded-lg bg-[#23AAC5]/10 flex items-center justify-center flex-shrink-0">
+            <i class="iconoir-chat-bubble text-[#23AAC5]"></i>
           </div>
           <div class="flex-1 min-w-0">
             <div class="text-sm font-medium text-slate-800">Conversaciones creadas</div>
@@ -212,25 +212,25 @@ if (!$user) {
       <form id="password-form" class="space-y-4">
         <div>
           <label class="text-sm font-medium text-slate-700 block mb-2">Contraseña actual</label>
-          <input type="password" id="current-password" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-violet-400 transition-colors" required>
+          <input type="password" id="current-password" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-colors" required>
         </div>
 
         <div>
           <label class="text-sm font-medium text-slate-700 block mb-2">Nueva contraseña</label>
-          <input type="password" id="new-password" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-violet-400 transition-colors" required minlength="8">
+          <input type="password" id="new-password" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-colors" required minlength="8">
           <p class="text-xs text-slate-500 mt-1">Mínimo 8 caracteres</p>
         </div>
 
         <div>
           <label class="text-sm font-medium text-slate-700 block mb-2">Confirmar contraseña</label>
-          <input type="password" id="confirm-password" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-violet-400 transition-colors" required>
+          <input type="password" id="confirm-password" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-colors" required>
         </div>
 
         <div id="password-error" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></div>
         <div id="password-success" class="hidden text-sm text-green-600 bg-green-50 border border-green-200 rounded-lg px-3 py-2"></div>
 
         <div class="flex gap-3 pt-2">
-          <button type="submit" class="flex-1 px-4 py-2 bg-violet-600 text-white rounded-lg font-medium hover:bg-violet-700 transition-colors text-sm">
+          <button type="submit" class="flex-1 px-4 py-2 bg-gradient-to-r from-[#23AAC5] to-[#115c6c] text-white rounded-lg font-medium hover:opacity-90 transition-all text-sm shadow-md">
             Cambiar contraseña
           </button>
           <button type="button" id="cancel-password-btn" class="px-4 py-2 border border-slate-200 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-colors text-sm">

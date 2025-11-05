@@ -38,7 +38,7 @@ if (!$isSuperadmin) {
         <h1 class="text-3xl font-bold text-slate-800">Gestión de usuarios</h1>
         <p class="text-slate-600 mt-1">Crear, editar y gestionar cuentas de usuario</p>
       </div>
-      <button id="create-user-btn" class="px-4 py-2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-lg font-medium hover:shadow-lg transition-all flex items-center gap-2">
+      <button id="create-user-btn" class="px-4 py-2 bg-gradient-to-r from-[#23AAC5] to-[#115c6c] text-white rounded-lg font-medium hover:opacity-90 hover:shadow-lg transition-all flex items-center gap-2 shadow-md">
         <i class="iconoir-plus-circle"></i>
         <span>Nuevo usuario</span>
       </button>
@@ -49,9 +49,9 @@ if (!$isSuperadmin) {
       <div class="flex items-center gap-4">
         <div class="flex-1 relative">
           <i class="iconoir-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-          <input type="text" id="search-input" placeholder="Buscar por nombre, email..." class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-violet-400 transition-colors">
+          <input type="text" id="search-input" placeholder="Buscar por nombre, email..." class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-colors">
         </div>
-        <select id="status-filter" class="px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-violet-400 transition-colors">
+        <select id="status-filter" class="px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-colors">
           <option value="">Todos los estados</option>
           <option value="active">Activos</option>
           <option value="disabled">Deshabilitados</option>
@@ -62,7 +62,7 @@ if (!$isSuperadmin) {
     <!-- Lista de usuarios -->
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
       <div id="users-loading" class="text-center py-12">
-        <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-violet-600 border-r-transparent"></div>
+        <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#23AAC5] border-r-transparent"></div>
         <p class="text-sm text-slate-500 mt-3">Cargando usuarios...</p>
       </div>
 
@@ -138,22 +138,22 @@ if (!$isSuperadmin) {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label class="text-sm font-medium text-slate-700 block mb-2">Nombre *</label>
-            <input type="text" id="user-first-name" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-violet-400 transition-colors" required>
+            <input type="text" id="user-first-name" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-colors" required>
           </div>
           <div>
             <label class="text-sm font-medium text-slate-700 block mb-2">Apellidos *</label>
-            <input type="text" id="user-last-name" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-violet-400 transition-colors" required>
+            <input type="text" id="user-last-name" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-colors" required>
           </div>
         </div>
 
         <div>
           <label class="text-sm font-medium text-slate-700 block mb-2">Email *</label>
-          <input type="email" id="user-email" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-violet-400 transition-colors" required>
+          <input type="email" id="user-email" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-colors" required>
         </div>
 
         <div>
           <label class="text-sm font-medium text-slate-700 block mb-2">Departamento</label>
-          <select id="user-department" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-violet-400 transition-colors">
+          <select id="user-department" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-colors">
             <option value="">Sin asignar</option>
             <!-- Se llena dinámicamente -->
           </select>
@@ -163,18 +163,18 @@ if (!$isSuperadmin) {
           <label class="text-sm font-medium text-slate-700 block mb-2">
             <span id="password-label">Contraseña *</span>
           </label>
-          <input type="password" id="user-password" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-violet-400 transition-colors" minlength="8">
+          <input type="password" id="user-password" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-colors" minlength="8">
           <p class="text-xs text-slate-500 mt-1" id="password-hint">Mínimo 8 caracteres</p>
         </div>
 
         <div class="flex items-center gap-4 pt-2 border-t border-slate-100">
           <label class="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" id="user-superadmin" class="w-4 h-4 text-violet-600 border-slate-300 rounded focus:ring-violet-500">
+            <input type="checkbox" id="user-superadmin" class="w-4 h-4 text-[#23AAC5] border-slate-300 rounded focus:ring-[#23AAC5]">
             <span class="text-sm font-medium text-slate-700">Superadministrador</span>
           </label>
           
           <label class="flex items-center gap-2 cursor-pointer" id="status-toggle-container">
-            <input type="checkbox" id="user-status" class="w-4 h-4 text-violet-600 border-slate-300 rounded focus:ring-violet-500" checked>
+            <input type="checkbox" id="user-status" class="w-4 h-4 text-[#23AAC5] border-slate-300 rounded focus:ring-[#23AAC5]" checked>
             <span class="text-sm font-medium text-slate-700">Cuenta activa</span>
           </label>
         </div>
@@ -182,7 +182,7 @@ if (!$isSuperadmin) {
         <div id="user-error" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></div>
 
         <div class="flex gap-3 pt-2">
-          <button type="submit" class="flex-1 px-4 py-2 bg-violet-600 text-white rounded-lg font-medium hover:bg-violet-700 transition-colors text-sm">
+          <button type="submit" class="flex-1 px-4 py-2 bg-gradient-to-r from-[#23AAC5] to-[#115c6c] text-white rounded-lg font-medium hover:opacity-90 transition-all text-sm shadow-md">
             <span id="submit-text">Crear usuario</span>
           </button>
           <button type="button" id="cancel-modal-btn" class="px-4 py-2 border border-slate-200 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-colors text-sm">
@@ -287,14 +287,14 @@ if (!$isSuperadmin) {
           : '<span class="text-slate-400">Nunca</span>';
         
         const superadminBadge = u.is_superadmin 
-          ? '<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-violet-100 text-violet-800 ml-2">Admin</span>'
+          ? '<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-[#23AAC5]/10 text-[#23AAC5] ml-2">Admin</span>'
           : '';
 
         return `
           <tr class="hover:bg-slate-50 transition-colors">
             <td class="px-6 py-4">
               <div class="flex items-center gap-3">
-                <div class="h-10 w-10 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white font-semibold text-sm">
+                <div class="h-10 w-10 rounded-full bg-gradient-to-br from-[#23AAC5] to-[#115c6c] flex items-center justify-center text-white font-semibold text-sm">
                   ${escapeHtml(u.first_name[0] + u.last_name[0]).toUpperCase()}
                 </div>
                 <div>
@@ -312,7 +312,7 @@ if (!$isSuperadmin) {
             <td class="px-6 py-4 text-sm text-slate-600">${lastLogin}</td>
             <td class="px-6 py-4 text-right">
               <div class="flex items-center justify-end gap-2">
-                <button onclick="editUser(${u.id})" class="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-violet-600 hover:text-violet-700 hover:bg-violet-50 rounded-lg transition-colors">
+                <button onclick="editUser(${u.id})" class="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-[#23AAC5] hover:text-[#115c6c] hover:bg-[#23AAC5]/5 rounded-lg transition-colors">
                   <i class="iconoir-edit-pencil"></i>
                   <span>Editar</span>
                 </button>
