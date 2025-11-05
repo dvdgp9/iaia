@@ -98,12 +98,16 @@
       </div>
     </aside>
     <main class="flex-1 flex flex-col bg-white">
-      <header class="h-[52px] px-6 border-b border-slate-200 bg-white/95 backdrop-blur-sm flex items-center justify-between shadow-sm sticky top-0 z-10">
-        <!-- Logo -->
-        <div class="flex items-center gap-4 min-w-0">
-          <div class="text-base font-semibold text-slate-800 whitespace-nowrap">Ebonia</div>
+      <header class="h-[60px] px-6 border-b border-slate-200 bg-white/95 backdrop-blur-sm flex items-center justify-between shadow-sm sticky top-0 z-10">
+        <!-- Logo + Título conversación -->
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="text-lg font-bold text-slate-900 whitespace-nowrap">Ebonia</div>
+          <div class="h-5 w-px bg-slate-300"></div>
           <!-- Título conversación activa -->
-          <div id="conv-title" class="hidden text-sm text-slate-500 truncate max-w-md"></div>
+          <div id="conv-title" class="hidden flex items-center gap-2">
+            <i class="iconoir-chat-bubble text-[#23AAC5]"></i>
+            <span class="text-sm font-medium text-slate-700 truncate max-w-md"></span>
+          </div>
         </div>
         
         <!-- Acciones derecha -->
@@ -151,52 +155,76 @@
           </div>
         </div>
         <div id="empty-state" class="absolute inset-0 flex items-center justify-center p-8">
-          <div class="max-w-3xl w-full space-y-8">
-            <div class="text-center space-y-2">
-              <h2 class="text-4xl font-bold text-slate-800">¿En qué puedo ayudarte?</h2>
-              <p class="text-slate-500">Hazme cualquier pregunta o selecciona una opción</p>
+          <div class="max-w-4xl w-full space-y-10">
+            <div class="text-center space-y-3">
+              <div class="inline-flex items-center justify-center w-16 h-16 rounded-full gradient-brand mb-4 shadow-lg">
+                <i class="iconoir-chat-bubble text-3xl text-white"></i>
+              </div>
+              <h2 class="text-5xl font-bold text-slate-900">¿En qué puedo ayudarte?</h2>
+              <p class="text-lg text-slate-600">Soy tu asistente de IA corporativa. Puedo ayudarte con análisis, redacción, búsqueda y mucho más</p>
             </div>
-            <div class="grid grid-cols-2 gap-3">
-              <button class="prompt-suggestion p-4 bg-white border-2 border-slate-200 rounded-xl hover:border-[#23AAC5] hover:shadow-md transition-all text-left group">
-                <div class="flex items-center gap-2 text-sm font-medium text-slate-700 group-hover:text-[#23AAC5]">
-                  <i class="iconoir-light-bulb text-lg"></i>
-                  <span>Resumir documento</span>
+            <div class="grid grid-cols-2 gap-4">
+              <button class="prompt-suggestion p-5 bg-white border-2 border-slate-200 rounded-2xl hover:border-[#23AAC5] hover:shadow-lg hover:scale-[1.02] transition-all text-left group">
+                <div class="flex items-center gap-3 mb-2">
+                  <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-[#23AAC5]/10 to-[#115c6c]/10 flex items-center justify-center group-hover:from-[#23AAC5]/20 group-hover:to-[#115c6c]/20 transition-colors">
+                    <i class="iconoir-light-bulb text-2xl text-[#23AAC5]"></i>
+                  </div>
+                  <span class="font-semibold text-slate-800 group-hover:text-[#23AAC5] transition-colors">Resumir documento</span>
                 </div>
-                <div class="text-xs text-slate-500 mt-1">Analiza y extrae los puntos clave</div>
+                <div class="text-sm text-slate-600">Analiza y extrae los puntos clave</div>
               </button>
-              <button class="prompt-suggestion p-4 bg-white border-2 border-slate-200 rounded-xl hover:border-[#23AAC5] hover:shadow-md transition-all text-left group">
-                <div class="flex items-center gap-2 text-sm font-medium text-slate-700 group-hover:text-[#23AAC5]">
-                  <i class="iconoir-graph-up text-lg"></i>
-                  <span>Analizar datos</span>
+              <button class="prompt-suggestion p-5 bg-white border-2 border-slate-200 rounded-2xl hover:border-[#23AAC5] hover:shadow-lg hover:scale-[1.02] transition-all text-left group">
+                <div class="flex items-center gap-3 mb-2">
+                  <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-[#23AAC5]/10 to-[#115c6c]/10 flex items-center justify-center group-hover:from-[#23AAC5]/20 group-hover:to-[#115c6c]/20 transition-colors">
+                    <i class="iconoir-graph-up text-2xl text-[#23AAC5]"></i>
+                  </div>
+                  <span class="font-semibold text-slate-800 group-hover:text-[#23AAC5] transition-colors">Analizar datos</span>
                 </div>
-                <div class="text-xs text-slate-500 mt-1">Genera insights de tus datos</div>
+                <div class="text-sm text-slate-600">Genera insights de tus datos</div>
               </button>
-              <button class="prompt-suggestion p-4 bg-white border-2 border-slate-200 rounded-xl hover:border-[#23AAC5] hover:shadow-md transition-all text-left group">
-                <div class="flex items-center gap-2 text-sm font-medium text-slate-700 group-hover:text-[#23AAC5]">
-                  <i class="iconoir-edit-pencil text-lg"></i>
-                  <span>Redactar contenido</span>
+              <button class="prompt-suggestion p-5 bg-white border-2 border-slate-200 rounded-2xl hover:border-[#23AAC5] hover:shadow-lg hover:scale-[1.02] transition-all text-left group">
+                <div class="flex items-center gap-3 mb-2">
+                  <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-[#23AAC5]/10 to-[#115c6c]/10 flex items-center justify-center group-hover:from-[#23AAC5]/20 group-hover:to-[#115c6c]/20 transition-colors">
+                    <i class="iconoir-edit-pencil text-2xl text-[#23AAC5]"></i>
+                  </div>
+                  <span class="font-semibold text-slate-800 group-hover:text-[#23AAC5] transition-colors">Redactar contenido</span>
                 </div>
-                <div class="text-xs text-slate-500 mt-1">Crea textos profesionales</div>
+                <div class="text-sm text-slate-600">Crea textos profesionales</div>
               </button>
-              <button class="prompt-suggestion p-4 bg-white border-2 border-slate-200 rounded-xl hover:border-[#23AAC5] hover:shadow-md transition-all text-left group">
-                <div class="flex items-center gap-2 text-sm font-medium text-slate-700 group-hover:text-[#23AAC5]">
-                  <i class="iconoir-search text-lg"></i>
-                  <span>Buscar información</span>
+              <button class="prompt-suggestion p-5 bg-white border-2 border-slate-200 rounded-2xl hover:border-[#23AAC5] hover:shadow-lg hover:scale-[1.02] transition-all text-left group">
+                <div class="flex items-center gap-3 mb-2">
+                  <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-[#23AAC5]/10 to-[#115c6c]/10 flex items-center justify-center group-hover:from-[#23AAC5]/20 group-hover:to-[#115c6c]/20 transition-colors">
+                    <i class="iconoir-search text-2xl text-[#23AAC5]"></i>
+                  </div>
+                  <span class="font-semibold text-slate-800 group-hover:text-[#23AAC5] transition-colors">Buscar información</span>
                 </div>
-                <div class="text-xs text-slate-500 mt-1">Encuentra respuestas rápidas</div>
+                <div class="text-sm text-slate-600">Encuentra respuestas rápidas</div>
               </button>
             </div>
-            <form id="chat-form-empty" class="max-w-2xl mx-auto">
+            <form id="chat-form-empty" class="max-w-3xl mx-auto">
               <div class="relative">
-                <input id="chat-input-empty" class="w-full border-2 border-slate-300 rounded-2xl px-6 py-4 pr-14 text-lg focus:outline-none focus:border-[#23AAC5] focus:ring-4 focus:ring-[#23AAC5]/20 transition-all shadow-lg" placeholder="Pregúntame lo que quieras..." />
-                <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 gradient-brand-btn text-white rounded-xl hover:shadow-lg hover:opacity-90 transition-all">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                <input id="chat-input-empty" class="w-full border-2 border-slate-300 rounded-2xl px-6 py-5 pr-16 text-lg focus:outline-none focus:border-[#23AAC5] focus:ring-4 focus:ring-[#23AAC5]/20 transition-all shadow-xl" placeholder="Escribe tu pregunta aquí..." />
+                <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 p-3 gradient-brand-btn text-white rounded-xl hover:shadow-lg hover:opacity-90 transition-all">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
                 </button>
               </div>
+              <p class="text-center text-sm text-slate-500 mt-3">Presiona Enter para enviar</p>
             </form>
           </div>
         </div>
-        <div id="messages" class="hidden p-6"></div>
+        <div id="messages" class="hidden p-8 space-y-2"></div>
+        <div id="typing-indicator" class="hidden px-8 pb-4">
+          <div class="flex gap-3 items-start max-w-3xl">
+            <div class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 text-sm font-semibold flex-shrink-0">E</div>
+            <div class="bg-white border border-slate-200 px-5 py-3.5 rounded-2xl rounded-tl-sm shadow-sm">
+              <div class="flex gap-1.5">
+                <div class="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0ms"></div>
+                <div class="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 150ms"></div>
+                <div class="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 300ms"></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
       <footer id="chat-footer" class="hidden p-6 bg-white border-t border-slate-200 shadow-lg">
         <form id="chat-form" class="max-w-4xl mx-auto flex gap-3">
@@ -225,6 +253,7 @@
     const convListEl = document.getElementById('conv-list');
     const newConvBtn = document.getElementById('new-conv-btn');
     const sortSelect = document.getElementById('sort-select');
+    const typingIndicator = document.getElementById('typing-indicator');
 
     let csrf = null;
     let currentConversationId = null;
@@ -271,19 +300,47 @@
 
     function append(role, content){
       if(messagesEl.children.length === 0) showChatMode();
+      
       const wrap = document.createElement('div');
-      wrap.className = 'mb-4 flex ' + (role === 'user' ? 'justify-end' : 'justify-start');
+      wrap.className = 'mb-6 flex flex-col ' + (role === 'user' ? 'items-end' : 'items-start');
+      
+      // Avatar + burbuja container
+      const msgContainer = document.createElement('div');
+      msgContainer.className = 'flex gap-3 max-w-3xl ' + (role === 'user' ? 'flex-row-reverse' : 'flex-row');
+      
+      // Avatar
+      const avatar = document.createElement('div');
+      avatar.className = role === 'user'
+        ? 'w-9 h-9 rounded-full gradient-brand flex items-center justify-center text-white text-sm font-semibold flex-shrink-0 shadow-sm'
+        : 'w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 text-sm font-semibold flex-shrink-0';
+      avatar.textContent = role === 'user' 
+        ? (currentUser ? currentUser.first_name[0] + currentUser.last_name[0] : '?')
+        : 'E';
+      
+      // Burbuja
       const bubble = document.createElement('div');
       bubble.className = role === 'user' 
-        ? 'max-w-2xl gradient-brand text-white px-5 py-3 rounded-2xl rounded-tr-sm shadow-md' 
-        : 'max-w-2xl bg-white border border-slate-200 text-slate-800 px-5 py-3 rounded-2xl rounded-tl-sm shadow-sm';
+        ? 'gradient-brand text-white px-5 py-3.5 rounded-2xl rounded-tr-sm shadow-md' 
+        : 'bg-white border border-slate-200 text-slate-800 px-5 py-3.5 rounded-2xl rounded-tl-sm shadow-sm';
       bubble.style.wordBreak = 'break-word';
+      
       if (role === 'assistant') {
         bubble.innerHTML = mdToHtml(content);
       } else {
         bubble.textContent = content;
       }
-      wrap.appendChild(bubble);
+      
+      msgContainer.appendChild(avatar);
+      msgContainer.appendChild(bubble);
+      
+      // Timestamp
+      const timestamp = document.createElement('div');
+      timestamp.className = 'text-xs text-slate-400 mt-1 px-3';
+      const now = new Date();
+      timestamp.textContent = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+      
+      wrap.appendChild(msgContainer);
+      wrap.appendChild(timestamp);
       messagesEl.appendChild(wrap);
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
@@ -486,7 +543,8 @@
     function updateConvTitle(title) {
       if (title && title !== 'Nueva conversación') {
         currentConvTitle = title;
-        convTitleEl.textContent = title;
+        const span = convTitleEl.querySelector('span');
+        if (span) span.textContent = title;
         convTitleEl.classList.remove('hidden');
       } else {
         currentConvTitle = null;
@@ -518,8 +576,17 @@
     async function handleSubmit(text){
       if(!text) return;
       append('user', text);
+      
+      // Mostrar indicador de escritura
+      typingIndicator.classList.remove('hidden');
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      
       try {
         const data = await api('/api/chat.php', { method: 'POST', body: { conversation_id: currentConversationId, message: text } });
+        
+        // Ocultar indicador de escritura
+        typingIndicator.classList.add('hidden');
+        
         if (!currentConversationId && data.conversation && data.conversation.id) {
           currentConversationId = data.conversation.id;
           await loadConversations();
@@ -541,6 +608,7 @@
         }
         append('assistant', data.message.content);
       } catch(e){
+        typingIndicator.classList.add('hidden');
         append('assistant', 'Error: ' + e.message);
       }
     }
