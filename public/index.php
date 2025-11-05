@@ -172,11 +172,33 @@
               
               <!-- Input principal -->
               <form id="chat-form-empty" class="max-w-2xl mx-auto mb-4">
-                <div class="relative">
-                  <input id="chat-input-empty" class="w-full border-2 border-slate-300 rounded-2xl px-5 py-4 pr-14 focus:outline-none focus:border-[#23AAC5] focus:ring-4 focus:ring-[#23AAC5]/20 transition-all shadow-lg bg-white" placeholder="Escribe tu pregunta o solicitud..." />
-                  <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 gradient-brand-btn text-white rounded-xl hover:shadow-lg hover:opacity-90 transition-all">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                <!-- Preview de archivo adjunto en estado vacío -->
+                <div id="file-preview-empty" class="hidden mb-3 p-3 bg-slate-50 border border-slate-200 rounded-lg flex items-center gap-3">
+                  <div class="flex-1 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-[#23AAC5]/10 to-[#115c6c]/10 flex items-center justify-center flex-shrink-0">
+                      <i id="file-icon-empty" class="iconoir-page text-xl text-[#23AAC5]"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <div id="file-name-empty" class="text-sm font-medium text-slate-800 truncate"></div>
+                      <div id="file-size-empty" class="text-xs text-slate-500"></div>
+                    </div>
+                  </div>
+                  <button type="button" id="remove-file-empty" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                    <i class="iconoir-xmark"></i>
                   </button>
+                </div>
+                
+                <div class="relative flex gap-2">
+                  <input type="file" id="file-input-empty" class="hidden" accept=".pdf,.png,.jpg,.jpeg,.gif,.webp" />
+                  <button type="button" id="attach-btn-empty" class="p-4 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/5 rounded-2xl transition-all border-2 border-slate-300 hover:border-[#23AAC5]" title="Adjuntar archivo">
+                    <i class="iconoir-attachment text-xl"></i>
+                  </button>
+                  <div class="flex-1 relative">
+                    <input id="chat-input-empty" class="w-full border-2 border-slate-300 rounded-2xl px-5 py-4 pr-14 focus:outline-none focus:border-[#23AAC5] focus:ring-4 focus:ring-[#23AAC5]/20 transition-all shadow-lg bg-white" placeholder="Escribe tu pregunta o solicitud..." />
+                    <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 gradient-brand-btn text-white rounded-xl hover:shadow-lg hover:opacity-90 transition-all">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                    </button>
+                  </div>
                 </div>
               </form>
             </div>
@@ -404,6 +426,14 @@
     const fileSize = document.getElementById('file-size');
     const fileIcon = document.getElementById('file-icon');
     const removeFileBtn = document.getElementById('remove-file');
+    
+    const fileInputEmpty = document.getElementById('file-input-empty');
+    const attachBtnEmpty = document.getElementById('attach-btn-empty');
+    const filePreviewEmpty = document.getElementById('file-preview-empty');
+    const fileNameEmpty = document.getElementById('file-name-empty');
+    const fileSizeEmpty = document.getElementById('file-size-empty');
+    const fileIconEmpty = document.getElementById('file-icon-empty');
+    const removeFileBtnEmpty = document.getElementById('remove-file-empty');
 
     let csrf = null;
     let currentConversationId = null;
@@ -411,6 +441,7 @@
     let currentUser = null;
     let currentConvTitle = null;
     let currentFile = null; // archivo adjunto actual
+    let currentFileEmpty = null; // archivo adjunto en estado vacío
 
     function showChatMode(){
       emptyState.classList.add('hidden');
@@ -873,9 +904,68 @@
     formEmptyEl.addEventListener('submit', async (e)=>{
       e.preventDefault();
       const text = inputEmptyEl.value.trim();
+      
+      if (!text && !currentFileEmpty) return;
+      
       inputEmptyEl.value = '';
-      await handleSubmit(text);
+      await handleSubmit(text, currentFileEmpty);
+      
+      // Limpiar archivo después de enviar
+      if (currentFileEmpty) {
+        currentFileEmpty = null;
+        fileInputEmpty.value = '';
+        filePreviewEmpty.classList.add('hidden');
+      }
     });
+
+    // Manejar adjuntar archivo en estado vacío
+    attachBtnEmpty.addEventListener('click', () => {
+      fileInputEmpty.click();
+    });
+
+    fileInputEmpty.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      // Validar tamaño (10MB máximo)
+      const maxSize = 10 * 1024 * 1024;
+      if (file.size > maxSize) {
+        alert('El archivo es demasiado grande. Máximo 10MB.');
+        fileInputEmpty.value = '';
+        return;
+      }
+
+      // Validar tipo
+      const validTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/gif', 'image/webp'];
+      if (!validTypes.includes(file.type)) {
+        alert('Tipo de archivo no soportado. Solo PDF e imágenes.');
+        fileInputEmpty.value = '';
+        return;
+      }
+
+      currentFileEmpty = file;
+      showFilePreviewEmpty(file);
+    });
+
+    removeFileBtnEmpty.addEventListener('click', () => {
+      currentFileEmpty = null;
+      fileInputEmpty.value = '';
+      filePreviewEmpty.classList.add('hidden');
+    });
+
+    function showFilePreviewEmpty(file) {
+      fileNameEmpty.textContent = file.name;
+      fileSizeEmpty.textContent = formatFileSize(file.size);
+      
+      // Cambiar icono según tipo
+      if (file.type === 'application/pdf') {
+        fileIconEmpty.className = 'iconoir-page text-xl text-red-500';
+      } else if (file.type.startsWith('image/')) {
+        fileIconEmpty.className = 'iconoir-media-image text-xl text-[#23AAC5]';
+      }
+      
+      filePreviewEmpty.classList.remove('hidden');
+    }
 
     // Manejar clics en voces
     document.querySelectorAll('.voice-option').forEach(btn => {
