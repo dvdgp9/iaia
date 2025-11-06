@@ -307,6 +307,19 @@
                     </div>
                   </button>
 
+                  <button class="gesture-option w-full p-3 bg-slate-50 hover:bg-[#23AAC5]/5 border border-slate-200 hover:border-[#23AAC5] rounded-xl transition-all text-left group" data-gesture="summarize">
+                    <div class="flex items-center gap-3">
+                      <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#23AAC5]/20 to-[#115c6c]/20 flex items-center justify-center flex-shrink-0">
+                        <i class="iconoir-compress text-lg text-[#23AAC5]"></i>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <div class="font-semibold text-slate-800 text-sm group-hover:text-[#23AAC5] transition-colors">Resumir contenido</div>
+                        <div class="text-xs text-slate-500">Extrae lo más importante</div>
+                      </div>
+                      <i class="iconoir-arrow-right text-slate-400 group-hover:text-[#23AAC5] transition-colors"></i>
+                    </div>
+                  </button>
+
                   <button id="view-all-gestures" class="w-full p-3 bg-white hover:bg-[#23AAC5]/5 border-2 border-dashed border-slate-300 hover:border-[#23AAC5] rounded-xl transition-all text-center group">
                     <div class="flex items-center justify-center gap-2 text-sm font-medium text-slate-600 group-hover:text-[#23AAC5] transition-colors">
                       <span>Ver todos los gestos</span>
