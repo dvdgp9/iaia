@@ -42,6 +42,7 @@ Ebonia: plataforma interna de inteligencia corporativa (Grupo Ebone) basada en P
 - 2025-11-03: Borrador de `docs/db_schema.md` creado para revisión.
 - 2025-11-03: Scaffolding y endpoints mínimos creados. `.env` configurado con credenciales locales.
 - Listo para pruebas locales con `php -S -t public`.
+- 2025-11-26: **SEGURIDAD**: Corregido problema de autenticación en `index.php`. Se agregó verificación de sesión en PHP antes de renderizar HTML. Antes solo se verificaba con JavaScript, permitiendo que usuarios no autenticados vieran la interfaz brevemente.
 
 # Executor's Feedback or Assistance Requests
 
@@ -52,3 +53,12 @@ Ebonia: plataforma interna de inteligencia corporativa (Grupo Ebone) basada en P
 
 - Mantener comandos idempotentes para poder re-ejecutar sin fallos (p.ej. `git remote set-url` si `origin` ya existe).
 - Documentar primero: BD y contratos de API, para evitar divergencias futuras.
+- **Seguridad**: Siempre verificar autenticación en PHP ANTES de renderizar HTML. La verificación solo en JavaScript es insegura porque el HTML se envía al navegador antes de ejecutarse el script, permitiendo que usuarios no autenticados vean contenido protegido brevemente. Patrón correcto:
+  ```php
+  Session::start();
+  $user = Session::user();
+  if (!$user) {
+      header('Location: /login.php');
+      exit;
+  }
+  ```

@@ -1,4 +1,15 @@
-<?php ?><!DOCTYPE html>
+<?php
+require_once __DIR__ . '/../src/App/bootstrap.php';
+
+use App\Session;
+
+Session::start();
+$user = Session::user();
+if (!$user) {
+    header('Location: /login.php');
+    exit;
+}
+?><!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
