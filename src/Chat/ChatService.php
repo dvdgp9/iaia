@@ -2,25 +2,28 @@
 namespace Chat;
 
 class ChatService {
-    private GeminiClient $client;
+    private LlmProvider $provider;
 
-    public function __construct(?GeminiClient $client = null)
+    public function __construct(?LlmProvider $provider = null)
     {
-        $this->client = $client ?? new GeminiClient();
+        // Por defecto usamos la factoría, actualmente sólo Gemini
+        $this->provider = $provider ?? LlmProviderFactory::create();
     }
 
     public function reply(string $userMessage): array
     {
-        $answer = $this->client->generateText($userMessage);
+        $answer = $this->provider->generate([
+            [ 'role' => 'user', 'content' => $userMessage ],
+        ]);
         return [ 'role' => 'assistant', 'content' => $answer ];
     }
 
     /**
-     * @param array<int, array{role:string, content:string}> $history
+     * @param array<int, array{role:string, content:string, file?:array}> $history
      */
     public function replyWithHistory(array $history): array
     {
-        $answer = $this->client->generateWithMessages($history);
+        $answer = $this->provider->generate($history);
         return [ 'role' => 'assistant', 'content' => $answer ];
     }
 }

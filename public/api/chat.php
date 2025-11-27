@@ -1,6 +1,9 @@
 <?php
 require_once __DIR__ . '/../../src/App/bootstrap.php';
+require_once __DIR__ . '/../../src/Chat/LlmProvider.php';
 require_once __DIR__ . '/../../src/Chat/GeminiClient.php';
+require_once __DIR__ . '/../../src/Chat/GeminiProvider.php';
+require_once __DIR__ . '/../../src/Chat/LlmProviderFactory.php';
 require_once __DIR__ . '/../../src/Chat/ChatService.php';
 require_once __DIR__ . '/../../src/Auth/AuthService.php';
 require_once __DIR__ . '/../../src/Repos/ConversationsRepo.php';
@@ -10,6 +13,7 @@ use App\Response;
 use App\Session;
 use Auth\AuthService;
 use Chat\ChatService;
+use Chat\LlmProviderFactory;
 use Repos\ConversationsRepo;
 use Repos\MessagesRepo;
 
@@ -25,6 +29,10 @@ $input = json_decode(file_get_contents('php://input'), true) ?? [];
 $message = trim((string)($input['message'] ?? ''));
 $conversationId = isset($input['conversation_id']) ? (int)$input['conversation_id'] : 0;
 $file = $input['file'] ?? null;
+
+// Opcional: permitir elegir proveedor/modelo desde el cliente (validado por la factoría)
+$providerName = isset($input['provider']) ? (string)$input['provider'] : null;
+$modelName = isset($input['model']) ? (string)$input['model'] : null;
 
 // Validar que haya mensaje o archivo
 if ($message === '' && !$file) {
@@ -57,7 +65,8 @@ $userMsgId = $msgs->create($conversationId, (int)$user['id'], 'user', $message, 
 // Auto-titular si el título sigue siendo el genérico
 $convos->autoTitle($conversationId, $message);
 
-$svc = new ChatService();
+$provider = LlmProviderFactory::create($providerName, $modelName);
+$svc = new ChatService($provider);
 // Construir historial: incluir todos los mensajes de la conversación (ya incluye el del usuario)
 $allMessages = $msgs->listByConversation($conversationId);
 $history = [];
