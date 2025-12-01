@@ -33,7 +33,8 @@ class QwenClient {
         }
 
         // Qwen usa el endpoint compatible con OpenAI
-        $url = 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions';
+        $url = 'https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions';
+
 
         // Construir mensajes en formato OpenAI
         $messagesPayload = [];
