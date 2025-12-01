@@ -116,7 +116,7 @@ if (!$user) {
             <!-- Opción "Todas" siempre visible -->
             <li>
               <button data-folder-id="-1" class="folder-item w-full text-left p-2 rounded-lg transition-all duration-200 flex items-center gap-2 hover:bg-slate-50 group">
-                <i class="iconoir-folder text-slate-400"></i>
+                <i class="iconoir-folder text-[#23AAC5]"></i>
                 <span class="flex-1 text-sm text-slate-700">Todas</span>
                 <span class="text-xs text-slate-400" id="all-count">0</span>
               </button>
@@ -124,7 +124,7 @@ if (!$user) {
             <!-- Opción "Sin carpeta" -->
             <li>
               <button data-folder-id="0" class="folder-item w-full text-left p-2 rounded-lg transition-all duration-200 flex items-center gap-2 hover:bg-slate-50 group">
-                <i class="iconoir-folder-minus text-slate-400"></i>
+                <i class="iconoir-folder text-[#23AAC5]"></i>
                 <span class="flex-1 text-sm text-slate-700">Sin carpeta</span>
                 <span class="text-xs text-slate-400" id="root-count">0</span>
               </button>
