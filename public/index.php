@@ -746,11 +746,20 @@ if (!$user) {
           btn.classList.add('bg-gradient-to-r', 'from-[#23AAC5]/10', 'to-[#115c6c]/10', 'shadow-sm');
         }
         
-        btn.innerHTML = `
-          <i class="iconoir-folder text-[#23AAC5]"></i>
-          <span class="flex-1 text-sm text-slate-700 truncate">${folder.name}</span>
-          <span class="text-xs text-slate-400">${folder.conversation_count}</span>
-        `;
+        const iconEl = document.createElement('i');
+        iconEl.className = 'iconoir-folder text-[#23AAC5] flex-shrink-0';
+        
+        const nameEl = document.createElement('span');
+        nameEl.className = 'flex-1 text-sm text-slate-700 truncate min-w-0';
+        nameEl.textContent = folder.name;
+        
+        const countEl = document.createElement('span');
+        countEl.className = 'text-xs text-slate-400 flex-shrink-0';
+        countEl.textContent = folder.conversation_count;
+        
+        btn.appendChild(iconEl);
+        btn.appendChild(nameEl);
+        btn.appendChild(countEl);
         
         btn.addEventListener('click', () => {
           currentFolderId = folder.id;
@@ -758,9 +767,9 @@ if (!$user) {
           loadConversations();
         });
         
-        // Acciones de carpeta (renombrar, eliminar)
+        // Acciones de carpeta (renombrar, eliminar) - siempre presentes pero invisibles
         const actions = document.createElement('div');
-        actions.className = 'hidden group-hover:flex items-center gap-0.5 ml-auto';
+        actions.className = 'flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0';
         
         const renameBtn = document.createElement('button');
         renameBtn.className = 'p-1 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded transition-colors';
