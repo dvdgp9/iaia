@@ -422,6 +422,61 @@ if (!$user) {
       </footer>
     </main>
   </div>
+  
+  <!-- Modal Mover a Carpeta -->
+  <div id="move-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[80vh] flex flex-col">
+      <!-- Header -->
+      <div class="p-6 border-b border-slate-200 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl gradient-brand flex items-center justify-center">
+            <i class="iconoir-folder-settings text-xl text-white"></i>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-slate-900">Mover conversación</h3>
+            <p class="text-xs text-slate-500" id="move-conv-title">Selecciona la carpeta de destino</p>
+          </div>
+        </div>
+        <button id="close-move-modal" class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
+          <i class="iconoir-xmark text-xl"></i>
+        </button>
+      </div>
+      
+      <!-- Body - Lista de carpetas -->
+      <div class="flex-1 overflow-y-auto p-6">
+        <div class="space-y-2" id="folder-options">
+          <!-- Opción "Sin carpeta" -->
+          <button data-target-folder="0" class="folder-option w-full p-4 bg-slate-50 hover:bg-[#23AAC5]/5 border-2 border-slate-200 hover:border-[#23AAC5] rounded-xl transition-all text-left group">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-slate-200 flex items-center justify-center flex-shrink-0 group-hover:bg-[#23AAC5]/10">
+                <i class="iconoir-folder-minus text-xl text-slate-500 group-hover:text-[#23AAC5]"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="font-semibold text-slate-800 group-hover:text-[#23AAC5] transition-colors">Sin carpeta</div>
+                <div class="text-xs text-slate-500">Mover a la raíz</div>
+              </div>
+              <i class="iconoir-nav-arrow-right text-slate-300 group-hover:text-[#23AAC5] transition-colors"></i>
+            </div>
+          </button>
+          
+          <!-- Carpetas dinámicas se insertarán aquí -->
+        </div>
+        
+        <div id="empty-folders" class="hidden text-center py-8 text-slate-400 text-sm">
+          <i class="iconoir-folder text-4xl mb-2"></i>
+          <p>No tienes carpetas creadas</p>
+        </div>
+      </div>
+      
+      <!-- Footer -->
+      <div class="p-6 border-t border-slate-200 flex gap-3">
+        <button id="cancel-move" class="flex-1 px-4 py-2.5 border-2 border-slate-200 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-colors">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+  
   <script type="module">
     const messagesEl = document.getElementById('messages');
     const messagesContainer = document.getElementById('messages-container');
@@ -444,6 +499,11 @@ if (!$user) {
     const typingIndicator = document.getElementById('typing-indicator');
     const folderListEl = document.getElementById('folder-list');
     const newFolderBtn = document.getElementById('new-folder-btn');
+    const moveModal = document.getElementById('move-modal');
+    const closeMoveModal = document.getElementById('close-move-modal');
+    const cancelMoveBtn = document.getElementById('cancel-move');
+    const folderOptionsEl = document.getElementById('folder-options');
+    const emptyFoldersEl = document.getElementById('empty-folders');
     const fileInput = document.getElementById('file-input');
     const attachBtn = document.getElementById('attach-btn');
     const filePreview = document.getElementById('file-preview');
@@ -469,6 +529,7 @@ if (!$user) {
     let currentFileEmpty = null; // archivo adjunto en estado vacío
     let currentFolderId = -1; // -1 = todas, 0 = sin carpeta, >0 = carpeta específica
     let allFolders = []; // cache de carpetas
+    let conversationToMove = null; // conversación que se está moviendo
 
     function showChatMode(){
       emptyState.classList.add('hidden');
@@ -630,6 +691,25 @@ if (!$user) {
         alert('Error al crear carpeta: ' + err.message);
       }
     });
+    
+    // Cerrar modal
+    closeMoveModal.addEventListener('click', () => {
+      moveModal.classList.add('hidden');
+      conversationToMove = null;
+    });
+    
+    cancelMoveBtn.addEventListener('click', () => {
+      moveModal.classList.add('hidden');
+      conversationToMove = null;
+    });
+    
+    // Cerrar modal al hacer clic fuera
+    moveModal.addEventListener('click', (e) => {
+      if (e.target === moveModal) {
+        moveModal.classList.add('hidden');
+        conversationToMove = null;
+      }
+    });
 
     logoutBtn.addEventListener('click', async (e)=>{
       e.stopPropagation();
@@ -747,6 +827,87 @@ if (!$user) {
         }
       });
     }
+    
+    function openMoveModal(conversation) {
+      conversationToMove = conversation;
+      document.getElementById('move-conv-title').textContent = `"${conversation.title}"`;
+      
+      // Renderizar opciones de carpetas
+      const dynamicOptions = folderOptionsEl.querySelectorAll('.dynamic-folder-option');
+      dynamicOptions.forEach(el => el.remove());
+      
+      if (allFolders.length === 0) {
+        emptyFoldersEl.classList.remove('hidden');
+      } else {
+        emptyFoldersEl.classList.add('hidden');
+        
+        allFolders.forEach(folder => {
+          const btn = document.createElement('button');
+          btn.dataset.targetFolder = folder.id;
+          btn.className = 'folder-option dynamic-folder-option w-full p-4 bg-slate-50 hover:bg-[#23AAC5]/5 border-2 border-slate-200 hover:border-[#23AAC5] rounded-xl transition-all text-left group';
+          
+          // Marcar si es la carpeta actual
+          if (conversation.folder_id && conversation.folder_id == folder.id) {
+            btn.classList.add('border-[#23AAC5]', 'bg-[#23AAC5]/5');
+          }
+          
+          btn.innerHTML = `
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-[#23AAC5]/20 to-[#115c6c]/20 flex items-center justify-center flex-shrink-0">
+                <i class="iconoir-folder text-xl text-[#23AAC5]"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="font-semibold text-slate-800 group-hover:text-[#23AAC5] transition-colors">${folder.name}</div>
+                <div class="text-xs text-slate-500">${folder.conversation_count} conversación${folder.conversation_count !== 1 ? 'es' : ''}</div>
+              </div>
+              <i class="iconoir-nav-arrow-right text-slate-300 group-hover:text-[#23AAC5] transition-colors"></i>
+            </div>
+          `;
+          
+          btn.addEventListener('click', () => handleMoveConversation(folder.id));
+          folderOptionsEl.appendChild(btn);
+        });
+      }
+      
+      // Añadir listener al botón "Sin carpeta"
+      const rootBtn = folderOptionsEl.querySelector('[data-target-folder="0"]');
+      if (rootBtn) {
+        // Remover listeners anteriores clonando
+        const newRootBtn = rootBtn.cloneNode(true);
+        rootBtn.parentNode.replaceChild(newRootBtn, rootBtn);
+        
+        // Marcar si está en raíz
+        if (!conversation.folder_id || conversation.folder_id === 0) {
+          newRootBtn.classList.add('border-[#23AAC5]', 'bg-[#23AAC5]/5');
+        }
+        
+        newRootBtn.addEventListener('click', () => handleMoveConversation(null));
+      }
+      
+      moveModal.classList.remove('hidden');
+    }
+    
+    async function handleMoveConversation(targetFolderId) {
+      if (!conversationToMove) return;
+      
+      try {
+        await api('/api/conversations/move_to_folder.php', { 
+          method: 'POST', 
+          body: { 
+            conversation_id: conversationToMove.id, 
+            folder_id: targetFolderId 
+          } 
+        });
+        
+        moveModal.classList.add('hidden');
+        conversationToMove = null;
+        
+        await loadFolders();
+        await loadConversations();
+      } catch (err) {
+        alert('Error al mover: ' + err.message);
+      }
+    }
 
     async function loadConversations(){
       const sort = sortSelect.value || 'updated_at';
@@ -827,42 +988,11 @@ if (!$user) {
         });
         const moveBtn = document.createElement('button');
         moveBtn.className = 'p-1.5 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded transition-colors';
-        moveBtn.innerHTML = '<i class="iconoir-folder-arrow-in"></i>';
+        moveBtn.innerHTML = '<i class="iconoir-folder-settings"></i>';
         moveBtn.title = 'Mover a carpeta';
         moveBtn.addEventListener('click', async (e) => {
           e.stopPropagation();
-          
-          // Construir selector de carpeta
-          const options = ['0|Sin carpeta'];
-          allFolders.forEach(f => options.push(`${f.id}|${f.name}`));
-          
-          const selection = prompt(
-            'Mover a carpeta:\n' + options.map((opt, idx) => `${idx}: ${opt.split('|')[1]}`).join('\n') + 
-            '\n\nEscribe el número de la carpeta:'
-          );
-          
-          if (selection === null) return;
-          const idx = parseInt(selection);
-          if (isNaN(idx) || idx < 0 || idx >= options.length) {
-            alert('Selección inválida');
-            return;
-          }
-          
-          const targetFolderId = options[idx].split('|')[0];
-          
-          try {
-            await api('/api/conversations/move_to_folder.php', { 
-              method: 'POST', 
-              body: { 
-                conversation_id: c.id, 
-                folder_id: targetFolderId === '0' ? null : parseInt(targetFolderId) 
-              } 
-            });
-            await loadFolders();
-            await loadConversations();
-          } catch (err) {
-            alert('Error al mover: ' + err.message);
-          }
+          openMoveModal(c);
         });
         
         const delBtn = document.createElement('button');
