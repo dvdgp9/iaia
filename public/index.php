@@ -104,18 +104,50 @@ if (!$user) {
         </button>
       </div>
       <div class="flex-1 overflow-y-auto p-3">
-        <div class="flex items-center justify-between mb-2 px-2">
-          <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Conversaciones</div>
-          <select id="sort-select" class="text-xs border border-slate-200 rounded px-2 py-1 bg-white focus:outline-none focus:border-[#23AAC5]">
-            <option value="updated_at">Recientes</option>
-            <option value="favorite">Favoritos</option>
-            <option value="created_at">Creación</option>
-            <option value="title">Alfabético</option>
-          </select>
+        <!-- Sección Carpetas -->
+        <div class="mb-4">
+          <div class="flex items-center justify-between mb-2 px-2">
+            <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Carpetas</div>
+            <button id="new-folder-btn" class="p-1 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded transition-colors" title="Nueva carpeta">
+              <i class="iconoir-folder-plus text-sm"></i>
+            </button>
+          </div>
+          <ul id="folder-list" class="space-y-1">
+            <!-- Opción "Todas" siempre visible -->
+            <li>
+              <button data-folder-id="-1" class="folder-item w-full text-left p-2 rounded-lg transition-all duration-200 flex items-center gap-2 hover:bg-slate-50 group">
+                <i class="iconoir-folder text-slate-400"></i>
+                <span class="flex-1 text-sm text-slate-700">Todas</span>
+                <span class="text-xs text-slate-400" id="all-count">0</span>
+              </button>
+            </li>
+            <!-- Opción "Sin carpeta" -->
+            <li>
+              <button data-folder-id="0" class="folder-item w-full text-left p-2 rounded-lg transition-all duration-200 flex items-center gap-2 hover:bg-slate-50 group">
+                <i class="iconoir-folder-minus text-slate-400"></i>
+                <span class="flex-1 text-sm text-slate-700">Sin carpeta</span>
+                <span class="text-xs text-slate-400" id="root-count">0</span>
+              </button>
+            </li>
+            <!-- Carpetas dinámicas se insertarán aquí -->
+          </ul>
         </div>
-        <ul id="conv-list" class="space-y-1">
-          <li class="text-slate-400 text-sm px-3 py-2">(vacío)</li>
-        </ul>
+        
+        <!-- Sección Conversaciones -->
+        <div>
+          <div class="flex items-center justify-between mb-2 px-2">
+            <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Conversaciones</div>
+            <select id="sort-select" class="text-xs border border-slate-200 rounded px-2 py-1 bg-white focus:outline-none focus:border-[#23AAC5]">
+              <option value="updated_at">Recientes</option>
+              <option value="favorite">Favoritos</option>
+              <option value="created_at">Creación</option>
+              <option value="title">Alfabético</option>
+            </select>
+          </div>
+          <ul id="conv-list" class="space-y-1">
+            <li class="text-slate-400 text-sm px-3 py-2">(vacío)</li>
+          </ul>
+        </div>
       </div>
     </aside>
     <main class="flex-1 flex flex-col bg-white">
@@ -410,6 +442,8 @@ if (!$user) {
     const newConvBtn = document.getElementById('new-conv-btn');
     const sortSelect = document.getElementById('sort-select');
     const typingIndicator = document.getElementById('typing-indicator');
+    const folderListEl = document.getElementById('folder-list');
+    const newFolderBtn = document.getElementById('new-folder-btn');
     const fileInput = document.getElementById('file-input');
     const attachBtn = document.getElementById('attach-btn');
     const filePreview = document.getElementById('file-preview');
@@ -433,6 +467,8 @@ if (!$user) {
     let currentConvTitle = null;
     let currentFile = null; // archivo adjunto actual
     let currentFileEmpty = null; // archivo adjunto en estado vacío
+    let currentFolderId = -1; // -1 = todas, 0 = sin carpeta, >0 = carpeta específica
+    let allFolders = []; // cache de carpetas
 
     function showChatMode(){
       emptyState.classList.add('hidden');
@@ -559,6 +595,7 @@ if (!$user) {
           document.getElementById('admin-link').classList.remove('hidden');
         }
         
+        await loadFolders();
         await loadConversations();
       } catch (_) {
         window.location.href = '/login.php';
@@ -580,6 +617,19 @@ if (!$user) {
     });
     
     sortSelect.addEventListener('change', () => loadConversations());
+    
+    // Crear nueva carpeta
+    newFolderBtn.addEventListener('click', async () => {
+      const name = prompt('Nombre de la carpeta:');
+      if (!name || name.trim() === '') return;
+      try {
+        await api('/api/folders/create.php', { method: 'POST', body: { name: name.trim() } });
+        await loadFolders();
+        await loadConversations();
+      } catch (err) {
+        alert('Error al crear carpeta: ' + err.message);
+      }
+    });
 
     logoutBtn.addEventListener('click', async (e)=>{
       e.stopPropagation();
@@ -591,9 +641,117 @@ if (!$user) {
       }
     });
 
+    async function loadFolders(){
+      const data = await api('/api/folders/list.php');
+      allFolders = data.folders || [];
+      
+      // Contar conversaciones totales y sin carpeta
+      const allConvs = await api('/api/conversations/list.php?folder_id=-1');
+      const rootConvs = await api('/api/conversations/list.php?folder_id=0');
+      document.getElementById('all-count').textContent = (allConvs.items || []).length;
+      document.getElementById('root-count').textContent = (rootConvs.items || []).length;
+      
+      // Renderizar carpetas dinámicas
+      const existingDynamic = folderListEl.querySelectorAll('.dynamic-folder');
+      existingDynamic.forEach(el => el.remove());
+      
+      for (const folder of allFolders) {
+        const li = document.createElement('li');
+        li.className = 'dynamic-folder group';
+        
+        const btn = document.createElement('button');
+        btn.dataset.folderId = folder.id;
+        btn.className = 'folder-item w-full text-left p-2 rounded-lg transition-all duration-200 flex items-center gap-2 hover:bg-slate-50';
+        if (currentFolderId === folder.id) {
+          btn.classList.add('bg-gradient-to-r', 'from-[#23AAC5]/10', 'to-[#115c6c]/10', 'shadow-sm');
+        }
+        
+        btn.innerHTML = `
+          <i class="iconoir-folder text-[#23AAC5]"></i>
+          <span class="flex-1 text-sm text-slate-700 truncate">${folder.name}</span>
+          <span class="text-xs text-slate-400">${folder.conversation_count}</span>
+        `;
+        
+        btn.addEventListener('click', () => {
+          currentFolderId = folder.id;
+          loadFolders();
+          loadConversations();
+        });
+        
+        // Acciones de carpeta (renombrar, eliminar)
+        const actions = document.createElement('div');
+        actions.className = 'hidden group-hover:flex items-center gap-0.5 ml-auto';
+        
+        const renameBtn = document.createElement('button');
+        renameBtn.className = 'p-1 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded transition-colors';
+        renameBtn.innerHTML = '<i class="iconoir-edit-pencil text-xs"></i>';
+        renameBtn.title = 'Renombrar';
+        renameBtn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          const newName = prompt('Nuevo nombre:', folder.name);
+          if (!newName || newName.trim() === '') return;
+          try {
+            await api('/api/folders/rename.php', { method: 'POST', body: { id: folder.id, name: newName.trim() } });
+            await loadFolders();
+          } catch (err) {
+            alert('Error al renombrar: ' + err.message);
+          }
+        });
+        
+        const delBtn = document.createElement('button');
+        delBtn.className = 'p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors';
+        delBtn.innerHTML = '<i class="iconoir-trash text-xs"></i>';
+        delBtn.title = 'Eliminar';
+        delBtn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          const msg = folder.conversation_count > 0 
+            ? `¿Eliminar "${folder.name}"? Las ${folder.conversation_count} conversaciones quedarán sin carpeta.`
+            : `¿Eliminar "${folder.name}"?`;
+          if (!confirm(msg)) return;
+          try {
+            await api('/api/folders/delete.php', { method: 'POST', body: { id: folder.id } });
+            if (currentFolderId === folder.id) {
+              currentFolderId = -1;
+            }
+            await loadFolders();
+            await loadConversations();
+          } catch (err) {
+            alert('Error al eliminar: ' + err.message);
+          }
+        });
+        
+        actions.appendChild(renameBtn);
+        actions.appendChild(delBtn);
+        btn.appendChild(actions);
+        
+        li.appendChild(btn);
+        folderListEl.appendChild(li);
+      }
+      
+      // Actualizar estado activo de "Todas" y "Sin carpeta"
+      const allFolderItems = document.querySelectorAll('.folder-item');
+      allFolderItems.forEach(item => {
+        const folderId = parseInt(item.dataset.folderId);
+        item.classList.remove('bg-gradient-to-r', 'from-[#23AAC5]/10', 'to-[#115c6c]/10', 'shadow-sm');
+        if (folderId === currentFolderId) {
+          item.classList.add('bg-gradient-to-r', 'from-[#23AAC5]/10', 'to-[#115c6c]/10', 'shadow-sm');
+        }
+        
+        // Añadir event listeners solo para "Todas" (-1) y "Sin carpeta" (0)
+        if (folderId === -1 || folderId === 0) {
+          item.addEventListener('click', () => {
+            currentFolderId = folderId;
+            loadFolders();
+            loadConversations();
+          });
+        }
+      });
+    }
+
     async function loadConversations(){
       const sort = sortSelect.value || 'updated_at';
-      const data = await api(`/api/conversations/list.php?sort=${encodeURIComponent(sort)}`);
+      const folderParam = currentFolderId !== null ? `&folder_id=${currentFolderId}` : '';
+      const data = await api(`/api/conversations/list.php?sort=${encodeURIComponent(sort)}${folderParam}`);
       const items = data.items || [];
       if(items.length === 0){
         convListEl.innerHTML = '<li class="text-slate-400 text-sm px-3 py-2">(vacío)</li>';
@@ -667,6 +825,46 @@ if (!$user) {
             alert('Error al renombrar: ' + err.message);
           }
         });
+        const moveBtn = document.createElement('button');
+        moveBtn.className = 'p-1.5 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded transition-colors';
+        moveBtn.innerHTML = '<i class="iconoir-folder-arrow-in"></i>';
+        moveBtn.title = 'Mover a carpeta';
+        moveBtn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          
+          // Construir selector de carpeta
+          const options = ['0|Sin carpeta'];
+          allFolders.forEach(f => options.push(`${f.id}|${f.name}`));
+          
+          const selection = prompt(
+            'Mover a carpeta:\n' + options.map((opt, idx) => `${idx}: ${opt.split('|')[1]}`).join('\n') + 
+            '\n\nEscribe el número de la carpeta:'
+          );
+          
+          if (selection === null) return;
+          const idx = parseInt(selection);
+          if (isNaN(idx) || idx < 0 || idx >= options.length) {
+            alert('Selección inválida');
+            return;
+          }
+          
+          const targetFolderId = options[idx].split('|')[0];
+          
+          try {
+            await api('/api/conversations/move_to_folder.php', { 
+              method: 'POST', 
+              body: { 
+                conversation_id: c.id, 
+                folder_id: targetFolderId === '0' ? null : parseInt(targetFolderId) 
+              } 
+            });
+            await loadFolders();
+            await loadConversations();
+          } catch (err) {
+            alert('Error al mover: ' + err.message);
+          }
+        });
+        
         const delBtn = document.createElement('button');
         delBtn.className = 'p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors';
         delBtn.innerHTML = '<i class="iconoir-trash"></i>';
@@ -682,12 +880,14 @@ if (!$user) {
               updateConvTitle(null);
               showEmptyMode();
             }
+            await loadFolders();
             await loadConversations();
           } catch (err) {
             alert('Error al borrar: ' + err.message);
           }
         });
         actions.appendChild(renameBtn);
+        actions.appendChild(moveBtn);
         actions.appendChild(delBtn);
         container.appendChild(btn);
         container.appendChild(actions);

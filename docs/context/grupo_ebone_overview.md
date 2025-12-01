@@ -5,11 +5,10 @@ Grupo Ebone es una empresa granadina con sede principal en Granada que cuenta co
 
 ### Dirección y Liderazgo
 - **Director General:** Javier Blanco Rubio  
-Licenciado en Educación Física (INEF) y presidente de la Asociación Española de Empresarios de Servicios Deportivos a las Administraciones Públicas (AEESDAP).
 
 ### Estructura Organizativa
 La empresa cuenta con sedes en **Granada** y **Murcia**, además de delegaciones en **Madrid, Málaga, Jaén, Valencia y Asturias**.  
-Emplea a más de **1.000 profesionales** distribuidos por toda España.
+Emplea a más de **3.000 profesionales** distribuidos por toda España.
 
 ### Contacto
 - **Sede Granada:** Av. Fernando de los Ríos 11, Portal 1, Oficina 4. 18100, Armilla  
