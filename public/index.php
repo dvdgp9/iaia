@@ -759,7 +759,6 @@ if (!$user) {
         
         btn.appendChild(iconEl);
         btn.appendChild(nameEl);
-        btn.appendChild(countEl);
         
         btn.addEventListener('click', () => {
           currentFolderId = folder.id;
@@ -812,6 +811,7 @@ if (!$user) {
         actions.appendChild(renameBtn);
         actions.appendChild(delBtn);
         btn.appendChild(actions);
+        btn.appendChild(countEl);
         
         li.appendChild(btn);
         folderListEl.appendChild(li);
