@@ -1,9 +1,11 @@
 <?php
 require_once __DIR__ . '/../../src/App/bootstrap.php';
 require_once __DIR__ . '/../../src/Chat/ContextBuilder.php';
-require_once __DIR__ . '/../../src/Chat/LlmProvider.php';
 require_once __DIR__ . '/../../src/Chat/GeminiClient.php';
 require_once __DIR__ . '/../../src/Chat/GeminiProvider.php';
+require_once __DIR__ . '/../../src/Chat/QwenClient.php';
+require_once __DIR__ . '/../../src/Chat/QwenProvider.php';
+require_once __DIR__ . '/../../src/Chat/LlmProvider.php';
 require_once __DIR__ . '/../../src/Chat/LlmProviderFactory.php';
 require_once __DIR__ . '/../../src/Chat/ChatService.php';
 require_once __DIR__ . '/../../src/Auth/AuthService.php';

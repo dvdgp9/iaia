@@ -22,6 +22,13 @@ class LlmProviderFactory
                     : new GeminiClient(null, null, $systemPrompt);
                 return new GeminiProvider($client, $contextBuilder);
 
+            case 'qwen':
+                // Qwen de Alibaba Cloud
+                $client = $model !== null
+                    ? new QwenClient(null, $model, $systemPrompt)
+                    : new QwenClient(null, null, $systemPrompt);
+                return new QwenProvider($client, $contextBuilder);
+
             default:
                 Response::error('llm_provider_not_supported', 'Proveedor LLM no soportado: ' . $providerName, 400);
         }
