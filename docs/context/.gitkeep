@@ -1,0 +1,8 @@
+# Esta carpeta contiene el contexto corporativo que Ebonia usa en todas las conversaciones
+# 
+# Archivos en esta carpeta:
+# - system_prompt.md: Instrucciones base del sistema
+# - grupo_ebone_overview.md: Información general del Grupo Ebone
+# - [futuro] lineas_negocio/*.md: Detalle de cada línea de negocio
+#
+# Estos archivos son leídos por ContextBuilder y enviados como systemInstruction a los modelos LLM

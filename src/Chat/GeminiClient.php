@@ -7,11 +7,13 @@ use App\Response;
 class GeminiClient {
     private string $apiKey;
     private string $model;
+    private ?string $systemInstruction;
 
-    public function __construct(?string $apiKey = null, ?string $model = null)
+    public function __construct(?string $apiKey = null, ?string $model = null, ?string $systemInstruction = null)
     {
         $this->apiKey = $apiKey ?? (Env::get('GEMINI_API_KEY') ?? '');
         $this->model = $model ?? (Env::get('GEMINI_MODEL') ?? 'gemini-2.5-flash');
+        $this->systemInstruction = $systemInstruction;
     }
 
     public function generateText(string $prompt): string
@@ -63,6 +65,15 @@ class GeminiClient {
         }
 
         $payload = [ 'contents' => $contents ];
+
+        // Agregar systemInstruction si está definida
+        if ($this->systemInstruction !== null && $this->systemInstruction !== '') {
+            $payload['systemInstruction'] = [
+                'parts' => [
+                    ['text' => $this->systemInstruction]
+                ]
+            ];
+        }
 
         $ch = curl_init($url);
         curl_setopt_array($ch, [
