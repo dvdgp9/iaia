@@ -1,11 +1,11 @@
 <?php
 require_once __DIR__ . '/../../src/App/bootstrap.php';
 require_once __DIR__ . '/../../src/Chat/ContextBuilder.php';
+require_once __DIR__ . '/../../src/Chat/LlmProvider.php';
 require_once __DIR__ . '/../../src/Chat/GeminiClient.php';
 require_once __DIR__ . '/../../src/Chat/GeminiProvider.php';
 require_once __DIR__ . '/../../src/Chat/QwenClient.php';
 require_once __DIR__ . '/../../src/Chat/QwenProvider.php';
-require_once __DIR__ . '/../../src/Chat/LlmProvider.php';
 require_once __DIR__ . '/../../src/Chat/LlmProviderFactory.php';
 require_once __DIR__ . '/../../src/Chat/ChatService.php';
 require_once __DIR__ . '/../../src/Auth/AuthService.php';
@@ -112,8 +112,11 @@ if (count($history) > 20) {
 
 $assistantMsg = $svc->replyWithHistory($history);
 
+// Determinar el modelo usado (del env o del parámetro)
+$usedModel = $modelName ?? (getenv('LLM_PROVIDER') === 'qwen' ? getenv('QWEN_MODEL') : getenv('GEMINI_MODEL'));
+
 // Guardar respuesta de asistente
-$assistantMsgId = $msgs->create($conversationId, null, 'assistant', $assistantMsg['content'], getenv('GEMINI_MODEL') ?: null, null, null);
+$assistantMsgId = $msgs->create($conversationId, null, 'assistant', $assistantMsg['content'], $usedModel ?: null, null, null);
 
 // Actualizar updated_at de la conversación
 $convos->touch($conversationId);
@@ -124,7 +127,7 @@ Response::json([
         'id' => $assistantMsgId,
         'role' => $assistantMsg['role'],
         'content' => $assistantMsg['content'],
-        'model' => getenv('GEMINI_MODEL') ?: null
+        'model' => $usedModel ?: null
     ],
     'context_truncated' => $contextTruncated
 ]);
