@@ -9,6 +9,7 @@ if (!$user) {
     header('Location: /login.php');
     exit;
 }
+$csrfToken = $_SESSION['csrf_token'] ?? '';
 ?><!DOCTYPE html>
 <html lang="es">
 <head>
@@ -17,6 +18,7 @@ if (!$user) {
   <title>Ebonia — IA Corporativa</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/iconoir-icons/iconoir@main/css/iconoir.css">
+  <script>window.CSRF_TOKEN = '<?php echo $csrfToken; ?>';</script>
   <style>
     .gradient-brand {
       background: linear-gradient(135deg, #23AAC5 0%, #115c6c 100%);
@@ -1507,6 +1509,23 @@ if (!$user) {
       
       let faqHistory = []; // Historial en memoria
       
+      // Helpers locales
+      function escapeHtml(str) {
+        return str.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+      }
+      
+      function mdToHtml(md) {
+        let s = escapeHtml(md);
+        s = s.replace(/^###\s+(.+)$/gm, '<h3 class="font-semibold text-base mb-1">$1</h3>');
+        s = s.replace(/^##\s+(.+)$/gm, '<h2 class="font-semibold text-lg mb-1">$1</h2>');
+        s = s.replace(/^#\s+(.+)$/gm, '<h1 class="font-semibold text-xl mb-1">$1</h1>');
+        s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        s = s.replace(/\*(.+?)\*/g, '<em>$1</em>');
+        s = s.replace(/`([^`]+)`/g, '<code class="px-1 py-0.5 bg-slate-200 rounded text-xs">$1</code>');
+        s = s.replace(/\n/g, '<br>');
+        return s;
+      }
+      
       // Abrir modal
       faqBtn.addEventListener('click', () => {
         faqModal.classList.remove('hidden');
@@ -1575,7 +1594,7 @@ if (!$user) {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'X-CSRF-Token': csrf
+              'X-CSRF-Token': window.CSRF_TOKEN
             },
             body: JSON.stringify({
               message: message,
