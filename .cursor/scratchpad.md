@@ -129,6 +129,12 @@ Los "gestos" son acciones predefinidas que los usuarios pueden ejecutar para tar
    - Copiar y regenerar resultado
    - ✅ Completado
 
+5. [x] **Refactorizar gestos a páginas separadas**
+   - Cada gesto en su propia página `/gestures/<nombre>.php`
+   - JS modular en `/assets/js/gesture-<nombre>.js`
+   - `index.php` solo contiene navegación (redirige a rutas)
+   - ✅ Estructura lista para escalar a más gestos
+
 # Current Status / Progress Tracking
 
 - 2025-11-03: `index.php` creado. Repo inicializado en `main` y push a remoto realizado.
