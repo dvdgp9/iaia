@@ -68,7 +68,7 @@ $provider = LlmProviderFactory::create();
 
 // Generar contenido
 try {
-    $response = $provider->generateWithMessages([
+    $response = $provider->generate([
         ['role' => 'user', 'content' => $prompt]
     ]);
 } catch (\Exception $e) {
