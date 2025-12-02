@@ -21,7 +21,6 @@ set_exception_handler(function($e) {
 });
 
 require_once __DIR__ . '/../../../src/App/bootstrap.php';
-require_once __DIR__ . '/../../../src/Chat/ContextBuilder.php';
 require_once __DIR__ . '/../../../src/Chat/LlmProvider.php';
 require_once __DIR__ . '/../../../src/Chat/GeminiClient.php';
 require_once __DIR__ . '/../../../src/Chat/GeminiProvider.php';
@@ -32,7 +31,6 @@ require_once __DIR__ . '/../../../src/Chat/LlmProviderFactory.php';
 use App\Session;
 use App\Response;
 use Chat\LlmProviderFactory;
-use Chat\ContextBuilder;
 use Gestures\GestureExecutionsRepo;
 
 // Session ya se inicia en bootstrap
@@ -64,13 +62,8 @@ if (!$gestureType || !$prompt) {
     Response::error('missing_params', 'Faltan parámetros requeridos', 400);
 }
 
-// Construir contexto del sistema
-$contextBuilder = new ContextBuilder();
-$systemInstruction = $contextBuilder->build();
-
-// Crear cliente LLM
+// Crear cliente LLM (usa ContextBuilder y system prompt internamente)
 $provider = LlmProviderFactory::create();
-$provider->setSystemInstruction($systemInstruction);
 
 // Generar contenido
 try {
