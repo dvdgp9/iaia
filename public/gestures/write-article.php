@@ -230,7 +230,7 @@ $csrfToken = $_SESSION['csrf_token'] ?? '';
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-semibold text-slate-700 mb-2">¿Qué ocurre? <span class="text-red-500">*</span></label>
-            <input type="text" id="press-what" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-all" placeholder="El hecho o noticia principal" required />
+            <input type="text" id="press-what" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-all" placeholder="El hecho o noticia principal" />
           </div>
           <div>
             <label class="block text-sm font-semibold text-slate-700 mb-2">¿Quién lo hace?</label>
