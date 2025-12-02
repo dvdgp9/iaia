@@ -10,49 +10,39 @@ if (!$user) {
     exit;
 }
 $csrfToken = $_SESSION['csrf_token'] ?? '';
+$pageTitle = 'Escribir contenido — Ebonia';
+$activeTab = 'gestures';
 ?><!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Escribir contenido — Ebonia</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/iconoir-icons/iconoir@main/css/iconoir.css">
-  <script>window.CSRF_TOKEN = '<?php echo $csrfToken; ?>';</script>
-  <style>
-    .gradient-brand {
-      background: linear-gradient(135deg, #23AAC5 0%, #115c6c 100%);
-    }
-  </style>
-</head>
-<body class="bg-slate-50 min-h-screen">
-  <!-- Header -->
-  <header class="h-[60px] px-6 border-b border-slate-200 bg-white/95 backdrop-blur-sm flex items-center justify-between shadow-sm sticky top-0 z-10">
-    <div class="flex items-center gap-4">
-      <a href="/#gestures" class="flex items-center gap-2 text-slate-600 hover:text-[#23AAC5] transition-colors">
-        <i class="iconoir-arrow-left text-lg"></i>
-        <span class="text-sm font-medium">Volver a gestos</span>
-      </a>
-      <div class="h-6 w-px bg-slate-200"></div>
-      <div class="flex items-center gap-2">
-        <div class="w-8 h-8 rounded-lg bg-[#23AAC5] flex items-center justify-center text-white">
-          <i class="iconoir-page-edit text-sm"></i>
-        </div>
-        <span class="font-semibold text-slate-800">Escribir contenido</span>
-      </div>
-    </div>
+<?php include __DIR__ . '/../includes/head.php'; ?>
+<body class="bg-gray-100 text-slate-900 overflow-hidden">
+  <div class="min-h-screen flex h-screen">
+    <?php include __DIR__ . '/../includes/left-tabs.php'; ?>
     
-    <div class="flex items-center gap-3">
-      <a href="/" class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-colors" title="Ir al chat">
-        <i class="iconoir-chat-bubble text-xl"></i>
-      </a>
-    </div>
-  </header>
+    <!-- Main content area -->
+    <main class="flex-1 flex flex-col bg-white overflow-hidden">
+      <!-- Header del gesto -->
+      <header class="h-[60px] px-6 border-b border-slate-200 bg-white/95 backdrop-blur-sm flex items-center justify-between shadow-sm shrink-0">
+        <div class="flex items-center gap-4">
+          <a href="/#gestures" class="flex items-center gap-2 text-slate-600 hover:text-[#23AAC5] transition-colors">
+            <i class="iconoir-arrow-left text-lg"></i>
+            <span class="text-sm font-medium">Todos los gestos</span>
+          </a>
+          <div class="h-6 w-px bg-slate-200"></div>
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-lg bg-[#23AAC5] flex items-center justify-center text-white">
+              <i class="iconoir-page-edit text-sm"></i>
+            </div>
+            <span class="font-semibold text-slate-800">Escribir contenido</span>
+          </div>
+        </div>
+      </header>
 
-  <!-- Main content -->
-  <main class="max-w-4xl mx-auto p-6">
-    <!-- Header del gesto -->
-    <div class="flex items-center gap-4 mb-6">
+      <!-- Scrollable content -->
+      <div class="flex-1 overflow-auto bg-gradient-to-b from-slate-50/50 to-white p-6">
+        <div class="max-w-4xl mx-auto">
+          <!-- Header del gesto -->
+          <div class="flex items-center gap-4 mb-6">
       <div class="w-12 h-12 rounded-xl bg-[#23AAC5] flex items-center justify-center text-white shadow-lg">
         <i class="iconoir-page-edit text-xl"></i>
       </div>
@@ -297,7 +287,10 @@ $csrfToken = $_SESSION['csrf_token'] ?? '';
         <span class="text-[#115c6c] font-medium">Generando contenido...</span>
       </div>
     </div>
-  </main>
+        </div><!-- /max-w-4xl -->
+      </div><!-- /scrollable content -->
+    </main>
+  </div><!-- /main container -->
 
   <script src="/assets/js/gesture-write-article.js"></script>
 </body>

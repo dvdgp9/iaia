@@ -10,86 +10,14 @@ if (!$user) {
     exit;
 }
 $csrfToken = $_SESSION['csrf_token'] ?? '';
+$activeTab = 'conversations'; // Tab activa por defecto
+$useTabsJs = true; // Habilitar manejo JS de tabs en index.php
 ?><!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Ebonia — IA Corporativa</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/iconoir-icons/iconoir@main/css/iconoir.css">
-  <script>window.CSRF_TOKEN = '<?php echo $csrfToken; ?>';</script>
-  <style>
-    .gradient-brand {
-      background: linear-gradient(135deg, #23AAC5 0%, #115c6c 100%);
-    }
-    .gradient-brand-btn {
-      background: linear-gradient(90deg, #23AAC5 0%, #115c6c 100%);
-    }
-    .tab-item {
-      position: relative;
-      transition: all 0.2s ease;
-    }
-    .tab-item:hover {
-      background: rgba(35, 170, 197, 0.1);
-    }
-    .tab-item.active {
-      background: rgba(35, 170, 197, 0.15);
-    }
-    .tab-item.active::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 3px;
-      height: 32px;
-      background: #23AAC5;
-      border-radius: 0 2px 2px 0;
-    }
-    /* Custom font sizes */
-    .text-xs {
-      font-size: 0.65rem !important;
-    }
-    .text-sm {
-      font-size: 0.84rem !important;
-    }
-    .text-conversation {
-      font-size: 15px;
-    }
-  </style>
-</head>
+<?php include __DIR__ . '/includes/head.php'; ?>
 <body class="bg-gray-100 text-slate-900 overflow-hidden">
   <div class="min-h-screen flex h-screen">
-    <!-- Barra de tabs lateral izquierda -->
-    <aside class="w-[70px] gradient-brand flex flex-col items-center py-6 gap-2">
-      <!-- Tab Conversaciones -->
-      <button data-tab="conversations" class="tab-item active w-full py-4 flex flex-col items-center gap-1.5 text-white/80 hover:text-white" title="Conversaciones">
-        <i class="iconoir-chat-bubble text-2xl"></i>
-        <span class="text-[10px] font-medium">Chat</span>
-      </button>
-      
-      <!-- Tab Voces -->
-      <button data-tab="voices" class="tab-item w-full py-4 flex flex-col items-center gap-1.5 text-white/60 hover:text-white/80" title="Voces (próximamente)">
-        <i class="iconoir-voice-square text-2xl"></i>
-        <span class="text-[10px] font-medium">Voces</span>
-      </button>
-      
-      <!-- Tab Gestos -->
-      <button data-tab="gestures" class="tab-item w-full py-4 flex flex-col items-center gap-1.5 text-white/60 hover:text-white/80" title="Gestos (próximamente)">
-        <i class="iconoir-magic-wand text-2xl"></i>
-        <span class="text-[10px] font-medium">Gestos</span>
-      </button>
-      
-      <!-- Spacer -->
-      <div class="flex-1"></div>
-      
-      <!-- Tab Mi cuenta -->
-      <a href="/account.php" class="tab-item w-full py-4 flex flex-col items-center gap-1.5 text-white/60 hover:text-white/80" title="Mi cuenta">
-        <i class="iconoir-user text-2xl"></i>
-        <span class="text-[10px] font-medium">Cuenta</span>
-      </a>
-    </aside>
+    <?php include __DIR__ . '/includes/left-tabs.php'; ?>
 
     <!-- Sidebar conversaciones -->
     <aside id="conversations-sidebar" class="w-80 bg-white border-r border-slate-200 flex flex-col shadow-sm">
