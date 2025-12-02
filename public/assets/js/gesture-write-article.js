@@ -4,6 +4,8 @@
 (function() {
   'use strict';
 
+  const GESTURE_TYPE = 'write-article';
+
   // === Referencias DOM ===
   const writeArticleForm = document.getElementById('write-article-form');
   const articleResult = document.getElementById('article-result');
@@ -12,6 +14,8 @@
   const generateArticleBtn = document.getElementById('generate-article-btn');
   const copyArticleBtn = document.getElementById('copy-article-btn');
   const regenerateArticleBtn = document.getElementById('regenerate-article-btn');
+  const historyList = document.getElementById('history-list');
+  const newContentBtn = document.getElementById('new-content-btn');
 
   // Campos por tipo
   const fieldsInformativo = document.getElementById('fields-informativo');
@@ -55,7 +59,11 @@
     'uniges': 'UNIGES-3'
   };
 
-  let lastPrompt = ''; // Para regenerar
+  // Estado para regenerar
+  let lastPrompt = '';
+  let lastInputData = {};
+  let lastContentType = '';
+  let lastBusinessLine = '';
 
   // === Submit del formulario ===
   if (writeArticleForm) {
@@ -72,6 +80,7 @@
     const businessName = businessLineMap[businessLine];
     
     let prompt = '';
+    let inputData = {}; // Datos para guardar en historial
     
     // === ARTÍCULO INFORMATIVO ===
     if (contentType === 'informativo') {
@@ -81,6 +90,8 @@
       const category = document.getElementById('info-category').value;
       const length = document.getElementById('info-length').value;
       const details = document.getElementById('info-details').value.trim();
+      
+      inputData = { topic, category, length, details };
       
       const categoryMap = {
         'general': 'general/actualidad',
@@ -119,6 +130,8 @@ Escribe SOLO el artículo, sin comentarios ni explicaciones.`;
       const keywords = document.getElementById('blog-keywords').value.trim();
       const details = document.getElementById('blog-details').value.trim();
       
+      inputData = { topic, keywords, details };
+      
       prompt = `Escribe un post de blog optimizado para SEO para ${businessName}.
 
 TEMA: ${topic}
@@ -156,6 +169,8 @@ Escribe SOLO el post, sin comentarios ni explicaciones.`;
       const purpose = document.getElementById('press-purpose').value.trim();
       const quoteAuthor = document.getElementById('press-quote-author').value.trim();
       const quoteText = document.getElementById('press-quote-text').value.trim();
+      
+      inputData = { pressType, what, who, when, where, why, purpose, quoteAuthor, quoteText };
       
       const pressTypeMap = {
         'lanzamiento': 'lanzamiento de proyecto o servicio',
@@ -196,25 +211,36 @@ Si faltan datos, adapta la nota con la información disponible **sin inventar nu
 Escribe SOLO la nota de prensa, sin comentarios ni explicaciones.`;
     }
     
+    // Guardar datos para regenerar
     lastPrompt = prompt;
-    await sendPrompt(prompt);
+    lastInputData = inputData;
+    lastContentType = contentType;
+    lastBusinessLine = businessLine;
+    
+    await sendPrompt(prompt, inputData, contentType, businessLine);
   }
 
   // === Enviar prompt a la API ===
-  async function sendPrompt(prompt) {
+  async function sendPrompt(prompt, inputData, contentType, businessLine) {
     // Mostrar loading
     articleResult.classList.add('hidden');
     articleLoading.classList.remove('hidden');
     generateArticleBtn.disabled = true;
     
     try {
-      const res = await fetch('/api/chat.php', {
+      const res = await fetch('/api/gestures/generate.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-CSRF-Token': window.CSRF_TOKEN
         },
-        body: JSON.stringify({ message: prompt }),
+        body: JSON.stringify({
+          gesture_type: GESTURE_TYPE,
+          prompt: prompt,
+          input_data: inputData,
+          content_type: contentType,
+          business_line: businessLine
+        }),
         credentials: 'include'
       });
       
@@ -228,11 +254,14 @@ Escribe SOLO la nota de prensa, sin comentarios ni explicaciones.`;
       }
       
       // Mostrar resultado
-      articleContent.innerHTML = mdToHtml(data.message.content);
+      articleContent.innerHTML = mdToHtml(data.content);
       articleResult.classList.remove('hidden');
       
       // Scroll al resultado
       articleResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      
+      // Recargar historial
+      loadHistory();
       
     } catch (err) {
       articleLoading.classList.add('hidden');
@@ -258,7 +287,155 @@ Escribe SOLO la nota de prensa, sin comentarios ni explicaciones.`;
   // === Regenerar contenido ===
   if (regenerateArticleBtn) {
     regenerateArticleBtn.addEventListener('click', () => {
-      if (lastPrompt) sendPrompt(lastPrompt);
+      if (lastPrompt) {
+        sendPrompt(lastPrompt, lastInputData, lastContentType, lastBusinessLine);
+      }
     });
+  }
+
+  // === HISTORIAL ===
+  
+  // Cargar historial al iniciar
+  loadHistory();
+  
+  async function loadHistory() {
+    try {
+      const res = await fetch(`/api/gestures/history.php?type=${GESTURE_TYPE}`, {
+        credentials: 'include'
+      });
+      const data = await res.json();
+      
+      if (!res.ok) {
+        historyList.innerHTML = '<div class="p-4 text-center text-red-500 text-sm">Error al cargar</div>';
+        return;
+      }
+      
+      renderHistory(data.items || []);
+    } catch (err) {
+      historyList.innerHTML = '<div class="p-4 text-center text-red-500 text-sm">Error de conexión</div>';
+    }
+  }
+  
+  function renderHistory(items) {
+    if (items.length === 0) {
+      historyList.innerHTML = `
+        <div class="p-6 text-center">
+          <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3">
+            <i class="iconoir-page-edit text-xl text-slate-400"></i>
+          </div>
+          <p class="text-sm text-slate-500">Aún no has generado contenido</p>
+          <p class="text-xs text-slate-400 mt-1">Usa el formulario para empezar</p>
+        </div>
+      `;
+      return;
+    }
+    
+    const contentTypeIcons = {
+      'informativo': 'iconoir-journal-page',
+      'blog': 'iconoir-post',
+      'nota-prensa': 'iconoir-megaphone'
+    };
+    
+    const businessColors = {
+      'ebone': 'bg-blue-100 text-blue-700',
+      'cubofit': 'bg-orange-100 text-orange-700',
+      'uniges': 'bg-purple-100 text-purple-700'
+    };
+    
+    historyList.innerHTML = items.map(item => {
+      const icon = contentTypeIcons[item.content_type] || 'iconoir-page-edit';
+      const businessClass = businessColors[item.business_line] || 'bg-slate-100 text-slate-600';
+      const businessLabel = businessLineMap[item.business_line] || item.business_line || '';
+      const timeAgo = formatTimeAgo(new Date(item.created_at));
+      
+      return `
+        <button class="history-item w-full p-3 text-left hover:bg-slate-50 border-b border-slate-100 transition-colors group"
+                data-id="${item.id}">
+          <div class="flex items-start gap-2">
+            <i class="${icon} text-[#23AAC5] mt-0.5"></i>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium text-slate-700 truncate group-hover:text-[#115c6c]">${escapeHtml(item.title)}</p>
+              <div class="flex items-center gap-2 mt-1">
+                ${businessLabel ? `<span class="text-[10px] px-1.5 py-0.5 rounded ${businessClass}">${businessLabel}</span>` : ''}
+                <span class="text-[10px] text-slate-400">${timeAgo}</span>
+              </div>
+            </div>
+          </div>
+        </button>
+      `;
+    }).join('');
+    
+    // Añadir event listeners
+    historyList.querySelectorAll('.history-item').forEach(btn => {
+      btn.addEventListener('click', () => loadExecution(btn.dataset.id));
+    });
+  }
+  
+  async function loadExecution(id) {
+    try {
+      const res = await fetch(`/api/gestures/get.php?id=${id}`, {
+        credentials: 'include'
+      });
+      const data = await res.json();
+      
+      if (!res.ok || !data.execution) {
+        alert('Error al cargar el contenido');
+        return;
+      }
+      
+      const exec = data.execution;
+      
+      // Mostrar contenido
+      articleContent.innerHTML = mdToHtml(exec.output_content);
+      articleResult.classList.remove('hidden');
+      
+      // Guardar para regenerar
+      lastInputData = exec.input_data || {};
+      lastContentType = exec.content_type || '';
+      lastBusinessLine = exec.business_line || '';
+      
+      // Scroll al resultado
+      articleResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      
+    } catch (err) {
+      alert('Error de conexión');
+    }
+  }
+  
+  // Botón nuevo contenido - resetear formulario
+  if (newContentBtn) {
+    newContentBtn.addEventListener('click', () => {
+      writeArticleForm.reset();
+      articleResult.classList.add('hidden');
+      // Mostrar campos del tipo por defecto
+      fieldsInformativo.classList.remove('hidden');
+      fieldsBlog.classList.add('hidden');
+      fieldsNotaPrensa.classList.add('hidden');
+      // Scroll arriba
+      writeArticleForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+  
+  // === Utilidades ===
+  
+  function formatTimeAgo(date) {
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+    
+    if (diffMins < 1) return 'ahora';
+    if (diffMins < 60) return `hace ${diffMins} min`;
+    if (diffHours < 24) return `hace ${diffHours}h`;
+    if (diffDays === 1) return 'ayer';
+    if (diffDays < 7) return `hace ${diffDays} días`;
+    return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+  }
+  
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
   }
 })();

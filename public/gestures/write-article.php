@@ -19,6 +19,29 @@ $activeTab = 'gestures';
   <div class="min-h-screen flex h-screen">
     <?php include __DIR__ . '/../includes/left-tabs.php'; ?>
     
+    <!-- Sidebar de historial -->
+    <aside id="history-sidebar" class="w-72 bg-white border-r border-slate-200 flex flex-col shrink-0">
+      <div class="p-4 border-b border-slate-200">
+        <div class="flex items-center justify-between">
+          <h2 class="font-semibold text-slate-800 flex items-center gap-2">
+            <i class="iconoir-clock text-[#23AAC5]"></i>
+            Historial
+          </h2>
+          <button id="new-content-btn" class="p-1.5 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-lg transition-colors" title="Nuevo contenido">
+            <i class="iconoir-plus text-lg"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div id="history-list" class="flex-1 overflow-auto">
+        <!-- Se carga dinámicamente -->
+        <div class="p-4 text-center text-slate-400 text-sm">
+          <i class="iconoir-refresh animate-spin"></i>
+          Cargando...
+        </div>
+      </div>
+    </aside>
+    
     <!-- Main content area -->
     <main class="flex-1 flex flex-col bg-white overflow-hidden">
       <!-- Header del gesto -->
@@ -43,14 +66,14 @@ $activeTab = 'gestures';
         <div class="max-w-4xl mx-auto">
           <!-- Header del gesto -->
           <div class="flex items-center gap-4 mb-6">
-      <div class="w-12 h-12 rounded-xl bg-[#23AAC5] flex items-center justify-center text-white shadow-lg">
-        <i class="iconoir-page-edit text-xl"></i>
-      </div>
-      <div>
-        <h1 class="text-xl font-bold text-slate-900">Escribir contenido</h1>
-        <p class="text-sm text-slate-600">Genera artículos, posts de blog o notas de prensa</p>
-      </div>
-    </div>
+            <div class="w-12 h-12 rounded-xl bg-[#23AAC5] flex items-center justify-center text-white shadow-lg">
+              <i class="iconoir-page-edit text-xl"></i>
+            </div>
+            <div>
+              <h1 class="text-xl font-bold text-slate-900">Escribir contenido</h1>
+              <p class="text-sm text-slate-600">Genera artículos, posts de blog o notas de prensa</p>
+            </div>
+          </div>
     
     <!-- Formulario del gesto -->
     <form id="write-article-form" class="space-y-6 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
