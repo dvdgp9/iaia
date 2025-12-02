@@ -208,3 +208,6 @@ Formación válida para acreditación de competencias profesionales según Ley 5
 - Publicaciones  
 - Congreso Internacional de Innovación en Gestión Deportiva (II edición en 2025)
 
+### Contacto de comunicación y prensa
+- Correo general para notas de prensa, artículos y comunicaciones corporativas: **marketing@ebone.es**
+

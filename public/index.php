@@ -2107,6 +2107,10 @@ FORMATO:
 - Sin llamadas a la acción comerciales
 ${details ? `\nINSTRUCCIONES ADICIONALES: ${details}` : ''}
 
+Notas importantes:
+- No inventes nombres, cargos, fechas, cifras ni datos de contacto.
+- Si por contexto consideras oportuno añadir un correo de contacto, utiliza siempre marketing@ebone.es.
+
 Escribe SOLO el artículo, sin comentarios ni explicaciones.`;
         }
         
@@ -2134,6 +2138,10 @@ REQUISITOS SEO OBLIGATORIOS:
 - Conclusión con llamada a la acción (CTA)
 - Tono cercano pero profesional
 ${details ? `\nINSTRUCCIONES ADICIONALES: ${details}` : ''}
+
+Notas importantes:
+- No inventes nombres, cargos, fechas, cifras ni datos de contacto.
+- Si decides incluir un correo de contacto, utiliza siempre marketing@ebone.es.
 
 Escribe SOLO el post, sin comentarios ni explicaciones.`;
         }
