@@ -8,12 +8,21 @@ class QwenClient {
     private string $apiKey;
     private string $model;
     private ?string $systemInstruction;
+    private ?float $temperature;
+    private ?int $maxTokens;
 
-    public function __construct(?string $apiKey = null, ?string $model = null, ?string $systemInstruction = null)
-    {
+    public function __construct(
+        ?string $apiKey = null, 
+        ?string $model = null, 
+        ?string $systemInstruction = null,
+        ?float $temperature = null,
+        ?int $maxTokens = null
+    ) {
         $this->apiKey = $apiKey ?? (Env::get('QWEN_API_KEY') ?? '');
         $this->model = $model ?? (Env::get('QWEN_MODEL') ?? 'qwen-plus');
         $this->systemInstruction = $systemInstruction;
+        $this->temperature = $temperature;
+        $this->maxTokens = $maxTokens;
     }
 
     public function generateText(string $prompt): string
@@ -89,6 +98,14 @@ class QwenClient {
             'model' => $this->model,
             'messages' => $messagesPayload
         ];
+        
+        // Añadir parámetros opcionales
+        if ($this->temperature !== null) {
+            $payload['temperature'] = $this->temperature;
+        }
+        if ($this->maxTokens !== null) {
+            $payload['max_tokens'] = $this->maxTokens;
+        }
 
         $ch = curl_init($url);
         curl_setopt_array($ch, [

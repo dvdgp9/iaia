@@ -50,11 +50,16 @@ if (count($history) > 20) {
 $contextBuilder = new ContextBuilder();
 $systemPrompt = $contextBuilder->buildSystemPrompt();
 
-// Crear cliente QWEN con modelo turbo (rápido)
+// Crear cliente QWEN con modelo plus (más preciso)
+// - qwen-plus: mejor comprensión y precisión que turbo
+// - temperature 0.1: respuestas muy deterministas, menos creatividad = menos alucinaciones
+// - max_tokens 600: respuestas cortas pero suficientes
 $qwenClient = new QwenClient(
     null,           // API key desde .env
-    'qwen-turbo',   // Modelo rápido
-    $systemPrompt
+    'qwen-plus',    // Modelo más preciso
+    $systemPrompt,
+    0.1,            // Temperature muy baja para máxima fiabilidad
+    600             // Tokens suficientes para respuestas concisas
 );
 
 // Construir mensajes: historial + mensaje actual
@@ -75,7 +80,7 @@ try {
     
     Response::json([
         'reply' => $reply,
-        'model' => 'qwen-turbo'
+        'model' => 'qwen-plus'
     ]);
 } catch (\Exception $e) {
     Response::error('faq_error', 'Error al procesar pregunta: ' . $e->getMessage(), 500);
