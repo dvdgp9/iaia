@@ -467,11 +467,11 @@ $csrfToken = $_SESSION['csrf_token'] ?? '';
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label class="block text-sm font-semibold text-slate-700 mb-2">¿Por qué?</label>
-                      <textarea id="press-why" rows="2" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-all resize-none" placeholder="Motivo, causa, contexto..."></textarea>
+                      <textarea id="press-why" rows="2" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-all resize-none" placeholder="Motivo, causa, contexto (solo información segura y contrastada)"></textarea>
                     </div>
                     <div>
-                      <label class="block text-sm font-semibold text-slate-700 mb-2">¿Para qué?</label>
-                      <textarea id="press-purpose" rows="2" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-all resize-none" placeholder="Objetivo, finalidad, impacto esperado..."></textarea>
+                      <label class="block text-sm font-semibold text-slate-700 mb-2">Información adicional <span class="font-normal text-slate-400">(opcional)</span></label>
+                      <textarea id="press-purpose" rows="2" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-all resize-none" placeholder="Datos complementarios ya confirmados. No añadas nada que no tengas claro."></textarea>
                     </div>
                   </div>
                   <div>
@@ -481,7 +481,7 @@ $csrfToken = $_SESSION['csrf_token'] ?? '';
                       <input type="text" id="press-quote-text" class="flex-1 border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#23AAC5] transition-all" placeholder="Texto de la declaración..." />
                     </div>
                   </div>
-                  <p class="text-xs text-slate-500 italic">💡 Si dejas campos vacíos, el sistema generará la nota con la información disponible. Los campos obligatorios están marcados con *</p>
+                  <p class="text-xs text-slate-500 italic">💡 Si dejas campos vacíos, el sistema generará la nota con la información disponible. Los campos obligatorios están marcados con *. La IA no debe inventar datos (fechas, nombres, cargos, cifras, etc.); revisa siempre que todo sea correcto.</p>
                 </div>
                 
                 <!-- Botón generar -->
@@ -2165,7 +2165,7 @@ Escribe SOLO el post, sin comentarios ni explicaciones.`;
           if (when) dataSection += `\nCUÁNDO: ${when}`;
           if (where) dataSection += `\nDÓNDE: ${where}`;
           if (why) dataSection += `\nPOR QUÉ: ${why}`;
-          if (purpose) dataSection += `\nPARA QUÉ: ${purpose}`;
+          if (purpose) dataSection += `\nINFORMACIÓN ADICIONAL (ya confirmada, sin suposiciones): ${purpose}`;
           if (quoteText) dataSection += `\nDECLARACIÓN${quoteAuthor ? ` (${quoteAuthor})` : ''}: "${quoteText}"`;
           
           prompt = `Escribe una nota de prensa profesional para ${businessName}.
@@ -2186,7 +2186,7 @@ FORMATO NOTA DE PRENSA:
 - "###" al final (marca estándar de fin de nota de prensa)
 - Sección "Para más información:" con placeholder de contacto
 
-Si faltan datos, adapta la nota con la información disponible sin inventar fechas, nombres o cifras específicas.
+Si faltan datos, adapta la nota con la información disponible **sin inventar nunca** fechas, nombres, cargos, lugares, cifras u otros datos sensibles. Si algo no está en los datos, no lo supongas.
 
 Escribe SOLO la nota de prensa, sin comentarios ni explicaciones.`;
         }
