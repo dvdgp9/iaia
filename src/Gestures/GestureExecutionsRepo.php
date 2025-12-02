@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Gestures;
 
-use App\Database;
+use App\DB;
 use PDO;
 
 /**
@@ -16,7 +16,7 @@ class GestureExecutionsRepo
 
     public function __construct()
     {
-        $this->pdo = Database::pdo();
+        $this->pdo = DB::pdo();
     }
 
     /**
