@@ -53,6 +53,9 @@ if ($file) {
     if (!in_array($file['mime_type'], $allowedTypes)) {
         Response::error('validation_error', 'Tipo de archivo no soportado', 400);
     }
+    
+    // QWEN no soporta archivos/imágenes → forzar Gemini para multimodal
+    $providerName = 'gemini';
 }
 
 $convos = new ConversationsRepo();
@@ -112,8 +115,10 @@ if (count($history) > 20) {
 
 $assistantMsg = $svc->replyWithHistory($history);
 
-// Determinar el modelo usado (del env o del parámetro)
-$usedModel = $modelName ?? (getenv('LLM_PROVIDER') === 'qwen' ? getenv('QWEN_MODEL') : getenv('GEMINI_MODEL'));
+// Determinar el modelo usado
+// Si se forzó Gemini por archivo, usar ese modelo
+$effectiveProvider = $providerName ?? getenv('LLM_PROVIDER') ?: 'qwen';
+$usedModel = $modelName ?? ($effectiveProvider === 'gemini' ? getenv('GEMINI_MODEL') : getenv('QWEN_MODEL'));
 
 // Guardar respuesta de asistente
 $assistantMsgId = $msgs->create($conversationId, null, 'assistant', $assistantMsg['content'], $usedModel ?: null, null, null);
