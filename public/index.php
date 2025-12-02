@@ -350,12 +350,12 @@ $csrfToken = $_SESSION['csrf_token'] ?? '';
                 <div id="fields-informativo" class="space-y-4">
                   <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Tema del artículo</label>
-                    <input type="text" id="info-topic" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all" placeholder="Ej: Nueva temporada de actividades acuáticas en los centros deportivos" />
+                    <input type="text" id="info-topic" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-all" placeholder="Ej: Nueva temporada de actividades acuáticas en los centros deportivos" />
                   </div>
                   <div class="grid grid-cols-2 gap-4">
                     <div>
                       <label class="block text-sm font-semibold text-slate-700 mb-2">Categoría</label>
-                      <select id="info-category" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition-all bg-white">
+                      <select id="info-category" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#23AAC5] transition-all bg-white">
                         <option value="general">General</option>
                         <option value="deportes">Deportes</option>
                         <option value="cultura">Cultura</option>
@@ -365,7 +365,7 @@ $csrfToken = $_SESSION['csrf_token'] ?? '';
                     </div>
                     <div>
                       <label class="block text-sm font-semibold text-slate-700 mb-2">Extensión</label>
-                      <select id="info-length" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition-all bg-white">
+                      <select id="info-length" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#23AAC5] transition-all bg-white">
                         <option value="300">Corto (~300 palabras)</option>
                         <option value="500" selected>Medio (~500 palabras)</option>
                         <option value="800">Largo (~800 palabras)</option>
@@ -374,7 +374,7 @@ $csrfToken = $_SESSION['csrf_token'] ?? '';
                   </div>
                   <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Detalles adicionales <span class="font-normal text-slate-400">(opcional)</span></label>
-                    <textarea id="info-details" rows="2" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all resize-none" placeholder="Información extra, datos concretos, enfoque deseado..."></textarea>
+                    <textarea id="info-details" rows="2" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-all resize-none" placeholder="Información extra, datos concretos, enfoque deseado..."></textarea>
                   </div>
                 </div>
                 
@@ -382,11 +382,11 @@ $csrfToken = $_SESSION['csrf_token'] ?? '';
                 <div id="fields-blog" class="hidden space-y-4">
                   <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Tema del post</label>
-                    <input type="text" id="blog-topic" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all" placeholder="Ej: 5 beneficios de hacer ejercicio por la mañana" />
+                    <input type="text" id="blog-topic" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-all" placeholder="Ej: 5 beneficios de hacer ejercicio por la mañana" />
                   </div>
                   <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Palabras clave SEO <span class="font-normal text-slate-400">(separadas por comas)</span></label>
-                    <input type="text" id="blog-keywords" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all" placeholder="Ej: ejercicio matutino, rutina fitness, salud, bienestar" />
+                    <input type="text" id="blog-keywords" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-all" placeholder="Ej: ejercicio matutino, rutina fitness, salud, bienestar" />
                   </div>
                   <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl">
                     <div class="flex items-center gap-2 text-emerald-700">
@@ -397,7 +397,7 @@ $csrfToken = $_SESSION['csrf_token'] ?? '';
                   </div>
                   <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Instrucciones adicionales <span class="font-normal text-slate-400">(opcional)</span></label>
-                    <textarea id="blog-details" rows="2" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all resize-none" placeholder="Tono específico, datos a incluir, llamada a la acción..."></textarea>
+                    <textarea id="blog-details" rows="2" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-all resize-none" placeholder="Tono específico, datos a incluir, llamada a la acción..."></textarea>
                   </div>
                 </div>
                 
@@ -409,37 +409,32 @@ $csrfToken = $_SESSION['csrf_token'] ?? '';
                     <div class="flex flex-wrap gap-2">
                       <label class="cursor-pointer">
                         <input type="radio" name="press-type" value="lanzamiento" class="hidden peer" checked />
-                        <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-[#23AAC5] peer-checked:bg-[#23AAC5]/10 hover:border-[#23AAC5]/60 transition-all flex items-center gap-1">
-                          <i class="iconoir-rocket text-sm text-[#115c6c]"></i>
-                          <span>Lanzamiento</span>
+                        <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-[#23AAC5] peer-checked:bg-[#23AAC5]/10 hover:border-[#23AAC5]/60 transition-all">
+                          Lanzamiento
                         </div>
                       </label>
                       <label class="cursor-pointer">
                         <input type="radio" name="press-type" value="evento" class="hidden peer" />
-                        <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-[#23AAC5] peer-checked:bg-[#23AAC5]/10 hover:border-[#23AAC5]/60 transition-all flex items-center gap-1">
-                          <i class="iconoir-calendar text-sm text-[#115c6c]"></i>
-                          <span>Evento</span>
+                        <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-[#23AAC5] peer-checked:bg-[#23AAC5]/10 hover:border-[#23AAC5]/60 transition-all">
+                          Evento
                         </div>
                       </label>
                       <label class="cursor-pointer">
                         <input type="radio" name="press-type" value="nombramiento" class="hidden peer" />
-                        <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-[#23AAC5] peer-checked:bg-[#23AAC5]/10 hover:border-[#23AAC5]/60 transition-all flex items-center gap-1">
-                          <i class="iconoir-user-badge text-sm text-[#115c6c]"></i>
-                          <span>Nombramiento</span>
+                        <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-[#23AAC5] peer-checked:bg-[#23AAC5]/10 hover:border-[#23AAC5]/60 transition-all">
+                          Nombramiento
                         </div>
                       </label>
                       <label class="cursor-pointer">
                         <input type="radio" name="press-type" value="convenio" class="hidden peer" />
-                        <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-[#23AAC5] peer-checked:bg-[#23AAC5]/10 hover:border-[#23AAC5]/60 transition-all flex items-center gap-1">
-                          <i class="iconoir-handshake text-sm text-[#115c6c]"></i>
-                          <span>Convenio</span>
+                        <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-[#23AAC5] peer-checked:bg-[#23AAC5]/10 hover:border-[#23AAC5]/60 transition-all">
+                          Convenio
                         </div>
                       </label>
                       <label class="cursor-pointer">
                         <input type="radio" name="press-type" value="premio" class="hidden peer" />
-                        <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-[#23AAC5] peer-checked:bg-[#23AAC5]/10 hover:border-[#23AAC5]/60 transition-all flex items-center gap-1">
-                          <i class="iconoir-trophy text-sm text-[#115c6c]"></i>
-                          <span>Premio/Reconocimiento</span>
+                        <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-[#23AAC5] peer-checked:bg-[#23AAC5]/10 hover:border-[#23AAC5]/60 transition-all">
+                          Premio/Reconocimiento
                         </div>
                       </label>
                     </div>
@@ -449,36 +444,36 @@ $csrfToken = $_SESSION['csrf_token'] ?? '';
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label class="block text-sm font-semibold text-slate-700 mb-2">¿Qué ocurre? <span class="text-red-500">*</span></label>
-                      <input type="text" id="press-what" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all" placeholder="El hecho o noticia principal" required />
+                      <input type="text" id="press-what" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-all" placeholder="El hecho o noticia principal" required />
                     </div>
                     <div>
                       <label class="block text-sm font-semibold text-slate-700 mb-2">¿Quién lo hace?</label>
-                      <input type="text" id="press-who" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all" placeholder="Persona, empresa, organización..." />
+                      <input type="text" id="press-who" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-all" placeholder="Persona, empresa, organización..." />
                     </div>
                     <div>
                       <label class="block text-sm font-semibold text-slate-700 mb-2">¿Cuándo?</label>
-                      <input type="text" id="press-when" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all" placeholder="Fecha, periodo, momento..." />
+                      <input type="text" id="press-when" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-all" placeholder="Fecha, periodo, momento..." />
                     </div>
                     <div>
                       <label class="block text-sm font-semibold text-slate-700 mb-2">¿Dónde?</label>
-                      <input type="text" id="press-where" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all" placeholder="Ubicación, lugar, ámbito..." />
+                      <input type="text" id="press-where" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-all" placeholder="Ubicación, lugar, ámbito..." />
                     </div>
                   </div>
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label class="block text-sm font-semibold text-slate-700 mb-2">¿Por qué?</label>
-                      <textarea id="press-why" rows="2" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all resize-none" placeholder="Motivo, causa, contexto..."></textarea>
+                      <textarea id="press-why" rows="2" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-all resize-none" placeholder="Motivo, causa, contexto..."></textarea>
                     </div>
                     <div>
                       <label class="block text-sm font-semibold text-slate-700 mb-2">¿Para qué?</label>
-                      <textarea id="press-purpose" rows="2" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all resize-none" placeholder="Objetivo, finalidad, impacto esperado..."></textarea>
+                      <textarea id="press-purpose" rows="2" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-all resize-none" placeholder="Objetivo, finalidad, impacto esperado..."></textarea>
                     </div>
                   </div>
                   <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Declaración o cita textual <span class="font-normal text-slate-400">(opcional)</span></label>
                     <div class="flex gap-2">
-                      <input type="text" id="press-quote-author" class="w-1/3 border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition-all" placeholder="Autor de la cita" />
-                      <input type="text" id="press-quote-text" class="flex-1 border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition-all" placeholder="Texto de la declaración..." />
+                      <input type="text" id="press-quote-author" class="w-1/3 border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#23AAC5] transition-all" placeholder="Autor de la cita" />
+                      <input type="text" id="press-quote-text" class="flex-1 border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#23AAC5] transition-all" placeholder="Texto de la declaración..." />
                     </div>
                   </div>
                   <p class="text-xs text-slate-500 italic">💡 Si dejas campos vacíos, el sistema generará la nota con la información disponible. Los campos obligatorios están marcados con *</p>
@@ -486,7 +481,7 @@ $csrfToken = $_SESSION['csrf_token'] ?? '';
                 
                 <!-- Botón generar -->
                 <div class="flex justify-end pt-2 border-t border-slate-100">
-                  <button type="submit" id="generate-article-btn" class="px-6 py-3 bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all flex items-center gap-2">
+                  <button type="submit" id="generate-article-btn" class="px-6 py-3 bg-[#23AAC5] hover:bg-[#115c6c] text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all flex items-center gap-2">
                     <i class="iconoir-sparks"></i>
                     <span>Generar contenido</span>
                   </button>
@@ -498,10 +493,10 @@ $csrfToken = $_SESSION['csrf_token'] ?? '';
                 <div class="flex items-center justify-between mb-4">
                   <h2 class="text-lg font-semibold text-slate-800">Contenido generado</h2>
                   <div class="flex gap-2">
-                    <button id="copy-article-btn" class="px-3 py-1.5 text-sm text-slate-600 hover:text-violet-600 hover:bg-violet-50 rounded-lg transition-colors flex items-center gap-1.5">
+                    <button id="copy-article-btn" class="px-3 py-1.5 text-sm text-slate-600 hover:text-[#115c6c] hover:bg-[#23AAC5]/10 rounded-lg transition-colors flex items-center gap-1.5">
                       <i class="iconoir-copy"></i> Copiar
                     </button>
-                    <button id="regenerate-article-btn" class="px-3 py-1.5 text-sm text-slate-600 hover:text-violet-600 hover:bg-violet-50 rounded-lg transition-colors flex items-center gap-1.5">
+                    <button id="regenerate-article-btn" class="px-3 py-1.5 text-sm text-slate-600 hover:text-[#115c6c] hover:bg-[#23AAC5]/10 rounded-lg transition-colors flex items-center gap-1.5">
                       <i class="iconoir-refresh"></i> Regenerar
                     </button>
                   </div>
@@ -511,9 +506,9 @@ $csrfToken = $_SESSION['csrf_token'] ?? '';
               
               <!-- Loading -->
               <div id="article-loading" class="hidden mt-8 text-center py-12">
-                <div class="inline-flex items-center gap-3 px-6 py-4 bg-violet-50 rounded-xl">
-                  <div class="w-5 h-5 border-2 border-violet-500 border-t-transparent rounded-full animate-spin"></div>
-                  <span class="text-violet-700 font-medium">Generando contenido...</span>
+                <div class="inline-flex items-center gap-3 px-6 py-4 bg-[#23AAC5]/5 rounded-xl">
+                  <div class="w-5 h-5 border-2 border-[#23AAC5] border-t-transparent rounded-full animate-spin"></div>
+                  <span class="text-[#115c6c] font-medium">Generando contenido...</span>
                 </div>
               </div>
             </div>
@@ -2004,8 +1999,8 @@ $csrfToken = $_SESSION['csrf_token'] ?? '';
           }
           
           // Actualizar estado activo de las cards
-          gestureCards.forEach(c => c.classList.remove('ring-2', 'ring-violet-500'));
-          card.classList.add('ring-2', 'ring-violet-500');
+          gestureCards.forEach(c => c.classList.remove('ring-2', 'ring-[#23AAC5]'));
+          card.classList.add('ring-2', 'ring-[#23AAC5]');
         });
       });
       
