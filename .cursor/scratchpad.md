@@ -85,6 +85,48 @@ Chatbot ligero para preguntas rápidas sobre el Grupo Ebone. Usa QWEN Turbo (`qw
 - [x] Endpoints mínimos auth/login, auth/logout y chat.
 - [x] `.env` local configurado.
 
+---
+
+## Feature: Sistema de Gestos
+
+### Motivación
+Los "gestos" son acciones predefinidas que los usuarios pueden ejecutar para tareas específicas. A diferencia del chat libre, cada gesto tiene parámetros estructurados y produce un resultado específico.
+
+### Gestos planificados (6-10)
+1. **Escribir artículos** (primer gesto) - Genera artículos siguiendo un estilo seleccionable
+2. (Por definir)
+3. (Por definir)
+...
+
+### Diseño UI/UX
+- **Sidebar gestos**: Grid de tarjetas con icono, nombre y descripción corta
+- **Workspace**: Al seleccionar un gesto, se muestra su interfaz específica en el área principal
+- **Cada gesto**: Modal/panel con parámetros propios del gesto
+
+### Tareas de implementación
+
+1. [ ] **Crear sidebar de gestos** (`gestures-sidebar`)
+   - Grid 2 columnas con tarjetas de gestos
+   - Cada tarjeta: icono, nombre, descripción, color distintivo
+   - Hover/click states bonitos
+   - Success: UI atractiva y navegable
+
+2. [ ] **Crear workspace de gestos** (`gesture-workspace`)
+   - Área principal que muestra el gesto seleccionado
+   - Estado inicial con mensaje de bienvenida
+   - Success: Transición suave entre gestos
+
+3. [ ] **Lógica JS navegación gestos**
+   - Mostrar/ocultar sidebars según tab activa
+   - Seleccionar gesto → mostrar su interfaz
+   - Success: Navegación fluida
+
+4. [ ] **Implementar gesto "Escribir artículos"**
+   - Interfaz con parámetros (estilo, tema, longitud, etc.)
+   - Llamada a API para generación
+   - Vista previa y edición del resultado
+   - Success: Gesto funcional end-to-end
+
 # Current Status / Progress Tracking
 
 - 2025-11-03: `index.php` creado. Repo inicializado en `main` y push a remoto realizado.

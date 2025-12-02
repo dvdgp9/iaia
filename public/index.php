@@ -152,6 +152,53 @@ $csrfToken = $_SESSION['csrf_token'] ?? '';
         </div>
       </div>
     </aside>
+    
+    <!-- Sidebar gestos -->
+    <aside id="gestures-sidebar" class="hidden w-80 bg-white border-r border-slate-200 flex flex-col shadow-sm">
+      <div class="p-5 border-b border-slate-200">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="h-10 w-10 rounded-xl gradient-brand flex items-center justify-center text-white shadow-md">
+            <i class="iconoir-magic-wand text-xl"></i>
+          </div>
+          <div>
+            <strong class="text-xl font-semibold text-slate-800">Gestos</strong>
+            <div class="text-xs text-slate-500">Acciones rápidas</div>
+          </div>
+        </div>
+        <p class="text-sm text-slate-600">Selecciona un gesto para empezar una tarea específica.</p>
+      </div>
+      <div class="flex-1 overflow-y-auto p-4">
+        <div class="grid grid-cols-1 gap-3" id="gestures-list">
+          <!-- Gesto: Escribir artículos -->
+          <button data-gesture="write-article" class="gesture-card group p-4 bg-gradient-to-br from-violet-50 to-purple-50 hover:from-violet-100 hover:to-purple-100 border-2 border-violet-200 hover:border-violet-400 rounded-xl transition-all duration-200 text-left">
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 rounded-lg bg-violet-500 flex items-center justify-center text-white shadow-sm group-hover:scale-110 transition-transform">
+                <i class="iconoir-page-edit text-lg"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h3 class="font-semibold text-slate-800 group-hover:text-violet-700 transition-colors">Escribir artículos</h3>
+                <p class="text-xs text-slate-500 mt-0.5 line-clamp-2">Genera artículos de blog, noticias o contenido editorial con el estilo que elijas.</p>
+              </div>
+              <i class="iconoir-arrow-right text-slate-400 group-hover:text-violet-500 group-hover:translate-x-1 transition-all"></i>
+            </div>
+          </button>
+          
+          <!-- Gesto: Próximamente 1 -->
+          <div class="gesture-card p-4 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl opacity-60">
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 rounded-lg bg-slate-300 flex items-center justify-center text-white">
+                <i class="iconoir-plus text-lg"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h3 class="font-semibold text-slate-500">Próximamente</h3>
+                <p class="text-xs text-slate-400 mt-0.5">Nuevos gestos en desarrollo...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
     <main class="flex-1 flex flex-col bg-white">
       <header class="h-[60px] px-6 border-b border-slate-200 bg-white/95 backdrop-blur-sm flex items-center justify-between shadow-sm sticky top-0 z-10">
         <!-- Título conversación -->
@@ -204,6 +251,150 @@ $csrfToken = $_SESSION['csrf_token'] ?? '';
           </div>
         </div>
       </header>
+      
+      <!-- Workspace de Gestos (oculto por defecto) -->
+      <section id="gestures-workspace" class="hidden flex-1 overflow-auto bg-gradient-to-b from-slate-50/50 to-white">
+        <!-- Estado inicial: selecciona un gesto -->
+        <div id="gesture-welcome" class="h-full flex items-center justify-center p-6">
+          <div class="text-center max-w-md">
+            <div class="w-20 h-20 rounded-2xl gradient-brand flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <i class="iconoir-magic-wand text-4xl text-white"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-900 mb-3">Gestos de Ebonia</h2>
+            <p class="text-slate-600 mb-6">Los gestos son acciones predefinidas que te ayudan a realizar tareas específicas de forma rápida y consistente.</p>
+            <p class="text-sm text-slate-500">← Selecciona un gesto del panel lateral para empezar</p>
+          </div>
+        </div>
+        
+        <!-- Workspace del gesto: Escribir artículos -->
+        <div id="gesture-write-article" class="hidden h-full flex flex-col">
+          <div class="flex-1 overflow-auto p-6">
+            <div class="max-w-4xl mx-auto">
+              <!-- Header del gesto -->
+              <div class="flex items-center gap-4 mb-8">
+                <div class="w-14 h-14 rounded-xl bg-violet-500 flex items-center justify-center text-white shadow-lg">
+                  <i class="iconoir-page-edit text-2xl"></i>
+                </div>
+                <div>
+                  <h1 class="text-2xl font-bold text-slate-900">Escribir artículos</h1>
+                  <p class="text-slate-600">Genera contenido editorial de alta calidad</p>
+                </div>
+              </div>
+              
+              <!-- Formulario del gesto -->
+              <form id="write-article-form" class="space-y-6">
+                <!-- Tema/Título -->
+                <div>
+                  <label class="block text-sm font-semibold text-slate-700 mb-2">¿Sobre qué quieres escribir?</label>
+                  <input type="text" id="article-topic" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all" placeholder="Ej: Beneficios del deporte en la salud mental" required />
+                </div>
+                
+                <!-- Estilo (se expandirá más adelante) -->
+                <div>
+                  <label class="block text-sm font-semibold text-slate-700 mb-2">Estilo de escritura</label>
+                  <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="article-style-options">
+                    <label class="style-option cursor-pointer">
+                      <input type="radio" name="article-style" value="formal" class="hidden peer" checked />
+                      <div class="p-3 border-2 border-slate-200 rounded-xl text-center peer-checked:border-violet-500 peer-checked:bg-violet-50 hover:border-violet-300 transition-all">
+                        <i class="iconoir-book text-xl text-slate-600 peer-checked:text-violet-600 mb-1"></i>
+                        <div class="text-sm font-medium text-slate-700">Formal</div>
+                      </div>
+                    </label>
+                    <label class="style-option cursor-pointer">
+                      <input type="radio" name="article-style" value="casual" class="hidden peer" />
+                      <div class="p-3 border-2 border-slate-200 rounded-xl text-center peer-checked:border-violet-500 peer-checked:bg-violet-50 hover:border-violet-300 transition-all">
+                        <i class="iconoir-chat-bubble text-xl text-slate-600 peer-checked:text-violet-600 mb-1"></i>
+                        <div class="text-sm font-medium text-slate-700">Casual</div>
+                      </div>
+                    </label>
+                    <label class="style-option cursor-pointer">
+                      <input type="radio" name="article-style" value="technical" class="hidden peer" />
+                      <div class="p-3 border-2 border-slate-200 rounded-xl text-center peer-checked:border-violet-500 peer-checked:bg-violet-50 hover:border-violet-300 transition-all">
+                        <i class="iconoir-code text-xl text-slate-600 peer-checked:text-violet-600 mb-1"></i>
+                        <div class="text-sm font-medium text-slate-700">Técnico</div>
+                      </div>
+                    </label>
+                    <label class="style-option cursor-pointer">
+                      <input type="radio" name="article-style" value="creative" class="hidden peer" />
+                      <div class="p-3 border-2 border-slate-200 rounded-xl text-center peer-checked:border-violet-500 peer-checked:bg-violet-50 hover:border-violet-300 transition-all">
+                        <i class="iconoir-sparks text-xl text-slate-600 peer-checked:text-violet-600 mb-1"></i>
+                        <div class="text-sm font-medium text-slate-700">Creativo</div>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+                
+                <!-- Longitud -->
+                <div>
+                  <label class="block text-sm font-semibold text-slate-700 mb-2">Extensión del artículo</label>
+                  <div class="grid grid-cols-3 gap-3">
+                    <label class="cursor-pointer">
+                      <input type="radio" name="article-length" value="short" class="hidden peer" />
+                      <div class="p-3 border-2 border-slate-200 rounded-xl text-center peer-checked:border-violet-500 peer-checked:bg-violet-50 hover:border-violet-300 transition-all">
+                        <div class="text-sm font-medium text-slate-700">Corto</div>
+                        <div class="text-xs text-slate-500">~300 palabras</div>
+                      </div>
+                    </label>
+                    <label class="cursor-pointer">
+                      <input type="radio" name="article-length" value="medium" class="hidden peer" checked />
+                      <div class="p-3 border-2 border-slate-200 rounded-xl text-center peer-checked:border-violet-500 peer-checked:bg-violet-50 hover:border-violet-300 transition-all">
+                        <div class="text-sm font-medium text-slate-700">Medio</div>
+                        <div class="text-xs text-slate-500">~600 palabras</div>
+                      </div>
+                    </label>
+                    <label class="cursor-pointer">
+                      <input type="radio" name="article-length" value="long" class="hidden peer" />
+                      <div class="p-3 border-2 border-slate-200 rounded-xl text-center peer-checked:border-violet-500 peer-checked:bg-violet-50 hover:border-violet-300 transition-all">
+                        <div class="text-sm font-medium text-slate-700">Largo</div>
+                        <div class="text-xs text-slate-500">~1000 palabras</div>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+                
+                <!-- Instrucciones adicionales -->
+                <div>
+                  <label class="block text-sm font-semibold text-slate-700 mb-2">Instrucciones adicionales <span class="font-normal text-slate-400">(opcional)</span></label>
+                  <textarea id="article-instructions" rows="3" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all resize-none" placeholder="Ej: Incluir datos estadísticos, mencionar ejemplos del Grupo Ebone..."></textarea>
+                </div>
+                
+                <!-- Botón generar -->
+                <div class="flex justify-end pt-2">
+                  <button type="submit" id="generate-article-btn" class="px-6 py-3 bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all flex items-center gap-2">
+                    <i class="iconoir-sparks"></i>
+                    <span>Generar artículo</span>
+                  </button>
+                </div>
+              </form>
+              
+              <!-- Resultado (oculto inicialmente) -->
+              <div id="article-result" class="hidden mt-8">
+                <div class="flex items-center justify-between mb-4">
+                  <h2 class="text-lg font-semibold text-slate-800">Artículo generado</h2>
+                  <div class="flex gap-2">
+                    <button id="copy-article-btn" class="px-3 py-1.5 text-sm text-slate-600 hover:text-violet-600 hover:bg-violet-50 rounded-lg transition-colors flex items-center gap-1.5">
+                      <i class="iconoir-copy"></i> Copiar
+                    </button>
+                    <button id="regenerate-article-btn" class="px-3 py-1.5 text-sm text-slate-600 hover:text-violet-600 hover:bg-violet-50 rounded-lg transition-colors flex items-center gap-1.5">
+                      <i class="iconoir-refresh"></i> Regenerar
+                    </button>
+                  </div>
+                </div>
+                <div id="article-content" class="prose prose-slate max-w-none p-6 bg-white border-2 border-slate-200 rounded-xl"></div>
+              </div>
+              
+              <!-- Loading -->
+              <div id="article-loading" class="hidden mt-8 text-center py-12">
+                <div class="inline-flex items-center gap-3 px-6 py-4 bg-violet-50 rounded-xl">
+                  <div class="w-5 h-5 border-2 border-violet-500 border-t-transparent rounded-full animate-spin"></div>
+                  <span class="text-violet-700 font-medium">Generando artículo...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      
       <section class="flex-1 overflow-auto bg-gradient-to-b from-slate-50/50 to-white relative" id="messages-container">
         <div id="context-warning" class="hidden mx-6 mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
           <i class="iconoir-info-circle text-amber-600 text-lg mt-0.5"></i>
@@ -1366,34 +1557,48 @@ $csrfToken = $_SESSION['csrf_token'] ?? '';
         btn.classList.add('active', 'text-white/80');
         btn.classList.remove('text-white/60');
         
-        // Mostrar/ocultar sidebars según tab
+        // Mostrar/ocultar sidebars y workspaces según tab
+        const gesturesSidebar = document.getElementById('gestures-sidebar');
+        const gesturesWorkspace = document.getElementById('gestures-workspace');
+        const messagesContainer = document.getElementById('messages-container');
+        const chatForm = document.getElementById('chat-form');
+        
         if (tab === 'conversations') {
           conversationsSidebar.classList.remove('hidden');
-        } else {
+          gesturesSidebar.classList.add('hidden');
+          gesturesWorkspace.classList.add('hidden');
+          messagesContainer.classList.remove('hidden');
+          if (chatForm) chatForm.classList.remove('hidden');
+        } else if (tab === 'gestures') {
           conversationsSidebar.classList.add('hidden');
-          // Aquí se añadirán las sidebars de Voces y Gestos en el futuro
-          if (tab === 'voices' || tab === 'gestures') {
-            // Mostrar mensaje "próximamente"
-            const main = document.querySelector('main');
-            if (main && !main.querySelector('.coming-soon')) {
-              const comingSoon = document.createElement('div');
-              comingSoon.className = 'coming-soon absolute inset-0 flex items-center justify-center bg-white/95 z-50';
-              comingSoon.innerHTML = `
-                <div class="text-center">
-                  <i class="iconoir-hourglass text-6xl text-[#23AAC5] mb-4"></i>
-                  <h2 class="text-2xl font-bold text-gray-900 mb-2">${tab === 'voices' ? 'Voces' : 'Gestos'}</h2>
-                  <p class="text-gray-600">Función disponible próximamente</p>
-                </div>
-              `;
-              main.style.position = 'relative';
-              main.appendChild(comingSoon);
-              
-              // Remover después de 2 segundos y volver a conversaciones
-              setTimeout(() => {
-                comingSoon.remove();
-                document.querySelector('[data-tab="conversations"]').click();
-              }, 2000);
-            }
+          gesturesSidebar.classList.remove('hidden');
+          gesturesWorkspace.classList.remove('hidden');
+          messagesContainer.classList.add('hidden');
+          if (chatForm) chatForm.classList.add('hidden');
+        } else if (tab === 'voices') {
+          conversationsSidebar.classList.add('hidden');
+          gesturesSidebar.classList.add('hidden');
+          gesturesWorkspace.classList.add('hidden');
+          messagesContainer.classList.remove('hidden');
+          // Mostrar mensaje "próximamente" para Voces
+          const main = document.querySelector('main');
+          if (main && !main.querySelector('.coming-soon')) {
+            const comingSoon = document.createElement('div');
+            comingSoon.className = 'coming-soon absolute inset-0 flex items-center justify-center bg-white/95 z-50';
+            comingSoon.innerHTML = `
+              <div class="text-center">
+                <i class="iconoir-hourglass text-6xl text-[#23AAC5] mb-4"></i>
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">Voces</h2>
+                <p class="text-gray-600">Función disponible próximamente</p>
+              </div>
+            `;
+            main.style.position = 'relative';
+            main.appendChild(comingSoon);
+            
+            setTimeout(() => {
+              comingSoon.remove();
+              document.querySelector('[data-tab="conversations"]').click();
+            }, 2000);
           }
         }
       });
@@ -1643,6 +1848,157 @@ $csrfToken = $_SESSION['csrf_token'] ?? '';
         
         faqMessages.appendChild(div);
         faqMessages.scrollTop = faqMessages.scrollHeight;
+      }
+    })();
+  </script>
+  
+  <script>
+    // Gestures Logic
+    (function() {
+      const gestureCards = document.querySelectorAll('[data-gesture]');
+      const gestureWelcome = document.getElementById('gesture-welcome');
+      const gestureWorkspaces = {
+        'write-article': document.getElementById('gesture-write-article')
+      };
+      
+      // Seleccionar gesto
+      gestureCards.forEach(card => {
+        card.addEventListener('click', () => {
+          const gestureId = card.getAttribute('data-gesture');
+          
+          // Ocultar welcome y todos los workspaces
+          gestureWelcome.classList.add('hidden');
+          Object.values(gestureWorkspaces).forEach(ws => {
+            if (ws) ws.classList.add('hidden');
+          });
+          
+          // Mostrar workspace del gesto seleccionado
+          if (gestureWorkspaces[gestureId]) {
+            gestureWorkspaces[gestureId].classList.remove('hidden');
+          }
+          
+          // Actualizar estado activo de las cards
+          gestureCards.forEach(c => c.classList.remove('ring-2', 'ring-violet-500'));
+          card.classList.add('ring-2', 'ring-violet-500');
+        });
+      });
+      
+      // === Gesto: Escribir artículos ===
+      const writeArticleForm = document.getElementById('write-article-form');
+      const articleTopic = document.getElementById('article-topic');
+      const articleInstructions = document.getElementById('article-instructions');
+      const articleResult = document.getElementById('article-result');
+      const articleContent = document.getElementById('article-content');
+      const articleLoading = document.getElementById('article-loading');
+      const generateArticleBtn = document.getElementById('generate-article-btn');
+      const copyArticleBtn = document.getElementById('copy-article-btn');
+      const regenerateArticleBtn = document.getElementById('regenerate-article-btn');
+      
+      // Helper para convertir markdown a HTML
+      function mdToHtml(md) {
+        let s = md
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;');
+        s = s.replace(/^### (.+)$/gm, '<h3 class="text-lg font-semibold mt-4 mb-2">$1</h3>');
+        s = s.replace(/^## (.+)$/gm, '<h2 class="text-xl font-semibold mt-6 mb-3">$1</h2>');
+        s = s.replace(/^# (.+)$/gm, '<h1 class="text-2xl font-bold mt-6 mb-3">$1</h1>');
+        s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        s = s.replace(/\*(.+?)\*/g, '<em>$1</em>');
+        s = s.replace(/\n\n/g, '</p><p class="mb-4">');
+        s = '<p class="mb-4">' + s + '</p>';
+        return s;
+      }
+      
+      if (writeArticleForm) {
+        writeArticleForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          await generateArticle();
+        });
+      }
+      
+      async function generateArticle() {
+        const topic = articleTopic.value.trim();
+        if (!topic) return;
+        
+        const style = document.querySelector('input[name="article-style"]:checked')?.value || 'formal';
+        const length = document.querySelector('input[name="article-length"]:checked')?.value || 'medium';
+        const instructions = articleInstructions.value.trim();
+        
+        // Mostrar loading
+        articleResult.classList.add('hidden');
+        articleLoading.classList.remove('hidden');
+        generateArticleBtn.disabled = true;
+        
+        // Construir prompt
+        const lengthMap = { short: '300', medium: '600', long: '1000' };
+        const styleMap = {
+          formal: 'formal y profesional',
+          casual: 'casual y cercano',
+          technical: 'técnico y detallado',
+          creative: 'creativo y atractivo'
+        };
+        
+        const prompt = `Escribe un artículo sobre: "${topic}"
+
+Requisitos:
+- Estilo: ${styleMap[style]}
+- Extensión aproximada: ${lengthMap[length]} palabras
+- Formato: Incluye título (con #), subtítulos (con ##) si es necesario, y párrafos bien estructurados
+${instructions ? `- Instrucciones adicionales: ${instructions}` : ''}
+
+Escribe únicamente el artículo, sin comentarios adicionales.`;
+
+        try {
+          const res = await fetch('/api/chat.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-Token': window.CSRF_TOKEN
+            },
+            body: JSON.stringify({ message: prompt }),
+            credentials: 'include'
+          });
+          
+          const data = await res.json();
+          articleLoading.classList.add('hidden');
+          generateArticleBtn.disabled = false;
+          
+          if (!res.ok) {
+            alert('Error al generar el artículo: ' + (data.error?.message || 'Error desconocido'));
+            return;
+          }
+          
+          // Mostrar resultado
+          articleContent.innerHTML = mdToHtml(data.message.content);
+          articleResult.classList.remove('hidden');
+          
+        } catch (err) {
+          articleLoading.classList.add('hidden');
+          generateArticleBtn.disabled = false;
+          alert('Error de conexión al generar el artículo');
+        }
+      }
+      
+      // Copiar artículo
+      if (copyArticleBtn) {
+        copyArticleBtn.addEventListener('click', () => {
+          const text = articleContent.innerText;
+          navigator.clipboard.writeText(text).then(() => {
+            const originalText = copyArticleBtn.innerHTML;
+            copyArticleBtn.innerHTML = '<i class="iconoir-check"></i> Copiado';
+            setTimeout(() => {
+              copyArticleBtn.innerHTML = originalText;
+            }, 2000);
+          });
+        });
+      }
+      
+      // Regenerar artículo
+      if (regenerateArticleBtn) {
+        regenerateArticleBtn.addEventListener('click', () => {
+          generateArticle();
+        });
       }
     })();
   </script>
