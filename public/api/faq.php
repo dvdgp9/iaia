@@ -2,17 +2,22 @@
 /**
  * FAQ Chatbot Endpoint
  * 
- * Chatbot de dudas rápidas usando QWEN Flash.
+ * Chatbot de dudas rápidas usando QWEN Turbo.
  * No persiste en BD, pero recibe historial para continuidad de conversación.
+ * 
+ * IMPORTANTE: Usa ContextBuilder para cargar TODA la información corporativa.
+ * El modelo está instruido para NO inventar información.
  */
 require_once __DIR__ . '/../../src/App/bootstrap.php';
 require_once __DIR__ . '/../../src/Chat/QwenClient.php';
+require_once __DIR__ . '/../../src/Chat/ContextBuilder.php';
 require_once __DIR__ . '/../../src/Auth/AuthService.php';
 
 use App\Response;
 use App\Session;
 use Auth\AuthService;
 use Chat\QwenClient;
+use Chat\ContextBuilder;
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     Response::error('method_not_allowed', 'Sólo POST', 405);
@@ -40,14 +45,15 @@ if (count($history) > 20) {
     $history = array_slice($history, -20);
 }
 
-// Cargar system prompt FAQ
-$faqPromptPath = __DIR__ . '/../../docs/context/faq_prompt.md';
-$systemPrompt = file_exists($faqPromptPath) ? file_get_contents($faqPromptPath) : '';
+// Cargar TODO el contexto corporativo usando ContextBuilder
+// Esto incluye: system_prompt.md, faq_prompt.md, y todos los demás .md de docs/context
+$contextBuilder = new ContextBuilder();
+$systemPrompt = $contextBuilder->buildSystemPrompt();
 
-// Crear cliente QWEN con modelo flash
+// Crear cliente QWEN con modelo turbo (rápido)
 $qwenClient = new QwenClient(
     null,           // API key desde .env
-    'qwen-flash',   // Modelo rápido
+    'qwen-turbo',   // Modelo rápido
     $systemPrompt
 );
 
@@ -69,7 +75,7 @@ try {
     
     Response::json([
         'reply' => $reply,
-        'model' => 'qwen-flash'
+        'model' => 'qwen-turbo'
     ]);
 } catch (\Exception $e) {
     Response::error('faq_error', 'Error al procesar pregunta: ' . $e->getMessage(), 500);

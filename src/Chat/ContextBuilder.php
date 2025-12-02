@@ -46,6 +46,7 @@ class ContextBuilder
 
     /**
      * Obtiene todos los archivos .md del directorio de contexto, ordenados alfabéticamente.
+     * Prioriza archivos de instrucciones al inicio.
      * 
      * @return array<string>
      */
@@ -56,14 +57,21 @@ class ContextBuilder
             return [];
         }
 
-        // Ordenar para tener un orden predecible (system_prompt.md primero si existe)
+        // Ordenar alfabéticamente primero
         sort($files);
         
-        // Priorizar system_prompt.md al inicio si existe
-        $systemPrompt = $this->contextDir . '/system_prompt.md';
-        if (in_array($systemPrompt, $files)) {
-            $files = array_diff($files, [$systemPrompt]);
-            array_unshift($files, $systemPrompt);
+        // Archivos prioritarios que deben ir al inicio (en este orden)
+        $priorityFiles = [
+            $this->contextDir . '/system_prompt.md',
+            $this->contextDir . '/faq_prompt.md',
+        ];
+        
+        // Mover archivos prioritarios al inicio
+        foreach (array_reverse($priorityFiles) as $priorityFile) {
+            if (in_array($priorityFile, $files)) {
+                $files = array_values(array_diff($files, [$priorityFile]));
+                array_unshift($files, $priorityFile);
+            }
         }
 
         return $files;
