@@ -17,3 +17,6 @@ node_modules/
 # IDE
 .idea/
 .vscode/
+
+# FAQ internal context (subido a mano, no en Git)
+docs/context_faq/*.md

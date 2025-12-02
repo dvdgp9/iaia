@@ -45,9 +45,10 @@ if (count($history) > 20) {
     $history = array_slice($history, -20);
 }
 
-// Cargar TODO el contexto corporativo usando ContextBuilder
-// Esto incluye: system_prompt.md, faq_prompt.md, y todos los demás .md de docs/context
-$contextBuilder = new ContextBuilder();
+// Cargar contexto específico para FAQ desde docs/context_faq/
+// Separado del chat principal para permitir instrucciones específicas
+$faqContextDir = dirname(dirname(__DIR__)) . '/docs/context_faq';
+$contextBuilder = new ContextBuilder($faqContextDir);
 $systemPrompt = $contextBuilder->buildSystemPrompt();
 
 // Crear cliente QWEN con modelo plus (más preciso)

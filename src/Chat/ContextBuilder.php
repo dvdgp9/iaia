@@ -60,10 +60,9 @@ class ContextBuilder
         // Ordenar alfabéticamente primero
         sort($files);
         
-        // Archivos prioritarios que deben ir al inicio (en este orden)
+        // Archivos prioritarios que deben ir al inicio
         $priorityFiles = [
             $this->contextDir . '/system_prompt.md',
-            $this->contextDir . '/faq_prompt.md',
         ];
         
         // Mover archivos prioritarios al inicio
