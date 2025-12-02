@@ -349,25 +349,34 @@ Escribe SOLO la nota de prensa, sin comentarios ni explicaciones.`;
       const timeAgo = formatTimeAgo(new Date(item.created_at));
       
       return `
-        <button class="history-item w-full p-3 text-left hover:bg-slate-50 border-b border-slate-100 transition-colors group"
-                data-id="${item.id}">
-          <div class="flex items-start gap-2">
-            <i class="${icon} text-[#23AAC5] mt-0.5"></i>
-            <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium text-slate-700 truncate group-hover:text-[#115c6c]">${escapeHtml(item.title)}</p>
-              <div class="flex items-center gap-2 mt-1">
-                ${businessLabel ? `<span class="text-[10px] px-1.5 py-0.5 rounded ${businessClass}">${businessLabel}</span>` : ''}
-                <span class="text-[10px] text-slate-400">${timeAgo}</span>
-              </div>
+        <div class="history-item w-full p-3 hover:bg-slate-50 border-b border-slate-100 transition-colors group flex items-start gap-2" data-id="${item.id}">
+          <i class="${icon} text-[#23AAC5] mt-0.5"></i>
+          <div class="flex-1 min-w-0 cursor-pointer history-item-main">
+            <p class="text-sm font-medium text-slate-700 truncate group-hover:text-[#115c6c]">${escapeHtml(item.title)}</p>
+            <div class="flex items-center gap-2 mt-1">
+              ${businessLabel ? `<span class="text-[10px] px-1.5 py-0.5 rounded ${businessClass}">${businessLabel}</span>` : ''}
+              <span class="text-[10px] text-slate-400">${timeAgo}</span>
             </div>
           </div>
-        </button>
+          <button class="history-item-delete opacity-0 group-hover:opacity-100 transition-opacity text-slate-300 hover:text-red-500 p-1 rounded" title="Eliminar">
+            <i class="iconoir-trash"></i>
+          </button>
+        </div>
       `;
     }).join('');
     
     // Añadir event listeners
-    historyList.querySelectorAll('.history-item').forEach(btn => {
-      btn.addEventListener('click', () => loadExecution(btn.dataset.id));
+    historyList.querySelectorAll('.history-item-main').forEach(el => {
+      const id = el.parentElement.dataset.id;
+      el.addEventListener('click', () => loadExecution(id));
+    });
+    
+    historyList.querySelectorAll('.history-item-delete').forEach(btn => {
+      const id = btn.parentElement.dataset.id;
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        deleteExecution(id);
+      });
     });
   }
   
@@ -399,6 +408,33 @@ Escribe SOLO la nota de prensa, sin comentarios ni explicaciones.`;
       
     } catch (err) {
       alert('Error de conexión');
+    }
+  }
+
+  async function deleteExecution(id) {
+    if (!confirm('¿Eliminar este contenido del historial?')) return;
+    
+    try {
+      const res = await fetch('/api/gestures/delete.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': window.CSRF_TOKEN
+        },
+        body: JSON.stringify({ id: Number(id) }),
+        credentials: 'include'
+      });
+      
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        alert('No se ha podido eliminar el elemento');
+        return;
+      }
+      
+      // Recargar historial tras borrar
+      loadHistory();
+    } catch (err) {
+      alert('Error de conexión al eliminar');
     }
   }
   
