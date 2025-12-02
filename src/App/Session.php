@@ -22,8 +22,9 @@ class Session {
             $parsed = parse_url($appUrl);
             $host = $parsed['host'] ?? '';
         }
+        // Solo usar dominio si no es localhost/IP (para que funcione en desarrollo)
         $cookieDomain = '';
-        if ($host) {
+        if ($host && !preg_match('/^(localhost|127\.|192\.|10\.|172\.)/', $host)) {
             // Extraer dominio base (e.g., ebonia.es) si hay subdominio
             $parts = explode('.', $host);
             if (count($parts) >= 2) {
@@ -75,7 +76,7 @@ class Session {
     public static function rememberDays(int $days): void {
         if (session_status() !== PHP_SESSION_ACTIVE) return;
         $seconds = max(1, $days) * 86400;
-        $expires = time() + $seconds;
+        $lifetime = $seconds;
 
         // Recalcular flags como en start()
         $xfp = $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '';
@@ -94,23 +95,43 @@ class Session {
             $parsed = parse_url($appUrl);
             $host = $parsed['host'] ?? '';
         }
+        // Solo usar dominio si no es localhost/IP
         $cookieDomain = '';
-        if ($host) {
+        if ($host && !preg_match('/^(localhost|127\.|192\.|10\.|172\.)/', $host)) {
             $parts = explode('.', $host);
             if (count($parts) >= 2) {
                 $cookieDomain = $parts[count($parts)-2] . '.' . $parts[count($parts)-1];
             }
         }
 
-        // Reescribir cookie con expiración
-        setcookie(session_name(), session_id(), [
-            'expires' => $expires,
+        // Guardar datos de sesión
+        $sessionData = $_SESSION;
+        
+        // Destruir sesión actual
+        session_destroy();
+        
+        // Reconfigurar parámetros de cookie CON lifetime
+        session_set_cookie_params([
+            'lifetime' => $lifetime,
             'path' => '/',
-            'domain' => $cookieDomain ?: '',
+            'domain' => $cookieDomain,
             'secure' => $isHttps,
             'httponly' => true,
             'samesite' => 'Lax',
         ]);
+        
+        // Necesitamos setear el nombre antes de iniciar
+        session_name('ebonia_session');
+        
+        // Reiniciar sesión
+        session_start();
+        
+        // Regenerar ID para forzar envío de la cookie con los nuevos parámetros
+        // Esto es CRÍTICO: sin esto, el navegador mantiene la cookie antigua con lifetime=0
+        session_regenerate_id(true);
+        
+        // Restaurar datos de sesión
+        $_SESSION = $sessionData;
     }
 
     public static function logout(): void {
