@@ -271,98 +271,219 @@ $csrfToken = $_SESSION['csrf_token'] ?? '';
           <div class="flex-1 overflow-auto p-6">
             <div class="max-w-4xl mx-auto">
               <!-- Header del gesto -->
-              <div class="flex items-center gap-4 mb-8">
-                <div class="w-14 h-14 rounded-xl bg-violet-500 flex items-center justify-center text-white shadow-lg">
-                  <i class="iconoir-page-edit text-2xl"></i>
+              <div class="flex items-center gap-4 mb-6">
+                <div class="w-12 h-12 rounded-xl bg-violet-500 flex items-center justify-center text-white shadow-lg">
+                  <i class="iconoir-page-edit text-xl"></i>
                 </div>
                 <div>
-                  <h1 class="text-2xl font-bold text-slate-900">Escribir artículos</h1>
-                  <p class="text-slate-600">Genera contenido editorial de alta calidad</p>
+                  <h1 class="text-xl font-bold text-slate-900">Escribir contenido</h1>
+                  <p class="text-sm text-slate-600">Genera artículos, posts de blog o notas de prensa</p>
                 </div>
               </div>
               
               <!-- Formulario del gesto -->
               <form id="write-article-form" class="space-y-6">
-                <!-- Tema/Título -->
-                <div>
-                  <label class="block text-sm font-semibold text-slate-700 mb-2">¿Sobre qué quieres escribir?</label>
-                  <input type="text" id="article-topic" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all" placeholder="Ej: Beneficios del deporte en la salud mental" required />
-                </div>
                 
-                <!-- Estilo (se expandirá más adelante) -->
+                <!-- PASO 1: Tipo de contenido -->
                 <div>
-                  <label class="block text-sm font-semibold text-slate-700 mb-2">Estilo de escritura</label>
-                  <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="article-style-options">
-                    <label class="style-option cursor-pointer">
-                      <input type="radio" name="article-style" value="formal" class="hidden peer" checked />
-                      <div class="p-3 border-2 border-slate-200 rounded-xl text-center peer-checked:border-violet-500 peer-checked:bg-violet-50 hover:border-violet-300 transition-all">
-                        <i class="iconoir-book text-xl text-slate-600 peer-checked:text-violet-600 mb-1"></i>
-                        <div class="text-sm font-medium text-slate-700">Formal</div>
+                  <label class="block text-sm font-semibold text-slate-700 mb-3">¿Qué tipo de contenido necesitas?</label>
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <label class="cursor-pointer">
+                      <input type="radio" name="content-type" value="informativo" class="hidden peer" checked />
+                      <div class="p-4 border-2 border-slate-200 rounded-xl peer-checked:border-violet-500 peer-checked:bg-violet-50 hover:border-violet-300 transition-all h-full">
+                        <div class="flex items-center gap-2 mb-2">
+                          <i class="iconoir-newspaper text-xl text-violet-600"></i>
+                          <span class="font-semibold text-slate-800">Artículo informativo</span>
+                        </div>
+                        <p class="text-xs text-slate-500">Noticias, actualidad, deportes, cultura. Contenido objetivo y directo.</p>
                       </div>
                     </label>
-                    <label class="style-option cursor-pointer">
-                      <input type="radio" name="article-style" value="casual" class="hidden peer" />
-                      <div class="p-3 border-2 border-slate-200 rounded-xl text-center peer-checked:border-violet-500 peer-checked:bg-violet-50 hover:border-violet-300 transition-all">
-                        <i class="iconoir-chat-bubble text-xl text-slate-600 peer-checked:text-violet-600 mb-1"></i>
-                        <div class="text-sm font-medium text-slate-700">Casual</div>
+                    <label class="cursor-pointer">
+                      <input type="radio" name="content-type" value="blog" class="hidden peer" />
+                      <div class="p-4 border-2 border-slate-200 rounded-xl peer-checked:border-violet-500 peer-checked:bg-violet-50 hover:border-violet-300 transition-all h-full">
+                        <div class="flex items-center gap-2 mb-2">
+                          <i class="iconoir-post text-xl text-violet-600"></i>
+                          <span class="font-semibold text-slate-800">Post de blog</span>
+                        </div>
+                        <p class="text-xs text-slate-500">Optimizado para SEO, con palabras clave y estructura web.</p>
                       </div>
                     </label>
-                    <label class="style-option cursor-pointer">
-                      <input type="radio" name="article-style" value="technical" class="hidden peer" />
-                      <div class="p-3 border-2 border-slate-200 rounded-xl text-center peer-checked:border-violet-500 peer-checked:bg-violet-50 hover:border-violet-300 transition-all">
-                        <i class="iconoir-code text-xl text-slate-600 peer-checked:text-violet-600 mb-1"></i>
-                        <div class="text-sm font-medium text-slate-700">Técnico</div>
-                      </div>
-                    </label>
-                    <label class="style-option cursor-pointer">
-                      <input type="radio" name="article-style" value="creative" class="hidden peer" />
-                      <div class="p-3 border-2 border-slate-200 rounded-xl text-center peer-checked:border-violet-500 peer-checked:bg-violet-50 hover:border-violet-300 transition-all">
-                        <i class="iconoir-sparks text-xl text-slate-600 peer-checked:text-violet-600 mb-1"></i>
-                        <div class="text-sm font-medium text-slate-700">Creativo</div>
+                    <label class="cursor-pointer">
+                      <input type="radio" name="content-type" value="nota-prensa" class="hidden peer" />
+                      <div class="p-4 border-2 border-slate-200 rounded-xl peer-checked:border-violet-500 peer-checked:bg-violet-50 hover:border-violet-300 transition-all h-full">
+                        <div class="flex items-center gap-2 mb-2">
+                          <i class="iconoir-megaphone text-xl text-violet-600"></i>
+                          <span class="font-semibold text-slate-800">Nota de prensa</span>
+                        </div>
+                        <p class="text-xs text-slate-500">Comunicados oficiales con estructura periodística profesional.</p>
                       </div>
                     </label>
                   </div>
                 </div>
                 
-                <!-- Longitud -->
-                <div>
-                  <label class="block text-sm font-semibold text-slate-700 mb-2">Extensión del artículo</label>
-                  <div class="grid grid-cols-3 gap-3">
+                <!-- Línea de negocio (siempre visible) -->
+                <div class="flex gap-4 items-center p-3 bg-slate-50 rounded-xl border border-slate-200">
+                  <label class="text-sm font-medium text-slate-700 whitespace-nowrap">Línea de negocio:</label>
+                  <div class="flex flex-wrap gap-2">
                     <label class="cursor-pointer">
-                      <input type="radio" name="article-length" value="short" class="hidden peer" />
-                      <div class="p-3 border-2 border-slate-200 rounded-xl text-center peer-checked:border-violet-500 peer-checked:bg-violet-50 hover:border-violet-300 transition-all">
-                        <div class="text-sm font-medium text-slate-700">Corto</div>
-                        <div class="text-xs text-slate-500">~300 palabras</div>
+                      <input type="radio" name="business-line" value="ebone" class="hidden peer" checked />
+                      <div class="px-3 py-1.5 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-violet-500 peer-checked:bg-violet-100 peer-checked:text-violet-700 hover:border-violet-300 transition-all font-medium">
+                        Grupo Ebone
                       </div>
                     </label>
                     <label class="cursor-pointer">
-                      <input type="radio" name="article-length" value="medium" class="hidden peer" checked />
-                      <div class="p-3 border-2 border-slate-200 rounded-xl text-center peer-checked:border-violet-500 peer-checked:bg-violet-50 hover:border-violet-300 transition-all">
-                        <div class="text-sm font-medium text-slate-700">Medio</div>
-                        <div class="text-xs text-slate-500">~600 palabras</div>
+                      <input type="radio" name="business-line" value="cubofit" class="hidden peer" />
+                      <div class="px-3 py-1.5 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-violet-500 peer-checked:bg-violet-100 peer-checked:text-violet-700 hover:border-violet-300 transition-all font-medium">
+                        CUBOFIT
                       </div>
                     </label>
                     <label class="cursor-pointer">
-                      <input type="radio" name="article-length" value="long" class="hidden peer" />
-                      <div class="p-3 border-2 border-slate-200 rounded-xl text-center peer-checked:border-violet-500 peer-checked:bg-violet-50 hover:border-violet-300 transition-all">
-                        <div class="text-sm font-medium text-slate-700">Largo</div>
-                        <div class="text-xs text-slate-500">~1000 palabras</div>
+                      <input type="radio" name="business-line" value="uniges" class="hidden peer" />
+                      <div class="px-3 py-1.5 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-violet-500 peer-checked:bg-violet-100 peer-checked:text-violet-700 hover:border-violet-300 transition-all font-medium">
+                        UNIGES-3
                       </div>
                     </label>
                   </div>
                 </div>
                 
-                <!-- Instrucciones adicionales -->
-                <div>
-                  <label class="block text-sm font-semibold text-slate-700 mb-2">Instrucciones adicionales <span class="font-normal text-slate-400">(opcional)</span></label>
-                  <textarea id="article-instructions" rows="3" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all resize-none" placeholder="Ej: Incluir datos estadísticos, mencionar ejemplos del Grupo Ebone..."></textarea>
+                <!-- ========== CAMPOS ARTÍCULO INFORMATIVO ========== -->
+                <div id="fields-informativo" class="space-y-4">
+                  <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Tema del artículo</label>
+                    <input type="text" id="info-topic" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all" placeholder="Ej: Nueva temporada de actividades acuáticas en los centros deportivos" />
+                  </div>
+                  <div class="grid grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-sm font-semibold text-slate-700 mb-2">Categoría</label>
+                      <select id="info-category" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition-all bg-white">
+                        <option value="general">General</option>
+                        <option value="deportes">Deportes</option>
+                        <option value="cultura">Cultura</option>
+                        <option value="salud">Salud y bienestar</option>
+                        <option value="empresa">Corporativo</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-semibold text-slate-700 mb-2">Extensión</label>
+                      <select id="info-length" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition-all bg-white">
+                        <option value="300">Corto (~300 palabras)</option>
+                        <option value="500" selected>Medio (~500 palabras)</option>
+                        <option value="800">Largo (~800 palabras)</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Detalles adicionales <span class="font-normal text-slate-400">(opcional)</span></label>
+                    <textarea id="info-details" rows="2" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all resize-none" placeholder="Información extra, datos concretos, enfoque deseado..."></textarea>
+                  </div>
+                </div>
+                
+                <!-- ========== CAMPOS POST DE BLOG ========== -->
+                <div id="fields-blog" class="hidden space-y-4">
+                  <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Tema del post</label>
+                    <input type="text" id="blog-topic" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all" placeholder="Ej: 5 beneficios de hacer ejercicio por la mañana" />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Palabras clave SEO <span class="font-normal text-slate-400">(separadas por comas)</span></label>
+                    <input type="text" id="blog-keywords" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all" placeholder="Ej: ejercicio matutino, rutina fitness, salud, bienestar" />
+                  </div>
+                  <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl">
+                    <div class="flex items-center gap-2 text-emerald-700">
+                      <i class="iconoir-check-circle"></i>
+                      <span class="text-sm font-medium">Configuración SEO automática</span>
+                    </div>
+                    <p class="text-xs text-emerald-600 mt-1">600-1000 palabras • Estructura H2/H3 • Meta descripción • Intro con palabra clave • CTA final</p>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Instrucciones adicionales <span class="font-normal text-slate-400">(opcional)</span></label>
+                    <textarea id="blog-details" rows="2" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all resize-none" placeholder="Tono específico, datos a incluir, llamada a la acción..."></textarea>
+                  </div>
+                </div>
+                
+                <!-- ========== CAMPOS NOTA DE PRENSA ========== -->
+                <div id="fields-nota-prensa" class="hidden space-y-4">
+                  <!-- Tipo de anuncio -->
+                  <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Tipo de anuncio</label>
+                    <div class="flex flex-wrap gap-2">
+                      <label class="cursor-pointer">
+                        <input type="radio" name="press-type" value="lanzamiento" class="hidden peer" checked />
+                        <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-violet-500 peer-checked:bg-violet-50 hover:border-violet-300 transition-all">
+                          🚀 Lanzamiento
+                        </div>
+                      </label>
+                      <label class="cursor-pointer">
+                        <input type="radio" name="press-type" value="evento" class="hidden peer" />
+                        <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-violet-500 peer-checked:bg-violet-50 hover:border-violet-300 transition-all">
+                          📅 Evento
+                        </div>
+                      </label>
+                      <label class="cursor-pointer">
+                        <input type="radio" name="press-type" value="nombramiento" class="hidden peer" />
+                        <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-violet-500 peer-checked:bg-violet-50 hover:border-violet-300 transition-all">
+                          👤 Nombramiento
+                        </div>
+                      </label>
+                      <label class="cursor-pointer">
+                        <input type="radio" name="press-type" value="convenio" class="hidden peer" />
+                        <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-violet-500 peer-checked:bg-violet-50 hover:border-violet-300 transition-all">
+                          🤝 Convenio
+                        </div>
+                      </label>
+                      <label class="cursor-pointer">
+                        <input type="radio" name="press-type" value="premio" class="hidden peer" />
+                        <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-violet-500 peer-checked:bg-violet-50 hover:border-violet-300 transition-all">
+                          🏆 Premio/Reconocimiento
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+                  
+                  <!-- Datos básicos con placeholders informativos -->
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-sm font-semibold text-slate-700 mb-2">¿Qué ocurre? <span class="text-red-500">*</span></label>
+                      <input type="text" id="press-what" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all" placeholder="El hecho o noticia principal" required />
+                    </div>
+                    <div>
+                      <label class="block text-sm font-semibold text-slate-700 mb-2">¿Quién lo hace?</label>
+                      <input type="text" id="press-who" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all" placeholder="Persona, empresa, organización..." />
+                    </div>
+                    <div>
+                      <label class="block text-sm font-semibold text-slate-700 mb-2">¿Cuándo?</label>
+                      <input type="text" id="press-when" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all" placeholder="Fecha, periodo, momento..." />
+                    </div>
+                    <div>
+                      <label class="block text-sm font-semibold text-slate-700 mb-2">¿Dónde?</label>
+                      <input type="text" id="press-where" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all" placeholder="Ubicación, lugar, ámbito..." />
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-sm font-semibold text-slate-700 mb-2">¿Por qué?</label>
+                      <textarea id="press-why" rows="2" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all resize-none" placeholder="Motivo, causa, contexto..."></textarea>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-semibold text-slate-700 mb-2">¿Para qué?</label>
+                      <textarea id="press-purpose" rows="2" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all resize-none" placeholder="Objetivo, finalidad, impacto esperado..."></textarea>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Declaración o cita textual <span class="font-normal text-slate-400">(opcional)</span></label>
+                    <div class="flex gap-2">
+                      <input type="text" id="press-quote-author" class="w-1/3 border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition-all" placeholder="Autor de la cita" />
+                      <input type="text" id="press-quote-text" class="flex-1 border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition-all" placeholder="Texto de la declaración..." />
+                    </div>
+                  </div>
+                  <p class="text-xs text-slate-500 italic">💡 Si dejas campos vacíos, el sistema generará la nota con la información disponible. Los campos obligatorios están marcados con *</p>
                 </div>
                 
                 <!-- Botón generar -->
-                <div class="flex justify-end pt-2">
+                <div class="flex justify-end pt-2 border-t border-slate-100">
                   <button type="submit" id="generate-article-btn" class="px-6 py-3 bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all flex items-center gap-2">
                     <i class="iconoir-sparks"></i>
-                    <span>Generar artículo</span>
+                    <span>Generar contenido</span>
                   </button>
                 </div>
               </form>
@@ -370,7 +491,7 @@ $csrfToken = $_SESSION['csrf_token'] ?? '';
               <!-- Resultado (oculto inicialmente) -->
               <div id="article-result" class="hidden mt-8">
                 <div class="flex items-center justify-between mb-4">
-                  <h2 class="text-lg font-semibold text-slate-800">Artículo generado</h2>
+                  <h2 class="text-lg font-semibold text-slate-800">Contenido generado</h2>
                   <div class="flex gap-2">
                     <button id="copy-article-btn" class="px-3 py-1.5 text-sm text-slate-600 hover:text-violet-600 hover:bg-violet-50 rounded-lg transition-colors flex items-center gap-1.5">
                       <i class="iconoir-copy"></i> Copiar
@@ -387,7 +508,7 @@ $csrfToken = $_SESSION['csrf_token'] ?? '';
               <div id="article-loading" class="hidden mt-8 text-center py-12">
                 <div class="inline-flex items-center gap-3 px-6 py-4 bg-violet-50 rounded-xl">
                   <div class="w-5 h-5 border-2 border-violet-500 border-t-transparent rounded-full animate-spin"></div>
-                  <span class="text-violet-700 font-medium">Generando artículo...</span>
+                  <span class="text-violet-700 font-medium">Generando contenido...</span>
                 </div>
               </div>
             </div>
@@ -1883,16 +2004,33 @@ $csrfToken = $_SESSION['csrf_token'] ?? '';
         });
       });
       
-      // === Gesto: Escribir artículos ===
+      // === Gesto: Escribir contenido ===
       const writeArticleForm = document.getElementById('write-article-form');
-      const articleTopic = document.getElementById('article-topic');
-      const articleInstructions = document.getElementById('article-instructions');
       const articleResult = document.getElementById('article-result');
       const articleContent = document.getElementById('article-content');
       const articleLoading = document.getElementById('article-loading');
       const generateArticleBtn = document.getElementById('generate-article-btn');
       const copyArticleBtn = document.getElementById('copy-article-btn');
       const regenerateArticleBtn = document.getElementById('regenerate-article-btn');
+      
+      // Campos por tipo
+      const fieldsInformativo = document.getElementById('fields-informativo');
+      const fieldsBlog = document.getElementById('fields-blog');
+      const fieldsNotaPrensa = document.getElementById('fields-nota-prensa');
+      
+      // Mostrar/ocultar campos según tipo de contenido
+      const contentTypeRadios = document.querySelectorAll('input[name="content-type"]');
+      contentTypeRadios.forEach(radio => {
+        radio.addEventListener('change', () => {
+          fieldsInformativo.classList.add('hidden');
+          fieldsBlog.classList.add('hidden');
+          fieldsNotaPrensa.classList.add('hidden');
+          
+          if (radio.value === 'informativo') fieldsInformativo.classList.remove('hidden');
+          else if (radio.value === 'blog') fieldsBlog.classList.remove('hidden');
+          else if (radio.value === 'nota-prensa') fieldsNotaPrensa.classList.remove('hidden');
+        });
+      });
       
       // Helper para convertir markdown a HTML
       function mdToHtml(md) {
@@ -1910,45 +2048,154 @@ $csrfToken = $_SESSION['csrf_token'] ?? '';
         return s;
       }
       
+      // Mapa de líneas de negocio
+      const businessLineMap = {
+        'ebone': 'Grupo Ebone',
+        'cubofit': 'CUBOFIT',
+        'uniges': 'UNIGES-3'
+      };
+      
+      let lastPrompt = ''; // Para regenerar
+      
       if (writeArticleForm) {
         writeArticleForm.addEventListener('submit', async (e) => {
           e.preventDefault();
-          await generateArticle();
+          await generateContent();
         });
       }
       
-      async function generateArticle() {
-        const topic = articleTopic.value.trim();
-        if (!topic) return;
+      async function generateContent() {
+        const contentType = document.querySelector('input[name="content-type"]:checked')?.value || 'informativo';
+        const businessLine = document.querySelector('input[name="business-line"]:checked')?.value || 'ebone';
+        const businessName = businessLineMap[businessLine];
         
-        const style = document.querySelector('input[name="article-style"]:checked')?.value || 'formal';
-        const length = document.querySelector('input[name="article-length"]:checked')?.value || 'medium';
-        const instructions = articleInstructions.value.trim();
+        let prompt = '';
         
+        // === ARTÍCULO INFORMATIVO ===
+        if (contentType === 'informativo') {
+          const topic = document.getElementById('info-topic').value.trim();
+          if (!topic) { alert('Por favor, indica el tema del artículo'); return; }
+          
+          const category = document.getElementById('info-category').value;
+          const length = document.getElementById('info-length').value;
+          const details = document.getElementById('info-details').value.trim();
+          
+          const categoryMap = {
+            'general': 'general/actualidad',
+            'deportes': 'deportes y actividad física',
+            'cultura': 'cultura y ocio',
+            'salud': 'salud y bienestar',
+            'empresa': 'noticias corporativas'
+          };
+          
+          prompt = `Escribe un artículo informativo para ${businessName}.
+
+TEMA: ${topic}
+CATEGORÍA: ${categoryMap[category]}
+EXTENSIÓN: Aproximadamente ${length} palabras
+
+FORMATO:
+- Título atractivo (con #)
+- Entradilla o lead (primer párrafo que resuma la noticia)
+- Desarrollo con subtítulos (##) si es necesario
+- Tono objetivo e informativo
+- Sin llamadas a la acción comerciales
+${details ? `\nINSTRUCCIONES ADICIONALES: ${details}` : ''}
+
+Escribe SOLO el artículo, sin comentarios ni explicaciones.`;
+        }
+        
+        // === POST DE BLOG ===
+        else if (contentType === 'blog') {
+          const topic = document.getElementById('blog-topic').value.trim();
+          if (!topic) { alert('Por favor, indica el tema del post'); return; }
+          
+          const keywords = document.getElementById('blog-keywords').value.trim();
+          const details = document.getElementById('blog-details').value.trim();
+          
+          prompt = `Escribe un post de blog optimizado para SEO para ${businessName}.
+
+TEMA: ${topic}
+${keywords ? `PALABRAS CLAVE: ${keywords}` : ''}
+
+REQUISITOS SEO OBLIGATORIOS:
+- Extensión: 600-1000 palabras
+- Título H1 atractivo que incluya la palabra clave principal
+- Meta descripción sugerida (máx 155 caracteres) al inicio entre corchetes [META: ...]
+- Introducción enganchante que incluya la palabra clave en las primeras 100 palabras
+- Estructura con H2 y H3 para facilitar la lectura
+- Párrafos cortos (máx 3-4 líneas)
+- Al menos una lista con viñetas o numerada
+- Conclusión con llamada a la acción (CTA)
+- Tono cercano pero profesional
+${details ? `\nINSTRUCCIONES ADICIONALES: ${details}` : ''}
+
+Escribe SOLO el post, sin comentarios ni explicaciones.`;
+        }
+        
+        // === NOTA DE PRENSA ===
+        else if (contentType === 'nota-prensa') {
+          const pressType = document.querySelector('input[name="press-type"]:checked')?.value || 'lanzamiento';
+          const what = document.getElementById('press-what').value.trim();
+          if (!what) { alert('Por favor, indica qué ocurre (el hecho principal)'); return; }
+          
+          const who = document.getElementById('press-who').value.trim();
+          const when = document.getElementById('press-when').value.trim();
+          const where = document.getElementById('press-where').value.trim();
+          const why = document.getElementById('press-why').value.trim();
+          const purpose = document.getElementById('press-purpose').value.trim();
+          const quoteAuthor = document.getElementById('press-quote-author').value.trim();
+          const quoteText = document.getElementById('press-quote-text').value.trim();
+          
+          const pressTypeMap = {
+            'lanzamiento': 'lanzamiento de proyecto o servicio',
+            'evento': 'evento',
+            'nombramiento': 'nombramiento o incorporación',
+            'convenio': 'convenio o colaboración institucional',
+            'premio': 'premio, éxito o reconocimiento'
+          };
+          
+          let dataSection = `QUÉ OCURRE: ${what}`;
+          if (who) dataSection += `\nQUIÉN: ${who}`;
+          if (when) dataSection += `\nCUÁNDO: ${when}`;
+          if (where) dataSection += `\nDÓNDE: ${where}`;
+          if (why) dataSection += `\nPOR QUÉ: ${why}`;
+          if (purpose) dataSection += `\nPARA QUÉ: ${purpose}`;
+          if (quoteText) dataSection += `\nDECLARACIÓN${quoteAuthor ? ` (${quoteAuthor})` : ''}: "${quoteText}"`;
+          
+          prompt = `Escribe una nota de prensa profesional para ${businessName}.
+
+TIPO DE ANUNCIO: ${pressTypeMap[pressType]}
+
+DATOS:
+${dataSection}
+
+FORMATO NOTA DE PRENSA:
+- Titular impactante (con #)
+- Subtítulo o bajada que amplíe la información
+- Ubicación y fecha al inicio del cuerpo: "[Ciudad], [fecha] –"
+- Primer párrafo: responder a las 5W (qué, quién, cuándo, dónde, por qué) de forma concisa
+- Desarrollo: ampliar información en orden de importancia decreciente (pirámide invertida)
+- Si hay declaración, incluirla entrecomillada con atribución
+- Cierre: información de contexto sobre ${businessName}
+- "###" al final (marca estándar de fin de nota de prensa)
+- Sección "Para más información:" con placeholder de contacto
+
+Si faltan datos, adapta la nota con la información disponible sin inventar fechas, nombres o cifras específicas.
+
+Escribe SOLO la nota de prensa, sin comentarios ni explicaciones.`;
+        }
+        
+        lastPrompt = prompt;
+        await sendPrompt(prompt);
+      }
+      
+      async function sendPrompt(prompt) {
         // Mostrar loading
         articleResult.classList.add('hidden');
         articleLoading.classList.remove('hidden');
         generateArticleBtn.disabled = true;
         
-        // Construir prompt
-        const lengthMap = { short: '300', medium: '600', long: '1000' };
-        const styleMap = {
-          formal: 'formal y profesional',
-          casual: 'casual y cercano',
-          technical: 'técnico y detallado',
-          creative: 'creativo y atractivo'
-        };
-        
-        const prompt = `Escribe un artículo sobre: "${topic}"
-
-Requisitos:
-- Estilo: ${styleMap[style]}
-- Extensión aproximada: ${lengthMap[length]} palabras
-- Formato: Incluye título (con #), subtítulos (con ##) si es necesario, y párrafos bien estructurados
-${instructions ? `- Instrucciones adicionales: ${instructions}` : ''}
-
-Escribe únicamente el artículo, sin comentarios adicionales.`;
-
         try {
           const res = await fetch('/api/chat.php', {
             method: 'POST',
@@ -1965,7 +2212,7 @@ Escribe únicamente el artículo, sin comentarios adicionales.`;
           generateArticleBtn.disabled = false;
           
           if (!res.ok) {
-            alert('Error al generar el artículo: ' + (data.error?.message || 'Error desconocido'));
+            alert('Error al generar el contenido: ' + (data.error?.message || 'Error desconocido'));
             return;
           }
           
@@ -1973,14 +2220,17 @@ Escribe únicamente el artículo, sin comentarios adicionales.`;
           articleContent.innerHTML = mdToHtml(data.message.content);
           articleResult.classList.remove('hidden');
           
+          // Scroll al resultado
+          articleResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          
         } catch (err) {
           articleLoading.classList.add('hidden');
           generateArticleBtn.disabled = false;
-          alert('Error de conexión al generar el artículo');
+          alert('Error de conexión al generar el contenido');
         }
       }
       
-      // Copiar artículo
+      // Copiar contenido
       if (copyArticleBtn) {
         copyArticleBtn.addEventListener('click', () => {
           const text = articleContent.innerText;
@@ -1994,10 +2244,10 @@ Escribe únicamente el artículo, sin comentarios adicionales.`;
         });
       }
       
-      // Regenerar artículo
+      // Regenerar contenido
       if (regenerateArticleBtn) {
         regenerateArticleBtn.addEventListener('click', () => {
-          generateArticle();
+          if (lastPrompt) sendPrompt(lastPrompt);
         });
       }
     })();

@@ -105,27 +105,29 @@ Los "gestos" son acciones predefinidas que los usuarios pueden ejecutar para tar
 
 ### Tareas de implementación
 
-1. [ ] **Crear sidebar de gestos** (`gestures-sidebar`)
-   - Grid 2 columnas con tarjetas de gestos
+1. [x] **Crear sidebar de gestos** (`gestures-sidebar`)
+   - Grid con tarjetas de gestos
    - Cada tarjeta: icono, nombre, descripción, color distintivo
    - Hover/click states bonitos
-   - Success: UI atractiva y navegable
+   - ✅ Completado
 
-2. [ ] **Crear workspace de gestos** (`gesture-workspace`)
+2. [x] **Crear workspace de gestos** (`gesture-workspace`)
    - Área principal que muestra el gesto seleccionado
    - Estado inicial con mensaje de bienvenida
-   - Success: Transición suave entre gestos
+   - ✅ Completado
 
-3. [ ] **Lógica JS navegación gestos**
+3. [x] **Lógica JS navegación gestos**
    - Mostrar/ocultar sidebars según tab activa
    - Seleccionar gesto → mostrar su interfaz
-   - Success: Navegación fluida
+   - ✅ Completado
 
-4. [ ] **Implementar gesto "Escribir artículos"**
-   - Interfaz con parámetros (estilo, tema, longitud, etc.)
-   - Llamada a API para generación
-   - Vista previa y edición del resultado
-   - Success: Gesto funcional end-to-end
+4. [x] **Implementar gesto "Escribir contenido"**
+   - 3 tipos: Artículo informativo, Post de blog (SEO), Nota de prensa
+   - Selector de línea de negocio (Ebone, CUBOFIT, UNIGES-3)
+   - Campos dinámicos según tipo seleccionado
+   - Prompts especializados para cada tipo
+   - Copiar y regenerar resultado
+   - ✅ Completado
 
 # Current Status / Progress Tracking
 
