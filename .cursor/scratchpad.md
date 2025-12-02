@@ -22,6 +22,55 @@ Ebonia: plataforma interna de inteligencia corporativa (Grupo Ebone) basada en P
 8. Semillas iniciales: empresas y departamentos proporcionados.
 9. README con setup (PHP 8.2+, MySQL, variables entorno) y decisiones.
 
+---
+
+## Feature: FAQ Chatbot (Dudas Rápidas) con QWEN Turbo
+
+### Motivación
+Chatbot ligero para preguntas rápidas sobre el Grupo Ebone. Usa QWEN Turbo (`qwen-turbo`) por su velocidad. Sin persistencia en BD, pero con historial en memoria del modal para poder hacer seguimiento de la conversación.
+
+### Decisiones técnicas
+- **Modelo**: `qwen-turbo` (1M tokens contexto, optimizado velocidad) via Alibaba Cloud API
+- **Endpoint**: `https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions` (ya configurado en QwenClient)
+- **Sin RAG**: El contexto corporativo (~4.5KB) cabe perfectamente en el system prompt
+- **Historial en sesión JS**: El modal mantiene array de mensajes en memoria para continuidad de conversación
+- **Sin persistencia BD**: No se guardan mensajes FAQ (diferencia clave con chat principal)
+
+### Tareas de implementación
+
+1. [x] **Crear endpoint `/api/faq.php`**
+   - Recibe: `{ message: string, history: array }`
+   - Usa QwenClient con modelo `qwen-turbo`
+   - System prompt optimizado para FAQ cortas
+   - Retorna: `{ reply: string }`
+   - Success: Respuesta en <2s para preguntas simples
+
+2. [x] **Crear system prompt FAQ** (`docs/context/faq_prompt.md`)
+   - Instrucciones para respuestas concisas
+   - Incluye contexto corporativo inline
+   - Directriz: responder en 2-3 párrafos máximo
+   - Success: Respuestas focalizadas y breves
+
+3. [x] **Agregar modal FAQ en `index.php`**
+   - Botón "?" junto a la lupa en header
+   - Modal con input + historial de mensajes
+   - Sugerencias de preguntas frecuentes
+   - Indicador de "escribiendo..."
+   - Success: Modal funcional con UX fluida
+
+4. [x] **Implementar lógica JS del modal**
+   - Array `faqHistory` en memoria
+   - Envío de historial completo en cada request
+   - Renderizado de conversación en el modal
+   - Botón para limpiar/nueva conversación
+   - Success: Poder hacer follow-up questions
+
+5. [ ] **Testing y ajustes**
+   - Verificar velocidad de respuesta
+   - Ajustar system prompt si respuestas muy largas
+   - Probar límite de historial (~20 mensajes)
+   - Success: UX fluida, respuestas relevantes
+
 # Project Status Board
 
 - [x] Crear `index.php` de placeholder.

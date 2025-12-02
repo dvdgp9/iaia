@@ -168,6 +168,11 @@ if (!$user) {
             <i class="iconoir-search text-xl"></i>
           </button>
           
+          <!-- FAQ / Dudas rápidas -->
+          <button id="faq-btn" class="p-2 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-lg transition-colors" title="Dudas rápidas">
+            <i class="iconoir-help-circle text-xl"></i>
+          </button>
+          
           <!-- Avatar + Dropdown -->
           <div class="relative" id="profile-dropdown-container">
             <button id="profile-btn" class="flex items-center gap-2 p-1.5 hover:bg-slate-50 rounded-lg transition-colors">
@@ -1409,6 +1414,215 @@ if (!$user) {
         if (gesturesTab) gesturesTab.click();
       });
     }
+  </script>
+  
+  <!-- Modal FAQ / Dudas Rápidas -->
+  <div id="faq-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col">
+      <!-- Header -->
+      <div class="p-5 border-b border-slate-200 flex items-center justify-between flex-shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl gradient-brand flex items-center justify-center">
+            <i class="iconoir-help-circle text-xl text-white"></i>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-slate-900">Dudas rápidas</h3>
+            <p class="text-xs text-slate-500">Pregunta sobre el Grupo Ebone</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="faq-clear-btn" class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors" title="Nueva conversación">
+            <i class="iconoir-refresh text-lg"></i>
+          </button>
+          <button id="faq-close-btn" class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
+            <i class="iconoir-xmark text-xl"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Mensajes -->
+      <div id="faq-messages" class="flex-1 overflow-y-auto p-5 space-y-4">
+        <!-- Estado inicial con sugerencias -->
+        <div id="faq-suggestions" class="space-y-3">
+          <p class="text-sm text-slate-600 text-center mb-4">¿Qué quieres saber? Aquí tienes algunas ideas:</p>
+          <div class="grid grid-cols-1 gap-2">
+            <button class="faq-suggestion p-3 text-left bg-slate-50 hover:bg-[#23AAC5]/5 border border-slate-200 hover:border-[#23AAC5] rounded-xl transition-all text-sm text-slate-700 hover:text-[#23AAC5]">
+              ¿Qué es CUBOFIT y cómo funciona?
+            </button>
+            <button class="faq-suggestion p-3 text-left bg-slate-50 hover:bg-[#23AAC5]/5 border border-slate-200 hover:border-[#23AAC5] rounded-xl transition-all text-sm text-slate-700 hover:text-[#23AAC5]">
+              ¿Cuántos empleados tiene el Grupo Ebone?
+            </button>
+            <button class="faq-suggestion p-3 text-left bg-slate-50 hover:bg-[#23AAC5]/5 border border-slate-200 hover:border-[#23AAC5] rounded-xl transition-all text-sm text-slate-700 hover:text-[#23AAC5]">
+              ¿Qué servicios ofrece UNIGES-3?
+            </button>
+            <button class="faq-suggestion p-3 text-left bg-slate-50 hover:bg-[#23AAC5]/5 border border-slate-200 hover:border-[#23AAC5] rounded-xl transition-all text-sm text-slate-700 hover:text-[#23AAC5]">
+              ¿Dónde están las sedes del grupo?
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Typing indicator -->
+      <div id="faq-typing" class="hidden px-5 pb-2">
+        <div class="flex items-center gap-2 text-slate-500 text-sm">
+          <div class="flex gap-1">
+            <div class="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0ms"></div>
+            <div class="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 150ms"></div>
+            <div class="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 300ms"></div>
+          </div>
+          <span>Pensando...</span>
+        </div>
+      </div>
+      
+      <!-- Input -->
+      <div class="p-4 border-t border-slate-200 flex-shrink-0">
+        <form id="faq-form" class="flex gap-3">
+          <input 
+            id="faq-input" 
+            type="text" 
+            class="flex-1 border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-all text-sm" 
+            placeholder="Escribe tu pregunta..."
+            autocomplete="off"
+          />
+          <button type="submit" class="px-5 py-3 gradient-brand-btn text-white rounded-xl font-medium shadow-md hover:shadow-lg hover:opacity-90 transition-all">
+            <i class="iconoir-send text-lg"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // FAQ Modal Logic
+    (function() {
+      const faqBtn = document.getElementById('faq-btn');
+      const faqModal = document.getElementById('faq-modal');
+      const faqCloseBtn = document.getElementById('faq-close-btn');
+      const faqClearBtn = document.getElementById('faq-clear-btn');
+      const faqForm = document.getElementById('faq-form');
+      const faqInput = document.getElementById('faq-input');
+      const faqMessages = document.getElementById('faq-messages');
+      const faqSuggestions = document.getElementById('faq-suggestions');
+      const faqTyping = document.getElementById('faq-typing');
+      
+      let faqHistory = []; // Historial en memoria
+      
+      // Abrir modal
+      faqBtn.addEventListener('click', () => {
+        faqModal.classList.remove('hidden');
+        faqInput.focus();
+      });
+      
+      // Cerrar modal
+      faqCloseBtn.addEventListener('click', () => {
+        faqModal.classList.add('hidden');
+      });
+      
+      // Cerrar con click fuera
+      faqModal.addEventListener('click', (e) => {
+        if (e.target === faqModal) {
+          faqModal.classList.add('hidden');
+        }
+      });
+      
+      // Cerrar con Escape
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !faqModal.classList.contains('hidden')) {
+          faqModal.classList.add('hidden');
+        }
+      });
+      
+      // Limpiar conversación
+      faqClearBtn.addEventListener('click', () => {
+        faqHistory = [];
+        faqMessages.innerHTML = faqSuggestions.outerHTML;
+        faqSuggestions.classList.remove('hidden');
+        bindSuggestions();
+      });
+      
+      // Sugerencias
+      function bindSuggestions() {
+        document.querySelectorAll('.faq-suggestion').forEach(btn => {
+          btn.addEventListener('click', () => {
+            faqInput.value = btn.textContent.trim();
+            faqForm.dispatchEvent(new Event('submit'));
+          });
+        });
+      }
+      bindSuggestions();
+      
+      // Enviar mensaje
+      faqForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const message = faqInput.value.trim();
+        if (!message) return;
+        
+        // Ocultar sugerencias
+        const suggestions = faqMessages.querySelector('#faq-suggestions');
+        if (suggestions) suggestions.classList.add('hidden');
+        
+        // Añadir mensaje usuario
+        appendFaqMessage('user', message);
+        faqInput.value = '';
+        faqHistory.push({ role: 'user', content: message });
+        
+        // Mostrar typing
+        faqTyping.classList.remove('hidden');
+        faqMessages.scrollTop = faqMessages.scrollHeight;
+        
+        try {
+          const res = await fetch('/api/faq.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-Token': csrf
+            },
+            body: JSON.stringify({
+              message: message,
+              history: faqHistory.slice(0, -1) // Enviar historial sin el mensaje actual
+            }),
+            credentials: 'include'
+          });
+          
+          const data = await res.json();
+          faqTyping.classList.add('hidden');
+          
+          if (!res.ok) {
+            appendFaqMessage('assistant', 'Lo siento, ha ocurrido un error. Por favor, inténtalo de nuevo.');
+            return;
+          }
+          
+          appendFaqMessage('assistant', data.reply);
+          faqHistory.push({ role: 'assistant', content: data.reply });
+          
+        } catch (err) {
+          faqTyping.classList.add('hidden');
+          appendFaqMessage('assistant', 'Error de conexión. Por favor, inténtalo de nuevo.');
+        }
+      });
+      
+      function appendFaqMessage(role, content) {
+        const div = document.createElement('div');
+        div.className = 'flex gap-3 ' + (role === 'user' ? 'justify-end' : 'justify-start');
+        
+        const avatar = role === 'user' 
+          ? `<div class="w-8 h-8 rounded-full gradient-brand flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">${currentUser ? currentUser.first_name[0] + currentUser.last_name[0] : '?'}</div>`
+          : `<div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 text-xs font-semibold flex-shrink-0">E</div>`;
+        
+        const bubbleClass = role === 'user'
+          ? 'gradient-brand text-white'
+          : 'bg-slate-100 text-slate-800';
+        
+        const contentHtml = role === 'assistant' ? mdToHtml(content) : escapeHtml(content);
+        
+        div.innerHTML = role === 'user'
+          ? `<div class="${bubbleClass} px-4 py-2.5 rounded-2xl rounded-tr-sm max-w-[80%] text-sm">${contentHtml}</div>${avatar}`
+          : `${avatar}<div class="${bubbleClass} px-4 py-2.5 rounded-2xl rounded-tl-sm max-w-[80%] text-sm">${contentHtml}</div>`;
+        
+        faqMessages.appendChild(div);
+        faqMessages.scrollTop = faqMessages.scrollHeight;
+      }
+    })();
   </script>
 </body>
 </html>

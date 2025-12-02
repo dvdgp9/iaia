@@ -18,12 +18,12 @@ WHERE slug IN (
 )
 ON DUPLICATE KEY UPDATE created_at=VALUES(created_at);
 
--- 3. Asignar rol 'admin' al usuario superadmin (id=1, invitado@ebone.es)
+-- 3. Asignar rol 'admin' al usuario superadmin (id=1, it@ebone.es)
 INSERT INTO user_roles (user_id, role_id, created_at)
 VALUES (1, 1, NOW())
 ON DUPLICATE KEY UPDATE created_at=VALUES(created_at);
 
--- 4. Asignar rol 'user' a Lucía (id=6, lucia@ebone.es)
+-- 4. Asignar rol 'user' a Lucía (id=6, lrosales@ebone.es)
 INSERT INTO user_roles (user_id, role_id, created_at)
 VALUES (6, 2, NOW())
 ON DUPLICATE KEY UPDATE created_at=VALUES(created_at);
