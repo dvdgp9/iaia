@@ -2,16 +2,23 @@
 /**
  * API: Ejecutar gesto y guardar resultado
  * POST /api/gestures/generate.php
- * 
- * Body JSON:
- * {
- *   "gesture_type": "write-article",
- *   "prompt": "...",
- *   "input_data": { ... },      // Datos del formulario para guardar
- *   "content_type": "blog",     // Opcional
- *   "business_line": "ebone"    // Opcional
- * }
  */
+
+// Debug: mostrar errores
+ini_set('display_errors', 0);
+error_reporting(E_ALL);
+set_error_handler(function($errno, $errstr, $errfile, $errline) {
+    header('Content-Type: application/json');
+    http_response_code(500);
+    echo json_encode(['error' => ['code' => 'php_error', 'message' => "$errstr in $errfile:$errline"]]);
+    exit;
+});
+set_exception_handler(function($e) {
+    header('Content-Type: application/json');
+    http_response_code(500);
+    echo json_encode(['error' => ['code' => 'exception', 'message' => $e->getMessage(), 'file' => $e->getFile(), 'line' => $e->getLine()]]);
+    exit;
+});
 
 require_once __DIR__ . '/../../../src/App/bootstrap.php';
 require_once __DIR__ . '/../../../src/Chat/ContextBuilder.php';
@@ -28,7 +35,7 @@ use Chat\LlmProviderFactory;
 use Chat\ContextBuilder;
 use Gestures\GestureExecutionsRepo;
 
-Session::start();
+// Session ya se inicia en bootstrap
 $user = Session::user();
 if (!$user) {
     Response::error('unauthorized', 'Sesión no válida', 401);
