@@ -292,7 +292,7 @@ $csrfToken = $_SESSION['csrf_token'] ?? '';
                       <input type="radio" name="content-type" value="informativo" class="hidden peer" checked />
                       <div class="p-4 border-2 border-slate-200 rounded-xl peer-checked:border-[#23AAC5] peer-checked:bg-[#23AAC5]/10 hover:border-[#23AAC5]/60 transition-all h-full">
                         <div class="flex items-center gap-2 mb-2">
-                          <i class="iconoir-newspaper text-xl text-[#115c6c]"></i>
+                          <i class="iconoir-journal-page text-xl text-[#115c6c]"></i>
                           <span class="font-semibold text-slate-800">Artículo informativo</span>
                         </div>
                         <p class="text-xs text-slate-500">Noticias, actualidad, deportes, cultura. Contenido objetivo y directo.</p>
@@ -409,32 +409,37 @@ $csrfToken = $_SESSION['csrf_token'] ?? '';
                     <div class="flex flex-wrap gap-2">
                       <label class="cursor-pointer">
                         <input type="radio" name="press-type" value="lanzamiento" class="hidden peer" checked />
-                        <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-[#23AAC5] peer-checked:bg-[#23AAC5]/10 hover:border-[#23AAC5]/60 transition-all">
-                          Lanzamiento
+                        <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-[#23AAC5] peer-checked:bg-[#23AAC5]/10 hover:border-[#23AAC5]/60 transition-all flex items-center gap-1">
+                          <i class="iconoir-send-diagonal text-sm text-[#115c6c]"></i>
+                          <span>Lanzamiento</span>
                         </div>
                       </label>
                       <label class="cursor-pointer">
                         <input type="radio" name="press-type" value="evento" class="hidden peer" />
-                        <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-[#23AAC5] peer-checked:bg-[#23AAC5]/10 hover:border-[#23AAC5]/60 transition-all">
-                          Evento
+                        <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-[#23AAC5] peer-checked:bg-[#23AAC5]/10 hover:border-[#23AAC5]/60 transition-all flex items-center gap-1">
+                          <i class="iconoir-calendar text-sm text-[#115c6c]"></i>
+                          <span>Evento</span>
                         </div>
                       </label>
                       <label class="cursor-pointer">
                         <input type="radio" name="press-type" value="nombramiento" class="hidden peer" />
-                        <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-[#23AAC5] peer-checked:bg-[#23AAC5]/10 hover:border-[#23AAC5]/60 transition-all">
-                          Nombramiento
+                        <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-[#23AAC5] peer-checked:bg-[#23AAC5]/10 hover:border-[#23AAC5]/60 transition-all flex items-center gap-1">
+                          <i class="iconoir-user-star text-sm text-[#115c6c]"></i>
+                          <span>Nombramiento</span>
                         </div>
                       </label>
                       <label class="cursor-pointer">
                         <input type="radio" name="press-type" value="convenio" class="hidden peer" />
-                        <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-[#23AAC5] peer-checked:bg-[#23AAC5]/10 hover:border-[#23AAC5]/60 transition-all">
-                          Convenio
+                        <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-[#23AAC5] peer-checked:bg-[#23AAC5]/10 hover:border-[#23AAC5]/60 transition-all flex items-center gap-1">
+                          <i class="iconoir-community text-sm text-[#115c6c]"></i>
+                          <span>Convenio</span>
                         </div>
                       </label>
                       <label class="cursor-pointer">
                         <input type="radio" name="press-type" value="premio" class="hidden peer" />
-                        <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-[#23AAC5] peer-checked:bg-[#23AAC5]/10 hover:border-[#23AAC5]/60 transition-all">
-                          Premio/Reconocimiento
+                        <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-[#23AAC5] peer-checked:bg-[#23AAC5]/10 hover:border-[#23AAC5]/60 transition-all flex items-center gap-1">
+                          <i class="iconoir-medal text-sm text-[#115c6c]"></i>
+                          <span>Premio/Reconocimiento</span>
                         </div>
                       </label>
                     </div>
@@ -506,7 +511,7 @@ $csrfToken = $_SESSION['csrf_token'] ?? '';
               
               <!-- Loading -->
               <div id="article-loading" class="hidden mt-8 text-center py-12">
-                <div class="inline-flex items-center gap-3 px-6 py-4 bg-[#23AAC5]/5 rounded-xl">
+                <div class="inline-flex items-center gap-3 px-6 py-4 bg-[#23AAC5]/10 rounded-xl">
                   <div class="w-5 h-5 border-2 border-[#23AAC5] border-t-transparent rounded-full animate-spin"></div>
                   <span class="text-[#115c6c] font-medium">Generando contenido...</span>
                 </div>
