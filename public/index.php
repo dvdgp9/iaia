@@ -170,16 +170,16 @@ $csrfToken = $_SESSION['csrf_token'] ?? '';
       <div class="flex-1 overflow-y-auto p-4">
         <div class="grid grid-cols-1 gap-3" id="gestures-list">
           <!-- Gesto: Escribir artículos -->
-          <button data-gesture="write-article" class="gesture-card group p-4 bg-gradient-to-br from-violet-50 to-purple-50 hover:from-violet-100 hover:to-purple-100 border-2 border-violet-200 hover:border-violet-400 rounded-xl transition-all duration-200 text-left">
+          <button data-gesture="write-article" class="gesture-card group p-4 bg-gradient-to-br from-[#23AAC5]/5 to-[#115c6c]/5 hover:from-[#23AAC5]/10 hover:to-[#115c6c]/10 border-2 border-[#23AAC5]/40 hover:border-[#23AAC5] rounded-xl transition-all duration-200 text-left">
             <div class="flex items-start gap-3">
-              <div class="w-10 h-10 rounded-lg bg-violet-500 flex items-center justify-center text-white shadow-sm group-hover:scale-110 transition-transform">
+              <div class="w-10 h-10 rounded-lg bg-[#23AAC5] flex items-center justify-center text-white shadow-sm group-hover:scale-110 transition-transform">
                 <i class="iconoir-page-edit text-lg"></i>
               </div>
               <div class="flex-1 min-w-0">
-                <h3 class="font-semibold text-slate-800 group-hover:text-violet-700 transition-colors">Escribir artículos</h3>
-                <p class="text-xs text-slate-500 mt-0.5 line-clamp-2">Genera artículos de blog, noticias o contenido editorial con el estilo que elijas.</p>
+                <h3 class="font-semibold text-slate-800 group-hover:text-[#115c6c] transition-colors">Escribir artículos</h3>
+                <p class="text-xs text-slate-600 mt-0.5 line-clamp-2">Genera artículos de blog, noticias o contenido editorial con el estilo que elijas.</p>
               </div>
-              <i class="iconoir-arrow-right text-slate-400 group-hover:text-violet-500 group-hover:translate-x-1 transition-all"></i>
+              <i class="iconoir-arrow-right text-slate-400 group-hover:text-[#23AAC5] group-hover:translate-x-1 transition-all"></i>
             </div>
           </button>
           
@@ -272,7 +272,7 @@ $csrfToken = $_SESSION['csrf_token'] ?? '';
             <div class="max-w-4xl mx-auto">
               <!-- Header del gesto -->
               <div class="flex items-center gap-4 mb-6">
-                <div class="w-12 h-12 rounded-xl bg-violet-500 flex items-center justify-center text-white shadow-lg">
+                <div class="w-12 h-12 rounded-xl bg-[#23AAC5] flex items-center justify-center text-white shadow-lg">
                   <i class="iconoir-page-edit text-xl"></i>
                 </div>
                 <div>
@@ -290,9 +290,9 @@ $csrfToken = $_SESSION['csrf_token'] ?? '';
                   <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <label class="cursor-pointer">
                       <input type="radio" name="content-type" value="informativo" class="hidden peer" checked />
-                      <div class="p-4 border-2 border-slate-200 rounded-xl peer-checked:border-violet-500 peer-checked:bg-violet-50 hover:border-violet-300 transition-all h-full">
+                      <div class="p-4 border-2 border-slate-200 rounded-xl peer-checked:border-[#23AAC5] peer-checked:bg-[#23AAC5]/10 hover:border-[#23AAC5]/60 transition-all h-full">
                         <div class="flex items-center gap-2 mb-2">
-                          <i class="iconoir-newspaper text-xl text-violet-600"></i>
+                          <i class="iconoir-newspaper text-xl text-[#115c6c]"></i>
                           <span class="font-semibold text-slate-800">Artículo informativo</span>
                         </div>
                         <p class="text-xs text-slate-500">Noticias, actualidad, deportes, cultura. Contenido objetivo y directo.</p>
@@ -300,9 +300,9 @@ $csrfToken = $_SESSION['csrf_token'] ?? '';
                     </label>
                     <label class="cursor-pointer">
                       <input type="radio" name="content-type" value="blog" class="hidden peer" />
-                      <div class="p-4 border-2 border-slate-200 rounded-xl peer-checked:border-violet-500 peer-checked:bg-violet-50 hover:border-violet-300 transition-all h-full">
+                      <div class="p-4 border-2 border-slate-200 rounded-xl peer-checked:border-[#23AAC5] peer-checked:bg-[#23AAC5]/10 hover:border-[#23AAC5]/60 transition-all h-full">
                         <div class="flex items-center gap-2 mb-2">
-                          <i class="iconoir-post text-xl text-violet-600"></i>
+                          <i class="iconoir-post text-xl text-[#115c6c]"></i>
                           <span class="font-semibold text-slate-800">Post de blog</span>
                         </div>
                         <p class="text-xs text-slate-500">Optimizado para SEO, con palabras clave y estructura web.</p>
@@ -310,9 +310,9 @@ $csrfToken = $_SESSION['csrf_token'] ?? '';
                     </label>
                     <label class="cursor-pointer">
                       <input type="radio" name="content-type" value="nota-prensa" class="hidden peer" />
-                      <div class="p-4 border-2 border-slate-200 rounded-xl peer-checked:border-violet-500 peer-checked:bg-violet-50 hover:border-violet-300 transition-all h-full">
+                      <div class="p-4 border-2 border-slate-200 rounded-xl peer-checked:border-[#23AAC5] peer-checked:bg-[#23AAC5]/10 hover:border-[#23AAC5]/60 transition-all h-full">
                         <div class="flex items-center gap-2 mb-2">
-                          <i class="iconoir-megaphone text-xl text-violet-600"></i>
+                          <i class="iconoir-megaphone text-xl text-[#115c6c]"></i>
                           <span class="font-semibold text-slate-800">Nota de prensa</span>
                         </div>
                         <p class="text-xs text-slate-500">Comunicados oficiales con estructura periodística profesional.</p>
@@ -327,19 +327,19 @@ $csrfToken = $_SESSION['csrf_token'] ?? '';
                   <div class="flex flex-wrap gap-2">
                     <label class="cursor-pointer">
                       <input type="radio" name="business-line" value="ebone" class="hidden peer" checked />
-                      <div class="px-3 py-1.5 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-violet-500 peer-checked:bg-violet-100 peer-checked:text-violet-700 hover:border-violet-300 transition-all font-medium">
+                      <div class="px-3 py-1.5 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-[#23AAC5] peer-checked:bg-[#23AAC5]/10 peer-checked:text-[#115c6c] hover:border-[#23AAC5]/60 transition-all font-medium">
                         Grupo Ebone
                       </div>
                     </label>
                     <label class="cursor-pointer">
                       <input type="radio" name="business-line" value="cubofit" class="hidden peer" />
-                      <div class="px-3 py-1.5 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-violet-500 peer-checked:bg-violet-100 peer-checked:text-violet-700 hover:border-violet-300 transition-all font-medium">
+                      <div class="px-3 py-1.5 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-[#23AAC5] peer-checked:bg-[#23AAC5]/10 peer-checked:text-[#115c6c] hover:border-[#23AAC5]/60 transition-all font-medium">
                         CUBOFIT
                       </div>
                     </label>
                     <label class="cursor-pointer">
                       <input type="radio" name="business-line" value="uniges" class="hidden peer" />
-                      <div class="px-3 py-1.5 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-violet-500 peer-checked:bg-violet-100 peer-checked:text-violet-700 hover:border-violet-300 transition-all font-medium">
+                      <div class="px-3 py-1.5 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-[#23AAC5] peer-checked:bg-[#23AAC5]/10 peer-checked:text-[#115c6c] hover:border-[#23AAC5]/60 transition-all font-medium">
                         UNIGES-3
                       </div>
                     </label>
@@ -405,36 +405,41 @@ $csrfToken = $_SESSION['csrf_token'] ?? '';
                 <div id="fields-nota-prensa" class="hidden space-y-4">
                   <!-- Tipo de anuncio -->
                   <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">Tipo de anuncio</label>
+                      <label class="block text-sm font-semibold text-slate-700 mb-2">Tipo de anuncio</label>
                     <div class="flex flex-wrap gap-2">
                       <label class="cursor-pointer">
                         <input type="radio" name="press-type" value="lanzamiento" class="hidden peer" checked />
-                        <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-violet-500 peer-checked:bg-violet-50 hover:border-violet-300 transition-all">
-                          🚀 Lanzamiento
+                        <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-[#23AAC5] peer-checked:bg-[#23AAC5]/10 hover:border-[#23AAC5]/60 transition-all flex items-center gap-1">
+                          <i class="iconoir-rocket text-sm text-[#115c6c]"></i>
+                          <span>Lanzamiento</span>
                         </div>
                       </label>
                       <label class="cursor-pointer">
                         <input type="radio" name="press-type" value="evento" class="hidden peer" />
-                        <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-violet-500 peer-checked:bg-violet-50 hover:border-violet-300 transition-all">
-                          📅 Evento
+                        <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-[#23AAC5] peer-checked:bg-[#23AAC5]/10 hover:border-[#23AAC5]/60 transition-all flex items-center gap-1">
+                          <i class="iconoir-calendar text-sm text-[#115c6c]"></i>
+                          <span>Evento</span>
                         </div>
                       </label>
                       <label class="cursor-pointer">
                         <input type="radio" name="press-type" value="nombramiento" class="hidden peer" />
-                        <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-violet-500 peer-checked:bg-violet-50 hover:border-violet-300 transition-all">
-                          👤 Nombramiento
+                        <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-[#23AAC5] peer-checked:bg-[#23AAC5]/10 hover:border-[#23AAC5]/60 transition-all flex items-center gap-1">
+                          <i class="iconoir-user-badge text-sm text-[#115c6c]"></i>
+                          <span>Nombramiento</span>
                         </div>
                       </label>
                       <label class="cursor-pointer">
                         <input type="radio" name="press-type" value="convenio" class="hidden peer" />
-                        <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-violet-500 peer-checked:bg-violet-50 hover:border-violet-300 transition-all">
-                          🤝 Convenio
+                        <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-[#23AAC5] peer-checked:bg-[#23AAC5]/10 hover:border-[#23AAC5]/60 transition-all flex items-center gap-1">
+                          <i class="iconoir-handshake text-sm text-[#115c6c]"></i>
+                          <span>Convenio</span>
                         </div>
                       </label>
                       <label class="cursor-pointer">
                         <input type="radio" name="press-type" value="premio" class="hidden peer" />
-                        <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-violet-500 peer-checked:bg-violet-50 hover:border-violet-300 transition-all">
-                          🏆 Premio/Reconocimiento
+                        <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-[#23AAC5] peer-checked:bg-[#23AAC5]/10 hover:border-[#23AAC5]/60 transition-all flex items-center gap-1">
+                          <i class="iconoir-trophy text-sm text-[#115c6c]"></i>
+                          <span>Premio/Reconocimiento</span>
                         </div>
                       </label>
                     </div>
