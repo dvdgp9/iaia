@@ -1605,8 +1605,11 @@ if (!$user) {
         const div = document.createElement('div');
         div.className = 'flex gap-3 ' + (role === 'user' ? 'justify-end' : 'justify-start');
         
+        // Obtener iniciales del usuario del avatar existente en el DOM
+        const userInitials = document.getElementById('user-avatar')?.textContent?.trim() || '?';
+        
         const avatar = role === 'user' 
-          ? `<div class="w-8 h-8 rounded-full gradient-brand flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">${currentUser ? currentUser.first_name[0] + currentUser.last_name[0] : '?'}</div>`
+          ? `<div class="w-8 h-8 rounded-full gradient-brand flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">${userInitials}</div>`
           : `<div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 text-xs font-semibold flex-shrink-0">E</div>`;
         
         const bubbleClass = role === 'user'
