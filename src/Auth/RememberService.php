@@ -1,7 +1,7 @@
 <?php
 namespace Auth;
 
-use App\Database;
+use App\DB;
 
 /**
  * Servicio para manejar tokens de "Recordarme" persistentes.
@@ -25,7 +25,7 @@ class RememberService
         $expiresAt = date('Y-m-d H:i:s', time() + self::TOKEN_DAYS * 86400);
         
         // Guardar en BD
-        $db = Database::getInstance()->getConnection();
+        $db = DB::pdo();
         $stmt = $db->prepare('
             INSERT INTO remember_tokens (user_id, token_hash, expires_at, created_at)
             VALUES (?, ?, ?, NOW())
@@ -59,7 +59,7 @@ class RememberService
         $tokenHash = hash('sha256', $token);
         
         // Buscar token válido en BD
-        $db = Database::getInstance()->getConnection();
+        $db = DB::pdo();
         $stmt = $db->prepare('
             SELECT rt.id, rt.user_id, 
                    u.id as uid, u.email, u.first_name, u.last_name, 
@@ -114,7 +114,7 @@ class RememberService
      */
     public static function clearAllForUser(int $userId): void
     {
-        $db = Database::getInstance()->getConnection();
+        $db = DB::pdo();
         $stmt = $db->prepare('DELETE FROM remember_tokens WHERE user_id = ?');
         $stmt->execute([$userId]);
         
@@ -126,7 +126,7 @@ class RememberService
      */
     public static function cleanupExpired(): int
     {
-        $db = Database::getInstance()->getConnection();
+        $db = DB::pdo();
         $stmt = $db->prepare('DELETE FROM remember_tokens WHERE expires_at < NOW()');
         $stmt->execute();
         return $stmt->rowCount();
@@ -137,7 +137,7 @@ class RememberService
      */
     private static function deleteToken(int $tokenId): void
     {
-        $db = Database::getInstance()->getConnection();
+        $db = DB::pdo();
         $stmt = $db->prepare('DELETE FROM remember_tokens WHERE id = ?');
         $stmt->execute([$tokenId]);
     }
