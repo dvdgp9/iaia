@@ -61,13 +61,17 @@ class RememberService
         // Buscar token válido en BD
         $db = Database::getInstance()->getConnection();
         $stmt = $db->prepare('
-            SELECT rt.id, rt.user_id, u.id as uid, u.email, u.name, u.role, u.active
+            SELECT rt.id, rt.user_id, 
+                   u.id as uid, u.email, u.first_name, u.last_name, 
+                   u.department_id, u.is_superadmin, u.status,
+                   d.name as department_name
             FROM remember_tokens rt
             JOIN users u ON u.id = rt.user_id
+            LEFT JOIN departments d ON d.id = u.department_id
             WHERE rt.user_id = ? 
               AND rt.token_hash = ? 
               AND rt.expires_at > NOW()
-              AND u.active = 1
+              AND u.status = "active"
             LIMIT 1
         ');
         $stmt->execute([$userId, $tokenHash]);
@@ -79,12 +83,23 @@ class RememberService
             return null;
         }
         
-        // Token válido - restaurar sesión
+        // Obtener roles del usuario
+        require_once __DIR__ . '/../Repos/UsersRepo.php';
+        $repo = new \Repos\UsersRepo();
+        $roles = $repo->getRoles((int)$row['uid']);
+        if ($row['is_superadmin']) {
+            $roles = array_values(array_unique(array_merge(['admin'], $roles)));
+        }
+        
+        // Token válido - restaurar sesión (mismo formato que AuthService::login)
         $user = [
             'id' => (int)$row['uid'],
             'email' => $row['email'],
-            'name' => $row['name'],
-            'role' => $row['role'],
+            'first_name' => $row['first_name'],
+            'last_name' => $row['last_name'],
+            'department_id' => $row['department_id'] ? (int)$row['department_id'] : null,
+            'department_name' => $row['department_name'] ?? null,
+            'roles' => $roles,
         ];
         
         // Rotar token por seguridad (invalidar el anterior, crear uno nuevo)
