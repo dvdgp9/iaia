@@ -278,38 +278,41 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
                 </div>
                 
                 <div class="space-y-2.5">
-                  <button class="voice-option w-full p-4 bg-white/60 hover:bg-white border border-slate-200/80 hover:border-violet-300 rounded-2xl transition-smooth text-left group hover:shadow-md" data-voice="cubo">
-                    <div class="flex items-center gap-3">
-                      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-sm group-hover:scale-110 transition-smooth">C</div>
-                      <div class="flex-1 min-w-0">
-                        <div class="font-semibold text-slate-800 group-hover:text-violet-700 transition-smooth">Cubo</div>
-                        <div class="text-xs text-slate-500">Analítico y estructurado</div>
-                      </div>
-                      <i class="iconoir-arrow-right text-slate-300 group-hover:text-violet-500 group-hover:translate-x-1 transition-smooth"></i>
-                    </div>
-                  </button>
-
-                  <button class="voice-option w-full p-4 bg-white/60 hover:bg-white border border-slate-200/80 hover:border-violet-300 rounded-2xl transition-smooth text-left group hover:shadow-md" data-voice="lex">
+                  <!-- Lex - Activo -->
+                  <button class="voice-option w-full p-4 bg-white/60 hover:bg-white border border-slate-200/80 hover:border-rose-300 rounded-2xl transition-smooth text-left group hover:shadow-md" data-voice="lex">
                     <div class="flex items-center gap-3">
                       <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-sm group-hover:scale-110 transition-smooth">L</div>
                       <div class="flex-1 min-w-0">
-                        <div class="font-semibold text-slate-800 group-hover:text-violet-700 transition-smooth">Lex</div>
-                        <div class="text-xs text-slate-500">Creativo y dinámico</div>
+                        <div class="font-semibold text-slate-800 group-hover:text-rose-600 transition-smooth">Lex</div>
+                        <div class="text-xs text-slate-500">Tu asistente legal de Ebone</div>
                       </div>
-                      <i class="iconoir-arrow-right text-slate-300 group-hover:text-violet-500 group-hover:translate-x-1 transition-smooth"></i>
+                      <i class="iconoir-arrow-right text-slate-300 group-hover:text-rose-500 group-hover:translate-x-1 transition-smooth"></i>
                     </div>
                   </button>
 
-                  <button class="voice-option w-full p-4 bg-white/60 hover:bg-white border border-slate-200/80 hover:border-violet-300 rounded-2xl transition-smooth text-left group hover:shadow-md" data-voice="uniges">
+                  <!-- Cubo - Próximamente -->
+                  <div class="w-full p-4 bg-white/40 border border-slate-200/80 rounded-2xl opacity-60">
                     <div class="flex items-center gap-3">
-                      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-sm group-hover:scale-110 transition-smooth">U</div>
+                      <div class="w-10 h-10 rounded-xl bg-slate-200 flex items-center justify-center text-slate-400 font-bold text-sm flex-shrink-0">C</div>
                       <div class="flex-1 min-w-0">
-                        <div class="font-semibold text-slate-800 group-hover:text-violet-700 transition-smooth">Uniges</div>
-                        <div class="text-xs text-slate-500">Profesional y técnico</div>
+                        <div class="font-semibold text-slate-500">Cubo</div>
+                        <div class="text-xs text-slate-400">Próximamente</div>
                       </div>
-                      <i class="iconoir-arrow-right text-slate-300 group-hover:text-violet-500 group-hover:translate-x-1 transition-smooth"></i>
+                      <span class="px-2 py-0.5 text-xs bg-slate-100 text-slate-400 rounded-full">Soon</span>
                     </div>
-                  </button>
+                  </div>
+
+                  <!-- Uniges - Próximamente -->
+                  <div class="w-full p-4 bg-white/40 border border-slate-200/80 rounded-2xl opacity-60">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-xl bg-slate-200 flex items-center justify-center text-slate-400 font-bold text-sm flex-shrink-0">U</div>
+                      <div class="flex-1 min-w-0">
+                        <div class="font-semibold text-slate-500">Uniges</div>
+                        <div class="text-xs text-slate-400">Próximamente</div>
+                      </div>
+                      <span class="px-2 py-0.5 text-xs bg-slate-100 text-slate-400 rounded-full">Soon</span>
+                    </div>
+                  </div>
 
                   <button id="view-all-voices" class="w-full p-3 mt-1 hover:bg-violet-50 border-2 border-dashed border-slate-200 hover:border-violet-300 rounded-2xl transition-smooth text-center group">
                     <div class="flex items-center justify-center gap-2 text-sm font-medium text-slate-500 group-hover:text-violet-600 transition-smooth">
@@ -1306,16 +1309,27 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
       filePreviewEmpty.classList.remove('hidden');
     }
 
-    // Manejar clics en voces
+    // Manejar clics en voces - rutas a páginas específicas
+    const voiceRoutes = {
+      'lex': '/voices/lex.php'
+      // Otras voces se añadirán cuando estén listas
+    };
+    
     document.querySelectorAll('.voice-option').forEach(btn => {
       btn.addEventListener('click', () => {
         const voice = btn.getAttribute('data-voice');
         const voiceName = btn.querySelector('.font-semibold').textContent;
         
-        // Mostrar mensaje temporal (próximamente)
+        // Si la voz tiene ruta, redirigir
+        if (voiceRoutes[voice]) {
+          window.location.href = voiceRoutes[voice];
+          return;
+        }
+        
+        // Mostrar mensaje temporal (próximamente) para voces sin implementar
         const tempMsg = document.createElement('div');
-        tempMsg.className = 'fixed top-20 left-1/2 -translate-x-1/2 bg-[#23AAC5] text-white px-6 py-3 rounded-xl shadow-lg z-50 flex items-center gap-2';
-        tempMsg.innerHTML = `<i class="iconoir-voice-square"></i><span>Conversación con <strong>${voiceName}</strong> disponible próximamente</span>`;
+        tempMsg.className = 'fixed top-20 left-1/2 -translate-x-1/2 bg-violet-600 text-white px-6 py-3 rounded-xl shadow-lg z-50 flex items-center gap-2';
+        tempMsg.innerHTML = `<i class="iconoir-voice-square"></i><span>Voz <strong>${voiceName}</strong> disponible próximamente</span>`;
         document.body.appendChild(tempMsg);
         
         setTimeout(() => {

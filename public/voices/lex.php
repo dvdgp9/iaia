@@ -1,0 +1,225 @@
+<?php
+require_once __DIR__ . '/../../src/App/bootstrap.php';
+
+use App\Session;
+
+Session::start();
+$user = Session::user();
+if (!$user) {
+    header('Location: /login.php');
+    exit;
+}
+$csrfToken = $_SESSION['csrf_token'] ?? '';
+$pageTitle = 'Lex — Asistente Legal — Ebonia';
+$activeTab = 'voices';
+$userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
+?><!DOCTYPE html>
+<html lang="es">
+<?php include __DIR__ . '/../includes/head.php'; ?>
+<body class="bg-mesh text-slate-900 overflow-hidden">
+  <div class="min-h-screen flex h-screen">
+    <?php include __DIR__ . '/../includes/left-tabs.php'; ?>
+    
+    <!-- Sidebar de historial -->
+    <aside id="history-sidebar" class="w-72 glass-strong border-r border-slate-200/50 flex flex-col shrink-0">
+      <div class="p-4 border-b border-slate-200/50">
+        <div class="flex items-center justify-between">
+          <h2 class="font-semibold text-slate-800 flex items-center gap-2">
+            <i class="iconoir-clock text-rose-500"></i>
+            Historial
+          </h2>
+          <button id="new-chat-btn" class="p-1.5 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-smooth" title="Nueva consulta">
+            <i class="iconoir-plus text-lg"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div id="history-list" class="flex-1 overflow-auto">
+        <!-- Se carga dinámicamente -->
+        <div class="p-4 text-center text-slate-400 text-sm">
+          <i class="iconoir-refresh animate-spin"></i>
+          Cargando...
+        </div>
+      </div>
+    </aside>
+    
+    <!-- Main content area -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+      <!-- Header -->
+      <header class="h-[60px] px-6 border-b border-slate-200/50 glass-strong flex items-center justify-between shadow-sm shrink-0">
+        <div class="flex items-center gap-4">
+          <a href="/" class="flex items-center gap-2 text-slate-600 hover:text-rose-500 transition-smooth">
+            <i class="iconoir-arrow-left text-lg"></i>
+            <span class="text-sm font-medium">Inicio</span>
+          </a>
+          <div class="h-6 w-px bg-slate-200"></div>
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center text-white shadow-md">
+              <span class="font-bold text-sm">L</span>
+            </div>
+            <div>
+              <span class="font-semibold text-slate-800">Lex</span>
+              <span class="text-xs text-slate-500 ml-2">Asistente Legal</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Panel de documentos toggle -->
+        <button id="toggle-docs-panel" class="flex items-center gap-2 px-3 py-1.5 text-sm text-slate-600 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-smooth">
+          <i class="iconoir-folder-document"></i>
+          <span>Documentos</span>
+          <i class="iconoir-nav-arrow-right text-xs" id="docs-arrow"></i>
+        </button>
+      </header>
+
+      <!-- Content area with optional docs panel -->
+      <div class="flex-1 flex overflow-hidden">
+        
+        <!-- Chat area -->
+        <div class="flex-1 flex flex-col bg-mesh">
+          
+          <!-- Messages -->
+          <div id="messages-container" class="flex-1 overflow-auto p-6">
+            <!-- Empty state -->
+            <div id="empty-state" class="h-full flex items-center justify-center">
+              <div class="text-center max-w-lg">
+                <div class="w-20 h-20 rounded-3xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center mx-auto mb-6 shadow-xl animate-float">
+                  <span class="text-4xl font-bold text-white">L</span>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-900 mb-3">Hola, <?php echo $userName; ?></h2>
+                <p class="text-slate-600 mb-6">
+                  Soy <strong>Lex</strong>, tu asistente legal del Grupo Ebone. Puedo ayudarte con consultas sobre convenios colectivos, normativas internas y documentación legal.
+                </p>
+                
+                <!-- Sugerencias -->
+                <div class="space-y-2">
+                  <p class="text-xs text-slate-400 uppercase tracking-wider mb-3">Prueba a preguntar:</p>
+                  <button class="suggestion-btn w-full p-3 glass border border-slate-200/50 hover:border-rose-300 rounded-xl text-left transition-smooth group">
+                    <span class="text-sm text-slate-700 group-hover:text-rose-600">¿Cuántos días de vacaciones me corresponden según el convenio?</span>
+                  </button>
+                  <button class="suggestion-btn w-full p-3 glass border border-slate-200/50 hover:border-rose-300 rounded-xl text-left transition-smooth group">
+                    <span class="text-sm text-slate-700 group-hover:text-rose-600">¿Cuál es el procedimiento para solicitar una excedencia?</span>
+                  </button>
+                  <button class="suggestion-btn w-full p-3 glass border border-slate-200/50 hover:border-rose-300 rounded-xl text-left transition-smooth group">
+                    <span class="text-sm text-slate-700 group-hover:text-rose-600">¿Qué dice el convenio sobre las horas extra?</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Messages list (hidden initially) -->
+            <div id="messages" class="hidden space-y-6 max-w-4xl mx-auto"></div>
+            
+            <!-- Typing indicator -->
+            <div id="typing-indicator" class="hidden max-w-4xl mx-auto">
+              <div class="flex gap-3 items-start">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">L</div>
+                <div class="glass border border-slate-200/50 px-5 py-3.5 rounded-2xl rounded-tl-sm shadow-sm">
+                  <div class="flex gap-1.5">
+                    <div class="w-2 h-2 bg-rose-400 rounded-full animate-bounce" style="animation-delay: 0ms"></div>
+                    <div class="w-2 h-2 bg-rose-400 rounded-full animate-bounce" style="animation-delay: 150ms"></div>
+                    <div class="w-2 h-2 bg-rose-400 rounded-full animate-bounce" style="animation-delay: 300ms"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Input area -->
+          <footer class="p-4 glass-strong border-t border-slate-200/50">
+            <form id="chat-form" class="max-w-4xl mx-auto">
+              <div class="flex gap-3">
+                <input 
+                  id="chat-input" 
+                  class="flex-1 px-5 py-4 rounded-2xl border-2 border-slate-200 text-base input-focus transition-smooth bg-white/80" 
+                  placeholder="Escribe tu consulta legal..."
+                  autocomplete="off"
+                />
+                <button type="submit" class="px-6 py-4 bg-gradient-to-r from-rose-500 to-pink-600 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-smooth flex items-center gap-2">
+                  <span>Enviar</span>
+                  <i class="iconoir-send-diagonal text-lg"></i>
+                </button>
+              </div>
+            </form>
+          </footer>
+        </div>
+        
+        <!-- Documents panel (collapsible) -->
+        <aside id="docs-panel" class="hidden w-80 glass-strong border-l border-slate-200/50 flex flex-col shrink-0">
+          <div class="p-4 border-b border-slate-200/50">
+            <h3 class="font-semibold text-slate-800 flex items-center gap-2">
+              <i class="iconoir-folder-document text-rose-500"></i>
+              Documentos disponibles
+            </h3>
+            <p class="text-xs text-slate-500 mt-1">Fuentes de conocimiento de Lex</p>
+          </div>
+          
+          <div class="flex-1 overflow-auto p-4 space-y-2">
+            <!-- Documento: Convenio -->
+            <div class="doc-item p-3 bg-white/60 border border-slate-200/80 rounded-xl hover:border-rose-300 transition-smooth cursor-pointer group">
+              <div class="flex items-start gap-3">
+                <div class="w-10 h-10 rounded-lg bg-rose-100 flex items-center justify-center flex-shrink-0">
+                  <i class="iconoir-page text-lg text-rose-600"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="font-medium text-sm text-slate-800 group-hover:text-rose-600 transition-smooth">Convenio Colectivo</div>
+                  <div class="text-xs text-slate-500 mt-0.5">Derechos laborales, vacaciones, permisos...</div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Documento: Normativa interna -->
+            <div class="doc-item p-3 bg-white/60 border border-slate-200/80 rounded-xl hover:border-rose-300 transition-smooth cursor-pointer group">
+              <div class="flex items-start gap-3">
+                <div class="w-10 h-10 rounded-lg bg-rose-100 flex items-center justify-center flex-shrink-0">
+                  <i class="iconoir-book text-lg text-rose-600"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="font-medium text-sm text-slate-800 group-hover:text-rose-600 transition-smooth">Normativa Interna</div>
+                  <div class="text-xs text-slate-500 mt-0.5">Políticas de empresa, procedimientos...</div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Documento: Estatuto trabajadores -->
+            <div class="doc-item p-3 bg-white/60 border border-slate-200/80 rounded-xl hover:border-rose-300 transition-smooth cursor-pointer group">
+              <div class="flex items-start gap-3">
+                <div class="w-10 h-10 rounded-lg bg-rose-100 flex items-center justify-center flex-shrink-0">
+                  <i class="iconoir-scale text-lg text-rose-600"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="font-medium text-sm text-slate-800 group-hover:text-rose-600 transition-smooth">Estatuto de los Trabajadores</div>
+                  <div class="text-xs text-slate-500 mt-0.5">Legislación laboral española</div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Placeholder próximamente -->
+            <div class="p-3 border-2 border-dashed border-slate-200 rounded-xl opacity-60">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0">
+                  <i class="iconoir-plus text-lg text-slate-400"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="font-medium text-sm text-slate-500">Más documentos</div>
+                  <div class="text-xs text-slate-400">Próximamente...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="p-4 border-t border-slate-200/50">
+            <p class="text-xs text-slate-400 text-center">
+              <i class="iconoir-info-circle"></i>
+              Lex consulta estos documentos para responder
+            </p>
+          </div>
+        </aside>
+        
+      </div>
+    </main>
+  </div>
+
+  <script src="/assets/js/voice-lex.js"></script>
+</body>
+</html>

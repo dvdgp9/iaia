@@ -146,6 +146,72 @@ Los "gestos" son acciones predefinidas que los usuarios pueden ejecutar para tar
 - 2025-12-01: **CONTEXTO CORPORATIVO**: Implementado sistema de contexto unificado con ContextBuilder. Ebonia ahora recibe conocimiento base del Grupo Ebone mediante systemInstruction en todas las conversaciones. Carpeta `docs/context/` creada con `system_prompt.md` y `grupo_ebone_overview.md`.
 - 2025-12-01: **FOLDERS**: Implementada funcionalidad completa de carpetas para organizar conversaciones. Usuarios pueden crear, renombrar, eliminar carpetas y mover conversaciones entre ellas. Incluye FoldersRepo, 6 endpoints API (/folders/list, create, rename, delete, move, reorder) y UI completa en sidebar.
 
+---
+
+## Feature: Sistema de Voces
+
+### Motivación
+Las "voces" son asistentes especializados con conocimiento profundo de dominios específicos. A diferencia del chat genérico, cada voz tiene contexto especializado y acceso a documentación relevante.
+
+### Voces planificadas
+1. **Lex** (primera voz) - Asistente legal de Ebone: convenios, normativas, artículos legales
+2. **Cubo** - Asistente CUBOFIT: productos fitness, especificaciones técnicas
+3. **Uniges** - Asistente UNIGES-3: gestión deportiva, servicios municipales
+
+### Decisión técnica: RAG vs Context directo
+
+**Recomendación: RAG (Retrieval Augmented Generation)**
+
+| Aspecto | Context directo | RAG |
+|---------|-----------------|-----|
+| Documentos pequeños (<50KB total) | ✅ Viable | Overkill |
+| Documentos grandes (convenios, normativas) | ❌ Excede contexto | ✅ Ideal |
+| Precisión en citas | ❌ Aproximada | ✅ Exacta con fuentes |
+| Coste por request | Alto (todo el contexto) | Bajo (solo chunks relevantes) |
+| Escalabilidad | ❌ Limitada | ✅ Ilimitada |
+
+**Implementación RAG propuesta:**
+1. **Ingesta**: Procesar documentos legales → chunks de ~500 tokens
+2. **Embeddings**: Usar modelo de embeddings (ej: text-embedding-3-small de OpenAI, o Gemini embeddings)
+3. **Vector Store**: SQLite con extensión vector, o tabla MySQL con búsqueda por similitud
+4. **Retrieval**: Top-k chunks relevantes según query del usuario
+5. **Generation**: LLM recibe chunks + query → respuesta con citas
+
+**Alternativa simplificada (MVP):**
+- Archivos markdown en `docs/context/voices/lex/`
+- ContextBuilder especializado que carga solo los docs de la voz activa
+- Funciona si total de docs < 100KB por voz
+
+### Tareas de implementación
+
+1. [ ] **Crear estructura `/public/voices/`**
+   - `lex.php` - Página de la voz Lex
+   - JS modular en `/assets/js/voice-lex.js`
+   - Success: Estructura lista
+
+2. [ ] **Crear UI de voz Lex**
+   - Similar a write-article.php pero orientado a consultas
+   - Sidebar con historial de consultas
+   - Área de chat especializada
+   - Panel lateral con documentos disponibles
+   - Success: UI funcional
+
+3. [ ] **Crear contexto especializado Lex**
+   - `docs/context/voices/lex/` con documentos legales
+   - System prompt específico para asistente legal
+   - Success: Contexto cargado correctamente
+
+4. [ ] **Implementar endpoint `/api/voices/chat.php`**
+   - Recibe: voice_id, message, history
+   - Carga contexto especializado de la voz
+   - Retorna respuesta con posibles citas
+   - Success: Respuestas legales precisas
+
+5. [ ] **(Futuro) Implementar RAG**
+   - Cuando los documentos excedan el contexto
+   - Vector store + embeddings
+   - Success: Búsqueda semántica en documentos
+
 # Executor's Feedback or Assistance Requests
 
 - Proveedor LLM: Gemini 1.5 Flash confirmado. API Key recibida (se gestionará vía `.env`, no se registrará en repo ni logs).

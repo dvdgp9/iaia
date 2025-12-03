@@ -19,8 +19,8 @@ $tabs = [
     'voices' => [
         'icon' => 'iconoir-voice-square',
         'label' => 'Voces',
-        'href' => null, // Deshabilitado
-        'title' => 'Voces (próximamente)'
+        'href' => '/voices/lex.php',
+        'title' => 'Voces especializadas'
     ],
     'gestures' => [
         'icon' => 'iconoir-magic-wand',
