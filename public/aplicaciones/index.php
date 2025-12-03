@@ -123,7 +123,7 @@ $apps = [
   <title>Aplicaciones · Ebonia</title>
   <?php include __DIR__ . '/../includes/head.php'; ?>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex">
+<body class="bg-mesh text-slate-100 min-h-screen flex">
   <!-- Sidebar izquierdo -->
   <?php include __DIR__ . '/../includes/left-tabs.php'; ?>
 
