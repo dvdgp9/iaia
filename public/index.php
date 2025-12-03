@@ -204,149 +204,135 @@ $useTabsJs = true; // Habilitar manejo JS de tabs en index.php
             <div class="text-amber-700 mt-0.5">Para optimizar el rendimiento, solo se envían los mensajes más recientes al asistente. El historial completo permanece guardado.</div>
           </div>
         </div>
-        <div id="empty-state" class="absolute inset-0 overflow-auto">
-          <div class="min-h-full flex flex-col justify-center px-6 py-8">
-            <div class="max-w-3xl mx-auto w-full">
+        <div id="empty-state" class="absolute inset-0 overflow-auto hero-gradient">
+          <div class="min-h-full flex flex-col">
+            
+            <!-- Hero Section -->
+            <div class="flex-1 flex flex-col items-center justify-center px-6 py-12">
               
-              <!-- Greeting + Input Hero -->
-              <div class="text-center mb-6">
-                <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-[#23AAC5]/10 to-[#115c6c]/10 rounded-full mb-4">
-                  <span class="relative flex h-2 w-2">
-                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#23AAC5] opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-2 w-2 bg-[#23AAC5]"></span>
-                  </span>
-                  <span class="text-xs font-medium text-[#115c6c]">Ebonia está lista</span>
+              <!-- Greeting -->
+              <div class="text-center mb-10">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#23AAC5]/10 text-[#115c6c] text-xs font-medium mb-6">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                  <span>IA Corporativa activa</span>
                 </div>
-                <h1 class="text-2xl font-bold text-slate-900 mb-1" id="greeting-text">¡Hola! ¿En qué puedo ayudarte?</h1>
-                <p class="text-sm text-slate-500">Escribe algo o elige una acción rápida</p>
+                <h1 class="text-4xl font-bold text-slate-900 mb-3" id="greeting-text">Buenos días</h1>
+                <p class="text-lg text-slate-500 max-w-md mx-auto">¿En qué puedo ayudarte hoy?</p>
               </div>
               
-              <!-- Input principal con glassmorphism -->
-              <form id="chat-form-empty" class="mb-6">
-                <div id="file-preview-empty" class="hidden mb-3 p-2.5 bg-white/80 backdrop-blur border border-slate-200 rounded-xl flex items-center gap-3">
-                  <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#23AAC5]/10 to-[#115c6c]/10 flex items-center justify-center flex-shrink-0">
-                    <i id="file-icon-empty" class="iconoir-page text-lg text-[#23AAC5]"></i>
-                  </div>
-                  <div class="flex-1 min-w-0">
-                    <div id="file-name-empty" class="text-sm font-medium text-slate-800 truncate"></div>
-                    <div id="file-size-empty" class="text-xs text-slate-500"></div>
+              <!-- Main Input -->
+              <form id="chat-form-empty" class="w-full max-w-2xl mb-12">
+                <!-- File preview -->
+                <div id="file-preview-empty" class="hidden mb-3 p-3 bg-white/80 backdrop-blur border border-slate-200 rounded-xl flex items-center gap-3">
+                  <div class="flex-1 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-[#23AAC5]/10 to-[#115c6c]/10 flex items-center justify-center flex-shrink-0">
+                      <i id="file-icon-empty" class="iconoir-page text-xl text-[#23AAC5]"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <div id="file-name-empty" class="text-sm font-medium text-slate-800 truncate"></div>
+                      <div id="file-size-empty" class="text-xs text-slate-500"></div>
+                    </div>
                   </div>
                   <button type="button" id="remove-file-empty" class="p-1.5 text-slate-400 hover:text-red-500 rounded-lg transition-colors">
                     <i class="iconoir-xmark"></i>
                   </button>
                 </div>
                 
-                <div class="relative group">
-                  <div class="absolute -inset-0.5 bg-gradient-to-r from-[#23AAC5] to-[#115c6c] rounded-2xl opacity-0 group-hover:opacity-20 group-focus-within:opacity-30 blur transition duration-300"></div>
-                  <div class="relative flex items-center gap-2 bg-white border border-slate-200 rounded-2xl p-1.5 shadow-sm group-hover:shadow-md group-focus-within:shadow-lg group-focus-within:border-[#23AAC5]/50 transition-all duration-300">
-                    <input type="file" id="file-input-empty" class="hidden" accept=".pdf,.png,.jpg,.jpeg,.gif,.webp" />
-                    <button type="button" id="attach-btn-empty" class="p-2.5 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/5 rounded-xl transition-all" title="Adjuntar archivo">
-                      <i class="iconoir-attachment text-lg"></i>
-                    </button>
-                    <input id="chat-input-empty" class="flex-1 py-2.5 px-1 bg-transparent focus:outline-none text-slate-800 placeholder:text-slate-400" placeholder="Pregunta lo que quieras..." />
-                    <button type="submit" class="p-2.5 gradient-brand-btn text-white rounded-xl hover:scale-105 active:scale-95 transition-all duration-200 shadow-sm hover:shadow-md">
-                      <i class="iconoir-send-diagonal text-lg"></i>
-                    </button>
-                  </div>
+                <!-- Glass input container -->
+                <div class="glass-input rounded-2xl p-2 flex items-center gap-2">
+                  <input type="file" id="file-input-empty" class="hidden" accept=".pdf,.png,.jpg,.jpeg,.gif,.webp" />
+                  <button type="button" id="attach-btn-empty" class="p-3 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/5 rounded-xl transition-all" title="Adjuntar archivo">
+                    <i class="iconoir-attachment text-xl"></i>
+                  </button>
+                  <input id="chat-input-empty" class="flex-1 bg-transparent px-2 py-3 focus:outline-none text-slate-700 placeholder-slate-400" placeholder="Escribe tu pregunta o pega un texto para analizar..." />
+                  <button type="submit" class="p-3 gradient-brand-btn text-white rounded-xl hover:opacity-90 transition-all flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                  </button>
+                </div>
+                
+                <!-- Hints -->
+                <div class="flex items-center justify-center gap-4 mt-4 text-xs text-slate-400">
+                  <span class="flex items-center gap-1.5">
+                    <i class="iconoir-attachment"></i>
+                    PDF, imágenes
+                  </span>
+                  <span class="hidden sm:flex items-center gap-1.5">
+                    <span class="kbd">⌘</span><span class="kbd">K</span>
+                    Búsqueda rápida
+                  </span>
                 </div>
               </form>
               
-              <!-- Quick suggestions como pills -->
-              <div class="flex flex-wrap justify-center gap-2 mb-8">
-                <button class="quick-prompt px-3 py-1.5 text-xs font-medium text-slate-600 bg-white border border-slate-200 rounded-full hover:border-[#23AAC5] hover:text-[#23AAC5] hover:bg-[#23AAC5]/5 transition-all duration-200 hover:scale-105" data-prompt="Escríbeme un email profesional">
-                  <i class="iconoir-mail mr-1"></i>Email profesional
-                </button>
-                <button class="quick-prompt px-3 py-1.5 text-xs font-medium text-slate-600 bg-white border border-slate-200 rounded-full hover:border-[#23AAC5] hover:text-[#23AAC5] hover:bg-[#23AAC5]/5 transition-all duration-200 hover:scale-105" data-prompt="Resume este texto:">
-                  <i class="iconoir-compress mr-1"></i>Resumir
-                </button>
-                <button class="quick-prompt px-3 py-1.5 text-xs font-medium text-slate-600 bg-white border border-slate-200 rounded-full hover:border-[#23AAC5] hover:text-[#23AAC5] hover:bg-[#23AAC5]/5 transition-all duration-200 hover:scale-105" data-prompt="Traduce al inglés:">
-                  <i class="iconoir-translate mr-1"></i>Traducir
-                </button>
-                <button class="quick-prompt px-3 py-1.5 text-xs font-medium text-slate-600 bg-white border border-slate-200 rounded-full hover:border-[#23AAC5] hover:text-[#23AAC5] hover:bg-[#23AAC5]/5 transition-all duration-200 hover:scale-105" data-prompt="Mejora la redacción de:">
-                  <i class="iconoir-sparks mr-1"></i>Mejorar texto
-                </button>
-              </div>
-              
-              <!-- Cards compactas: Voces y Gestos -->
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                
-                <!-- Voces Card -->
-                <div class="group relative bg-white rounded-2xl border border-slate-200 p-4 hover:border-[#23AAC5]/30 transition-all duration-300 hover:shadow-lg overflow-hidden">
-                  <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#23AAC5]/5 to-transparent rounded-full -translate-y-1/2 translate-x-1/2"></div>
+              <!-- Quick Actions Grid -->
+              <div class="w-full max-w-4xl">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                   
-                  <div class="relative">
-                    <div class="flex items-center gap-3 mb-3">
-                      <div class="w-9 h-9 rounded-xl gradient-brand flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-300">
-                        <i class="iconoir-user-voice text-white"></i>
-                      </div>
-                      <div>
-                        <h3 class="font-semibold text-slate-900 text-sm">Voces</h3>
-                        <p class="text-[11px] text-slate-500">Personalidades IA</p>
-                      </div>
+                  <!-- Escribir -->
+                  <button class="action-card gesture-option bg-white rounded-xl p-4 text-left group" data-gesture="write-article">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                      <i class="iconoir-edit-pencil text-lg text-white"></i>
                     </div>
-                    
-                    <div class="flex gap-2 mb-3">
-                      <button class="voice-option flex-1 p-2 bg-slate-50 hover:bg-gradient-to-br hover:from-blue-500/10 hover:to-indigo-600/10 border border-slate-200 hover:border-blue-400/50 rounded-xl transition-all duration-200 group/voice" data-voice="cubo">
-                        <div class="w-7 h-7 mx-auto rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-xs mb-1 group-hover/voice:scale-110 transition-transform">C</div>
-                        <div class="text-[10px] font-medium text-slate-700 text-center">Cubo</div>
-                      </button>
-                      <button class="voice-option flex-1 p-2 bg-slate-50 hover:bg-gradient-to-br hover:from-purple-500/10 hover:to-pink-600/10 border border-slate-200 hover:border-purple-400/50 rounded-xl transition-all duration-200 group/voice" data-voice="lex">
-                        <div class="w-7 h-7 mx-auto rounded-lg bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-white font-bold text-xs mb-1 group-hover/voice:scale-110 transition-transform">L</div>
-                        <div class="text-[10px] font-medium text-slate-700 text-center">Lex</div>
-                      </button>
-                      <button class="voice-option flex-1 p-2 bg-slate-50 hover:bg-gradient-to-br hover:from-emerald-500/10 hover:to-teal-600/10 border border-slate-200 hover:border-emerald-400/50 rounded-xl transition-all duration-200 group/voice" data-voice="uniges">
-                        <div class="w-7 h-7 mx-auto rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-xs mb-1 group-hover/voice:scale-110 transition-transform">U</div>
-                        <div class="text-[10px] font-medium text-slate-700 text-center">Uniges</div>
-                      </button>
-                    </div>
-                    
-                    <button id="view-all-voices" class="w-full py-1.5 text-[11px] font-medium text-slate-500 hover:text-[#23AAC5] transition-colors flex items-center justify-center gap-1">
-                      Ver todas <i class="iconoir-arrow-right text-xs"></i>
-                    </button>
-                  </div>
-                </div>
-                
-                <!-- Gestos Card -->
-                <div class="group relative bg-white rounded-2xl border border-slate-200 p-4 hover:border-[#23AAC5]/30 transition-all duration-300 hover:shadow-lg overflow-hidden">
-                  <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#115c6c]/5 to-transparent rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                    <div class="font-semibold text-slate-800 text-sm mb-0.5">Escribir</div>
+                    <div class="text-xs text-slate-500">Artículos y contenido</div>
+                  </button>
                   
-                  <div class="relative">
-                    <div class="flex items-center gap-3 mb-3">
-                      <div class="w-9 h-9 rounded-xl gradient-brand flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-300">
-                        <i class="iconoir-magic-wand text-white"></i>
-                      </div>
-                      <div>
-                        <h3 class="font-semibold text-slate-900 text-sm">Acciones</h3>
-                        <p class="text-[11px] text-slate-500">Plantillas optimizadas</p>
-                      </div>
+                  <!-- Traducir -->
+                  <button class="action-card gesture-option bg-white rounded-xl p-4 text-left group" data-gesture="translate">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                      <i class="iconoir-language text-lg text-white"></i>
                     </div>
-                    
-                    <div class="space-y-1.5 mb-3">
-                      <button class="gesture-option w-full p-2 bg-slate-50 hover:bg-[#23AAC5]/5 border border-slate-200 hover:border-[#23AAC5]/40 rounded-xl transition-all duration-200 text-left group/gesture flex items-center gap-2.5" data-gesture="write-document">
-                        <div class="w-7 h-7 rounded-lg bg-[#23AAC5]/10 flex items-center justify-center flex-shrink-0 group-hover/gesture:bg-[#23AAC5]/20 transition-colors">
-                          <i class="iconoir-page-edit text-sm text-[#23AAC5]"></i>
-                        </div>
-                        <span class="text-xs font-medium text-slate-700 group-hover/gesture:text-[#23AAC5] transition-colors">Escribir artículo</span>
-                        <i class="iconoir-arrow-right text-xs text-slate-300 group-hover/gesture:text-[#23AAC5] ml-auto transition-colors"></i>
-                      </button>
-                      <button class="gesture-option w-full p-2 bg-slate-50 hover:bg-[#23AAC5]/5 border border-slate-200 hover:border-[#23AAC5]/40 rounded-xl transition-all duration-200 text-left group/gesture flex items-center gap-2.5" data-gesture="translate">
-                        <div class="w-7 h-7 rounded-lg bg-[#23AAC5]/10 flex items-center justify-center flex-shrink-0 group-hover/gesture:bg-[#23AAC5]/20 transition-colors">
-                          <i class="iconoir-translate text-sm text-[#23AAC5]"></i>
-                        </div>
-                        <span class="text-xs font-medium text-slate-700 group-hover/gesture:text-[#23AAC5] transition-colors">Traducir texto</span>
-                        <i class="iconoir-arrow-right text-xs text-slate-300 group-hover/gesture:text-[#23AAC5] ml-auto transition-colors"></i>
-                      </button>
+                    <div class="font-semibold text-slate-800 text-sm mb-0.5">Traducir</div>
+                    <div class="text-xs text-slate-500">Múltiples idiomas</div>
+                  </button>
+                  
+                  <!-- Resumir -->
+                  <button class="action-card gesture-option bg-white rounded-xl p-4 text-left group" data-gesture="summarize">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                      <i class="iconoir-list text-lg text-white"></i>
                     </div>
-                    
-                    <button id="view-all-gestures" class="w-full py-1.5 text-[11px] font-medium text-slate-500 hover:text-[#23AAC5] transition-colors flex items-center justify-center gap-1">
-                      Ver todas <i class="iconoir-arrow-right text-xs"></i>
-                    </button>
-                  </div>
+                    <div class="font-semibold text-slate-800 text-sm mb-0.5">Resumir</div>
+                    <div class="text-xs text-slate-500">Extrae lo esencial</div>
+                  </button>
+                  
+                  <!-- Analizar -->
+                  <button class="action-card gesture-option bg-white rounded-xl p-4 text-left group" data-gesture="analyze">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                      <i class="iconoir-stats-up-square text-lg text-white"></i>
+                    </div>
+                    <div class="font-semibold text-slate-800 text-sm mb-0.5">Analizar</div>
+                    <div class="text-xs text-slate-500">Datos y documentos</div>
+                  </button>
+                  
                 </div>
-                
               </div>
-              
             </div>
+            
+            <!-- Bottom Section: Recent & Suggestions -->
+            <div class="border-t border-slate-200/60 bg-white/50 backdrop-blur-sm">
+              <div class="max-w-4xl mx-auto px-6 py-6">
+                <div class="flex items-center justify-between mb-4">
+                  <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Sugerencias</h3>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                  <button class="suggestion-chip px-4 py-2 bg-white border border-slate-200 rounded-full text-sm text-slate-600 hover:border-[#23AAC5] hover:text-[#23AAC5] transition-all">
+                    Redacta un email formal
+                  </button>
+                  <button class="suggestion-chip px-4 py-2 bg-white border border-slate-200 rounded-full text-sm text-slate-600 hover:border-[#23AAC5] hover:text-[#23AAC5] transition-all">
+                    Resume este documento
+                  </button>
+                  <button class="suggestion-chip px-4 py-2 bg-white border border-slate-200 rounded-full text-sm text-slate-600 hover:border-[#23AAC5] hover:text-[#23AAC5] transition-all">
+                    Traduce al inglés
+                  </button>
+                  <button class="suggestion-chip px-4 py-2 bg-white border border-slate-200 rounded-full text-sm text-slate-600 hover:border-[#23AAC5] hover:text-[#23AAC5] transition-all">
+                    Genera ideas para...
+                  </button>
+                  <button class="suggestion-chip px-4 py-2 bg-white border border-slate-200 rounded-full text-sm text-slate-600 hover:border-[#23AAC5] hover:text-[#23AAC5] transition-all">
+                    Mejora este texto
+                  </button>
+                </div>
+              </div>
+            </div>
+            
           </div>
         </div>
         <div id="messages" class="hidden p-8 space-y-2"></div>
@@ -624,18 +610,6 @@ $useTabsJs = true; // Habilitar manejo JS de tabs en index.php
         // Avatar con iniciales
         const initials = `${data.user.first_name[0]}${data.user.last_name[0]}`.toUpperCase();
         userAvatar.textContent = initials;
-        
-        // Saludo personalizado según hora del día
-        const hour = new Date().getHours();
-        let greeting = '¡Hola';
-        if (hour >= 5 && hour < 12) greeting = 'Buenos días';
-        else if (hour >= 12 && hour < 20) greeting = 'Buenas tardes';
-        else greeting = 'Buenas noches';
-        
-        const greetingEl = document.getElementById('greeting-text');
-        if (greetingEl) {
-          greetingEl.textContent = `${greeting}, ${data.user.first_name}`;
-        }
         
         // Mostrar enlace admin si es superadmin
         if (data.user.roles && data.user.roles.includes('admin')) {
@@ -1641,11 +1615,46 @@ $useTabsJs = true; // Habilitar manejo JS de tabs en index.php
   </script>
   
   <script>
+    // Dynamic Greeting based on time of day
+    (function() {
+      const greetingEl = document.getElementById('greeting-text');
+      if (!greetingEl) return;
+      
+      const hour = new Date().getHours();
+      let greeting = 'Buenas noches';
+      
+      if (hour >= 6 && hour < 12) {
+        greeting = 'Buenos días';
+      } else if (hour >= 12 && hour < 20) {
+        greeting = 'Buenas tardes';
+      }
+      
+      greetingEl.textContent = greeting;
+    })();
+    
+    // Suggestion chips - insert into chat input
+    (function() {
+      const chips = document.querySelectorAll('.suggestion-chip');
+      const inputEl = document.getElementById('chat-input-empty');
+      
+      chips.forEach(chip => {
+        chip.addEventListener('click', () => {
+          if (inputEl) {
+            inputEl.value = chip.textContent.trim();
+            inputEl.focus();
+          }
+        });
+      });
+    })();
+    
     // Gestures Navigation - redirige a páginas individuales de cada gesto
     (function() {
       const gestureRoutes = {
         'write-article': '/gestures/write-article.php',
-        'write-document': '/gestures/write-article.php'
+        // Próximamente más gestos
+        // 'translate': '/gestures/translate.php',
+        // 'summarize': '/gestures/summarize.php',
+        // 'analyze': '/gestures/analyze.php',
       };
       
       const gestureCards = document.querySelectorAll('[data-gesture]');
@@ -1654,24 +1663,13 @@ $useTabsJs = true; // Habilitar manejo JS de tabs en index.php
           const gestureId = card.getAttribute('data-gesture');
           if (gestureRoutes[gestureId]) {
             window.location.href = gestureRoutes[gestureId];
-          }
-        });
-      });
-    })();
-    
-    // Quick prompts - insertan texto en el input
-    (function() {
-      const quickPrompts = document.querySelectorAll('.quick-prompt');
-      const inputEmpty = document.getElementById('chat-input-empty');
-      
-      quickPrompts.forEach(btn => {
-        btn.addEventListener('click', () => {
-          const prompt = btn.getAttribute('data-prompt');
-          if (inputEmpty && prompt) {
-            inputEmpty.value = prompt + ' ';
-            inputEmpty.focus();
-            // Posicionar cursor al final
-            inputEmpty.setSelectionRange(inputEmpty.value.length, inputEmpty.value.length);
+          } else {
+            // Gesto no disponible aún - mostrar toast o similar
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 bg-slate-800 text-white text-sm rounded-lg shadow-lg z-50';
+            toast.textContent = 'Este gesto estará disponible próximamente';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2500);
           }
         });
       });
