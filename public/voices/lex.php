@@ -154,57 +154,11 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
             <p class="text-xs text-slate-500 mt-1">Fuentes de conocimiento de Lex</p>
           </div>
           
-          <div class="flex-1 overflow-auto p-4 space-y-2">
-            <!-- Documento: Convenio -->
-            <div class="doc-item p-3 bg-white/60 border border-slate-200/80 rounded-xl hover:border-rose-300 transition-smooth cursor-pointer group">
-              <div class="flex items-start gap-3">
-                <div class="w-10 h-10 rounded-lg bg-rose-100 flex items-center justify-center flex-shrink-0">
-                  <i class="iconoir-page text-lg text-rose-600"></i>
-                </div>
-                <div class="flex-1 min-w-0">
-                  <div class="font-medium text-sm text-slate-800 group-hover:text-rose-600 transition-smooth">Convenio Colectivo</div>
-                  <div class="text-xs text-slate-500 mt-0.5">Derechos laborales, vacaciones, permisos...</div>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Documento: Normativa interna -->
-            <div class="doc-item p-3 bg-white/60 border border-slate-200/80 rounded-xl hover:border-rose-300 transition-smooth cursor-pointer group">
-              <div class="flex items-start gap-3">
-                <div class="w-10 h-10 rounded-lg bg-rose-100 flex items-center justify-center flex-shrink-0">
-                  <i class="iconoir-book text-lg text-rose-600"></i>
-                </div>
-                <div class="flex-1 min-w-0">
-                  <div class="font-medium text-sm text-slate-800 group-hover:text-rose-600 transition-smooth">Normativa Interna</div>
-                  <div class="text-xs text-slate-500 mt-0.5">Políticas de empresa, procedimientos...</div>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Documento: Estatuto trabajadores -->
-            <div class="doc-item p-3 bg-white/60 border border-slate-200/80 rounded-xl hover:border-rose-300 transition-smooth cursor-pointer group">
-              <div class="flex items-start gap-3">
-                <div class="w-10 h-10 rounded-lg bg-rose-100 flex items-center justify-center flex-shrink-0">
-                  <i class="iconoir-scale text-lg text-rose-600"></i>
-                </div>
-                <div class="flex-1 min-w-0">
-                  <div class="font-medium text-sm text-slate-800 group-hover:text-rose-600 transition-smooth">Estatuto de los Trabajadores</div>
-                  <div class="text-xs text-slate-500 mt-0.5">Legislación laboral española</div>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Placeholder próximamente -->
-            <div class="p-3 border-2 border-dashed border-slate-200 rounded-xl opacity-60">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0">
-                  <i class="iconoir-plus text-lg text-slate-400"></i>
-                </div>
-                <div class="flex-1 min-w-0">
-                  <div class="font-medium text-sm text-slate-500">Más documentos</div>
-                  <div class="text-xs text-slate-400">Próximamente...</div>
-                </div>
-              </div>
+          <div id="docs-list" class="flex-1 overflow-auto p-4 space-y-2">
+            <!-- Se carga dinámicamente -->
+            <div class="p-4 text-center text-slate-400 text-sm">
+              <i class="iconoir-refresh animate-spin"></i>
+              Cargando documentos...
             </div>
           </div>
           
@@ -218,6 +172,44 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
         
       </div>
     </main>
+  </div>
+
+  <!-- Modal visor de documentos -->
+  <div id="doc-viewer-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="glass-strong rounded-3xl shadow-2xl w-full max-w-4xl max-h-[85vh] flex flex-col border border-slate-200/50">
+      <!-- Header -->
+      <div class="p-5 border-b border-slate-200/50 flex items-center justify-between flex-shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-rose-100 flex items-center justify-center">
+            <i class="iconoir-page text-xl text-rose-600"></i>
+          </div>
+          <div>
+            <h3 id="doc-viewer-title" class="text-lg font-semibold text-slate-900">Documento</h3>
+            <p class="text-xs text-slate-500">Documento de referencia de Lex</p>
+          </div>
+        </div>
+        <button id="close-doc-viewer" class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-smooth">
+          <i class="iconoir-xmark text-xl"></i>
+        </button>
+      </div>
+      
+      <!-- Content -->
+      <div id="doc-viewer-content" class="flex-1 overflow-y-auto p-6">
+        <div class="prose prose-slate max-w-none">
+          <div class="text-center text-slate-400 py-8">
+            <i class="iconoir-refresh animate-spin text-2xl mb-2"></i>
+            <p>Cargando documento...</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Footer -->
+      <div class="p-4 border-t border-slate-200/50 flex justify-end flex-shrink-0">
+        <button id="close-doc-viewer-btn" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-smooth">
+          Cerrar
+        </button>
+      </div>
+    </div>
   </div>
 
   <script src="/assets/js/voice-lex.js"></script>

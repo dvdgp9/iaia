@@ -119,5 +119,61 @@ $pageTitle = $pageTitle ?? 'Ebonia — IA Corporativa';
     .text-conversation {
       font-size: 15px;
     }
+    
+    /* Prose styling for document viewer */
+    .prose {
+      color: #334155;
+      line-height: 1.75;
+    }
+    .prose h1 {
+      font-size: 1.875rem;
+      font-weight: 700;
+      margin-top: 1.5rem;
+      margin-bottom: 1rem;
+      color: #0f172a;
+    }
+    .prose h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-top: 1.5rem;
+      margin-bottom: 0.75rem;
+      color: #1e293b;
+    }
+    .prose h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-top: 1.25rem;
+      margin-bottom: 0.5rem;
+      color: #334155;
+    }
+    .prose p {
+      margin-bottom: 1rem;
+    }
+    .prose ul, .prose ol {
+      margin-top: 0.75rem;
+      margin-bottom: 1rem;
+      padding-left: 1.5rem;
+    }
+    .prose li {
+      margin-bottom: 0.5rem;
+    }
+    .prose strong {
+      font-weight: 600;
+      color: #0f172a;
+    }
+    .prose code {
+      background: #f1f5f9;
+      padding: 0.125rem 0.375rem;
+      border-radius: 0.25rem;
+      font-size: 0.875em;
+      font-family: ui-monospace, monospace;
+    }
+    .prose blockquote {
+      border-left: 4px solid #e2e8f0;
+      padding-left: 1rem;
+      font-style: italic;
+      color: #64748b;
+      margin: 1rem 0;
+    }
   </style>
 </head>

@@ -24,6 +24,12 @@
   const toggleDocsBtn = document.getElementById('toggle-docs-panel');
   const docsPanel = document.getElementById('docs-panel');
   const docsArrow = document.getElementById('docs-arrow');
+  const docsList = document.getElementById('docs-list');
+  const docViewerModal = document.getElementById('doc-viewer-modal');
+  const docViewerTitle = document.getElementById('doc-viewer-title');
+  const docViewerContent = document.getElementById('doc-viewer-content');
+  const closeDocViewerBtn = document.getElementById('close-doc-viewer');
+  const closeDocViewerBtn2 = document.getElementById('close-doc-viewer-btn');
 
   // ===== HELPERS =====
   function escapeHtml(str) {
@@ -34,20 +40,54 @@
   function mdToHtml(md) {
     if (!md) return '';
     let s = escapeHtml(md);
+    
+    // Blockquotes (antes de otros elementos)
+    s = s.replace(/^&gt;\s*(.+)$/gm, '<blockquote>$1</blockquote>');
+    
     // Headers
-    s = s.replace(/^###\s+(.+)$/gm, '<h3 class="font-semibold text-base mb-1 mt-3">$1</h3>');
-    s = s.replace(/^##\s+(.+)$/gm, '<h2 class="font-semibold text-lg mb-1 mt-3">$1</h2>');
-    s = s.replace(/^#\s+(.+)$/gm, '<h1 class="font-semibold text-xl mb-2 mt-4">$1</h1>');
+    s = s.replace(/^###\s+(.+)$/gm, '<h3>$1</h3>');
+    s = s.replace(/^##\s+(.+)$/gm, '<h2>$1</h2>');
+    s = s.replace(/^#\s+(.+)$/gm, '<h1>$1</h1>');
+    
     // Bold and italic
     s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
     s = s.replace(/\*(.+?)\*/g, '<em>$1</em>');
+    
     // Code
-    s = s.replace(/`([^`]+)`/g, '<code class="px-1 py-0.5 bg-slate-100 rounded text-sm font-mono">$1</code>');
-    // Lists
-    s = s.replace(/^- (.+)$/gm, '<li class="ml-4">$1</li>');
-    s = s.replace(/(<li.*<\/li>\n?)+/g, '<ul class="list-disc my-2">$&</ul>');
-    // Line breaks
-    s = s.replace(/\n/g, '<br>');
+    s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
+    
+    // Lists (detectar bloques de listas)
+    const lines = s.split('\n');
+    let inList = false;
+    let result = [];
+    
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      
+      if (line.match(/^-\s+(.+)$/)) {
+        if (!inList) {
+          result.push('<ul>');
+          inList = true;
+        }
+        result.push('<li>' + line.replace(/^-\s+/, '') + '</li>');
+      } else {
+        if (inList) {
+          result.push('</ul>');
+          inList = false;
+        }
+        result.push(line);
+      }
+    }
+    
+    if (inList) {
+      result.push('</ul>');
+    }
+    
+    s = result.join('\n');
+    
+    // Line breaks (pero no dentro de listas)
+    s = s.replace(/\n(?!<\/?(ul|li|h[1-3]|blockquote)>)/g, '<br>');
+    
     return s;
   }
 
@@ -58,6 +98,91 @@
     if (diff < 3600) return `hace ${Math.floor(diff/60)} min`;
     if (diff < 86400) return `hace ${Math.floor(diff/3600)}h`;
     return new Date(date).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+  }
+
+  // ===== DOCUMENTS =====
+  async function loadDocuments() {
+    try {
+      const res = await fetch(`/api/voices/docs.php?voice_id=${VOICE_ID}`, {
+        credentials: 'include',
+        headers: { 'X-CSRF-Token': window.CSRF_TOKEN }
+      });
+      
+      if (!res.ok) {
+        docsList.innerHTML = '<div class="p-4 text-center text-slate-400 text-sm">Error al cargar</div>';
+        return;
+      }
+      
+      const data = await res.json();
+      const docs = data.documents || [];
+      
+      if (docs.length === 0) {
+        docsList.innerHTML = '<div class="p-4 text-center text-slate-400 text-sm">Sin documentos</div>';
+        return;
+      }
+      
+      // Render documents
+      docsList.innerHTML = docs.map(doc => {
+        const sizeKb = (doc.size / 1024).toFixed(1);
+        return `
+          <button class="doc-item w-full p-3 bg-white/60 border border-slate-200/80 rounded-xl hover:border-rose-300 transition-smooth text-left group hover:shadow-md" data-doc-id="${escapeHtml(doc.id)}">
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 rounded-lg bg-rose-100 flex items-center justify-center flex-shrink-0">
+                <i class="iconoir-page text-lg text-rose-600"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="font-medium text-sm text-slate-800 group-hover:text-rose-600 transition-smooth">${escapeHtml(doc.name)}</div>
+                <div class="text-xs text-slate-400 mt-0.5">${sizeKb} KB</div>
+              </div>
+              <i class="iconoir-eye text-slate-300 group-hover:text-rose-500 transition-smooth"></i>
+            </div>
+          </button>
+        `;
+      }).join('');
+      
+      // Bind click events
+      docsList.querySelectorAll('.doc-item').forEach(btn => {
+        const docId = btn.dataset.docId;
+        btn.addEventListener('click', () => openDocViewer(docId));
+      });
+      
+    } catch (e) {
+      console.error('Error loading documents:', e);
+      docsList.innerHTML = '<div class="p-4 text-center text-slate-400 text-sm">Error al cargar</div>';
+    }
+  }
+  
+  async function openDocViewer(docId) {
+    docViewerModal?.classList.remove('hidden');
+    docViewerTitle.textContent = 'Cargando...';
+    docViewerContent.innerHTML = '<div class="text-center text-slate-400 py-8"><i class="iconoir-refresh animate-spin text-2xl mb-2"></i><p>Cargando documento...</p></div>';
+    
+    try {
+      const res = await fetch(`/api/voices/doc.php?voice_id=${VOICE_ID}&doc_id=${encodeURIComponent(docId)}`, {
+        credentials: 'include',
+        headers: { 'X-CSRF-Token': window.CSRF_TOKEN }
+      });
+      
+      if (!res.ok) {
+        docViewerContent.innerHTML = '<div class="text-center text-red-600 py-8"><i class="iconoir-warning-circle text-2xl mb-2"></i><p>Error al cargar el documento</p></div>';
+        return;
+      }
+      
+      const data = await res.json();
+      docViewerTitle.textContent = data.document.name;
+      
+      // Render markdown as HTML
+      const html = mdToHtml(data.document.content);
+      docViewerContent.innerHTML = `<div class="prose prose-slate max-w-none">${html}</div>`;
+      
+    } catch (e) {
+      console.error('Error loading document:', e);
+      docViewerContent.innerHTML = '<div class="text-center text-red-600 py-8"><i class="iconoir-warning-circle text-2xl mb-2"></i><p>Error de conexión</p></div>';
+    }
+  }
+  
+  function closeDocViewer() {
+    docViewerModal?.classList.add('hidden');
   }
 
   // ===== INIT =====
@@ -72,8 +197,9 @@
       const data = await res.json();
       currentUser = data.user;
       
-      // Load history
+      // Load history and documents
       await loadHistory();
+      await loadDocuments();
       
       // Focus input
       chatInput?.focus();
@@ -321,6 +447,24 @@
       docsArrow.className = 'iconoir-nav-arrow-right text-xs';
     } else {
       docsArrow.className = 'iconoir-nav-arrow-left text-xs';
+    }
+  });
+
+  // Close doc viewer
+  closeDocViewerBtn?.addEventListener('click', closeDocViewer);
+  closeDocViewerBtn2?.addEventListener('click', closeDocViewer);
+  
+  // Close modal on backdrop click
+  docViewerModal?.addEventListener('click', (e) => {
+    if (e.target === docViewerModal) {
+      closeDocViewer();
+    }
+  });
+  
+  // Close modal on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !docViewerModal?.classList.contains('hidden')) {
+      closeDocViewer();
     }
   });
 
