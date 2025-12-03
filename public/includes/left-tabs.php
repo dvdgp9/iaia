@@ -27,6 +27,12 @@ $tabs = [
         'label' => 'Gestos',
         'href' => '/gestos/',
         'title' => 'Flujos automatizados'
+    ],
+    'apps' => [
+        'icon' => 'iconoir-view-grid',
+        'label' => 'Apps',
+        'href' => '/aplicaciones/',
+        'title' => 'Aplicaciones Ebone'
     ]
 ];
 ?>
