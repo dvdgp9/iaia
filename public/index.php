@@ -204,133 +204,175 @@ $useTabsJs = true; // Habilitar manejo JS de tabs en index.php
             <div class="text-amber-700 mt-0.5">Para optimizar el rendimiento, solo se envían los mensajes más recientes al asistente. El historial completo permanece guardado.</div>
           </div>
         </div>
-        <div id="empty-state" class="absolute inset-0 overflow-auto hero-gradient">
-          <div class="min-h-full flex flex-col">
-            
+        <div id="empty-state" class="absolute inset-0 overflow-auto mesh-bg">
+          <!-- Floating orbs -->
+          <div class="orb orb-1"></div>
+          <div class="orb orb-2"></div>
+          
+          <div class="relative z-10 min-h-full flex flex-col">
             <!-- Hero Section -->
             <div class="flex-1 flex flex-col items-center justify-center px-6 py-12">
               
-              <!-- Greeting -->
-              <div class="text-center mb-10">
-                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#23AAC5]/10 text-[#115c6c] text-xs font-medium mb-6">
-                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                  <span>IA Corporativa activa</span>
+              <!-- Animated Logo Mark -->
+              <div class="mb-8 float">
+                <div class="w-20 h-20 rounded-3xl gradient-brand flex items-center justify-center glow-pulse shadow-2xl">
+                  <span class="text-4xl font-black text-white">E</span>
                 </div>
-                <h1 class="text-4xl font-bold text-slate-900 mb-3" id="greeting-text">Buenos días</h1>
-                <p class="text-lg text-slate-500 max-w-md mx-auto">¿En qué puedo ayudarte hoy?</p>
               </div>
               
-              <!-- Main Input -->
+              <!-- Hero Title -->
+              <div class="text-center mb-10 max-w-2xl">
+                <h1 class="text-4xl md:text-5xl font-black text-slate-900 mb-4 leading-tight">
+                  ¿Qué creamos <span class="gradient-text">hoy</span>?
+                </h1>
+                <p class="text-lg text-slate-500 font-medium">
+                  Tu asistente de IA corporativa. Pregunta lo que necesites.
+                </p>
+              </div>
+              
+              <!-- Command Center Input -->
               <form id="chat-form-empty" class="w-full max-w-2xl mb-12">
-                <!-- File preview -->
-                <div id="file-preview-empty" class="hidden mb-3 p-3 bg-white/80 backdrop-blur border border-slate-200 rounded-xl flex items-center gap-3">
-                  <div class="flex-1 flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-[#23AAC5]/10 to-[#115c6c]/10 flex items-center justify-center flex-shrink-0">
-                      <i id="file-icon-empty" class="iconoir-page text-xl text-[#23AAC5]"></i>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                      <div id="file-name-empty" class="text-sm font-medium text-slate-800 truncate"></div>
-                      <div id="file-size-empty" class="text-xs text-slate-500"></div>
+                <!-- File Preview -->
+                <div id="file-preview-empty" class="hidden mb-4 p-4 glass rounded-2xl flex items-center gap-4">
+                  <div class="w-12 h-12 rounded-xl gradient-brand flex items-center justify-center flex-shrink-0">
+                    <i id="file-icon-empty" class="iconoir-page text-2xl text-white"></i>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div id="file-name-empty" class="font-semibold text-slate-800 truncate"></div>
+                    <div id="file-size-empty" class="text-sm text-slate-500"></div>
+                  </div>
+                  <button type="button" id="remove-file-empty" class="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all">
+                    <i class="iconoir-xmark text-xl"></i>
+                  </button>
+                </div>
+                
+                <!-- Main Input -->
+                <div class="relative group">
+                  <input type="file" id="file-input-empty" class="hidden" accept=".pdf,.png,.jpg,.jpeg,.gif,.webp" />
+                  
+                  <div class="flex items-center gap-3 p-2 command-input rounded-2xl">
+                    <button type="button" id="attach-btn-empty" class="p-3 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-xl transition-all" title="Adjuntar archivo">
+                      <i class="iconoir-attachment text-xl"></i>
+                    </button>
+                    
+                    <input id="chat-input-empty" 
+                           class="flex-1 bg-transparent text-lg text-slate-800 placeholder-slate-400 focus:outline-none py-3" 
+                           placeholder="Escribe tu pregunta o solicitud..." 
+                           autocomplete="off" />
+                    
+                    <div class="flex items-center gap-2">
+                      <span class="kbd hidden md:inline-flex">⌘K</span>
+                      <button type="submit" class="p-3 gradient-brand-btn text-white rounded-xl hover:opacity-90 transition-all glow-sm hover:glow-md">
+                        <i class="iconoir-arrow-right text-xl"></i>
+                      </button>
                     </div>
                   </div>
-                  <button type="button" id="remove-file-empty" class="p-1.5 text-slate-400 hover:text-red-500 rounded-lg transition-colors">
-                    <i class="iconoir-xmark"></i>
-                  </button>
                 </div>
                 
-                <!-- Glass input container -->
-                <div class="glass-input rounded-2xl p-2 flex items-center gap-2">
-                  <input type="file" id="file-input-empty" class="hidden" accept=".pdf,.png,.jpg,.jpeg,.gif,.webp" />
-                  <button type="button" id="attach-btn-empty" class="p-3 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/5 rounded-xl transition-all" title="Adjuntar archivo">
-                    <i class="iconoir-attachment text-xl"></i>
+                <!-- Quick suggestions -->
+                <div class="flex flex-wrap justify-center gap-2 mt-4">
+                  <button type="button" class="suggestion-chip px-4 py-2 text-sm font-medium text-slate-600 bg-white/80 hover:bg-white border border-slate-200 hover:border-[#23AAC5] hover:text-[#23AAC5] rounded-full transition-all">
+                    <i class="iconoir-chat-bubble mr-1.5"></i>Redactar email
                   </button>
-                  <input id="chat-input-empty" class="flex-1 bg-transparent px-2 py-3 focus:outline-none text-slate-700 placeholder-slate-400" placeholder="Escribe tu pregunta o pega un texto para analizar..." />
-                  <button type="submit" class="p-3 gradient-brand-btn text-white rounded-xl hover:opacity-90 transition-all flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                  <button type="button" class="suggestion-chip px-4 py-2 text-sm font-medium text-slate-600 bg-white/80 hover:bg-white border border-slate-200 hover:border-[#23AAC5] hover:text-[#23AAC5] rounded-full transition-all">
+                    <i class="iconoir-edit-pencil mr-1.5"></i>Corregir texto
                   </button>
-                </div>
-                
-                <!-- Hints -->
-                <div class="flex items-center justify-center gap-4 mt-4 text-xs text-slate-400">
-                  <span class="flex items-center gap-1.5">
-                    <i class="iconoir-attachment"></i>
-                    PDF, imágenes
-                  </span>
-                  <span class="hidden sm:flex items-center gap-1.5">
-                    <span class="kbd">⌘</span><span class="kbd">K</span>
-                    Búsqueda rápida
-                  </span>
+                  <button type="button" class="suggestion-chip px-4 py-2 text-sm font-medium text-slate-600 bg-white/80 hover:bg-white border border-slate-200 hover:border-[#23AAC5] hover:text-[#23AAC5] rounded-full transition-all">
+                    <i class="iconoir-lightbulb mr-1.5"></i>Generar ideas
+                  </button>
                 </div>
               </form>
               
-              <!-- Quick Actions Grid -->
-              <div class="w-full max-w-4xl">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <!-- Action Cards Grid -->
+              <div class="w-full max-w-5xl">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5 stagger-in">
                   
-                  <!-- Escribir -->
-                  <button class="action-card gesture-option bg-white rounded-xl p-4 text-left group" data-gesture="write-article">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                      <i class="iconoir-edit-pencil text-lg text-white"></i>
+                  <!-- Card: Escribir -->
+                  <button class="gesture-option card-3d group p-6 glass rounded-2xl text-left" data-gesture="write-document">
+                    <div class="flex items-start justify-between mb-4">
+                      <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg icon-bounce">
+                        <i class="iconoir-page-edit text-2xl text-white"></i>
+                      </div>
+                      <i class="iconoir-arrow-up-right text-xl text-slate-300 arrow-slide"></i>
                     </div>
-                    <div class="font-semibold text-slate-800 text-sm mb-0.5">Escribir</div>
-                    <div class="text-xs text-slate-500">Artículos y contenido</div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-1 group-hover:text-[#23AAC5] transition-colors">Escribir</h3>
+                    <p class="text-sm text-slate-500">Artículos, posts, documentos y más</p>
                   </button>
                   
-                  <!-- Traducir -->
-                  <button class="action-card gesture-option bg-white rounded-xl p-4 text-left group" data-gesture="translate">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                      <i class="iconoir-language text-lg text-white"></i>
+                  <!-- Card: Traducir -->
+                  <button class="gesture-option card-3d group p-6 glass rounded-2xl text-left" data-gesture="translate">
+                    <div class="flex items-start justify-between mb-4">
+                      <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-lg icon-bounce">
+                        <i class="iconoir-translate text-2xl text-white"></i>
+                      </div>
+                      <i class="iconoir-arrow-up-right text-xl text-slate-300 arrow-slide"></i>
                     </div>
-                    <div class="font-semibold text-slate-800 text-sm mb-0.5">Traducir</div>
-                    <div class="text-xs text-slate-500">Múltiples idiomas</div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-1 group-hover:text-[#23AAC5] transition-colors">Traducir</h3>
+                    <p class="text-sm text-slate-500">Cualquier idioma, tono profesional</p>
                   </button>
                   
-                  <!-- Resumir -->
-                  <button class="action-card gesture-option bg-white rounded-xl p-4 text-left group" data-gesture="summarize">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                      <i class="iconoir-list text-lg text-white"></i>
+                  <!-- Card: Analizar -->
+                  <button class="gesture-option card-3d group p-6 glass rounded-2xl text-left" data-gesture="summarize">
+                    <div class="flex items-start justify-between mb-4">
+                      <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg icon-bounce">
+                        <i class="iconoir-spark text-2xl text-white"></i>
+                      </div>
+                      <i class="iconoir-arrow-up-right text-xl text-slate-300 arrow-slide"></i>
                     </div>
-                    <div class="font-semibold text-slate-800 text-sm mb-0.5">Resumir</div>
-                    <div class="text-xs text-slate-500">Extrae lo esencial</div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-1 group-hover:text-[#23AAC5] transition-colors">Analizar</h3>
+                    <p class="text-sm text-slate-500">Resume, extrae y sintetiza</p>
                   </button>
                   
-                  <!-- Analizar -->
-                  <button class="action-card gesture-option bg-white rounded-xl p-4 text-left group" data-gesture="analyze">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                      <i class="iconoir-stats-up-square text-lg text-white"></i>
+                </div>
+                
+                <!-- Secondary Actions Row -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-5 stagger-in">
+                  
+                  <button class="voice-option group p-4 bg-white/60 hover:bg-white border border-slate-200/80 hover:border-[#23AAC5] rounded-xl transition-all text-left" data-voice="cubo">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 icon-bounce">C</div>
+                      <div class="min-w-0">
+                        <div class="font-semibold text-slate-800 text-sm group-hover:text-[#23AAC5] transition-colors">Cubo</div>
+                        <div class="text-xs text-slate-400">Analítico</div>
+                      </div>
                     </div>
-                    <div class="font-semibold text-slate-800 text-sm mb-0.5">Analizar</div>
-                    <div class="text-xs text-slate-500">Datos y documentos</div>
+                  </button>
+                  
+                  <button class="voice-option group p-4 bg-white/60 hover:bg-white border border-slate-200/80 hover:border-[#23AAC5] rounded-xl transition-all text-left" data-voice="lex">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-fuchsia-500 to-pink-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 icon-bounce">L</div>
+                      <div class="min-w-0">
+                        <div class="font-semibold text-slate-800 text-sm group-hover:text-[#23AAC5] transition-colors">Lex</div>
+                        <div class="text-xs text-slate-400">Creativo</div>
+                      </div>
+                    </div>
+                  </button>
+                  
+                  <button class="voice-option group p-4 bg-white/60 hover:bg-white border border-slate-200/80 hover:border-[#23AAC5] rounded-xl transition-all text-left" data-voice="uniges">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 icon-bounce">U</div>
+                      <div class="min-w-0">
+                        <div class="font-semibold text-slate-800 text-sm group-hover:text-[#23AAC5] transition-colors">Uniges</div>
+                        <div class="text-xs text-slate-400">Técnico</div>
+                      </div>
+                    </div>
+                  </button>
+                  
+                  <button id="view-all-gestures" class="group p-4 bg-white/40 hover:bg-white/80 border-2 border-dashed border-slate-300 hover:border-[#23AAC5] rounded-xl transition-all flex items-center justify-center gap-2">
+                    <span class="font-semibold text-sm text-slate-500 group-hover:text-[#23AAC5] transition-colors">Ver todo</span>
+                    <i class="iconoir-plus text-slate-400 group-hover:text-[#23AAC5] transition-colors"></i>
                   </button>
                   
                 </div>
               </div>
+              
             </div>
             
-            <!-- Bottom Section: Recent & Suggestions -->
-            <div class="border-t border-slate-200/60 bg-white/50 backdrop-blur-sm">
-              <div class="max-w-4xl mx-auto px-6 py-6">
-                <div class="flex items-center justify-between mb-4">
-                  <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Sugerencias</h3>
-                </div>
-                <div class="flex flex-wrap gap-2">
-                  <button class="suggestion-chip px-4 py-2 bg-white border border-slate-200 rounded-full text-sm text-slate-600 hover:border-[#23AAC5] hover:text-[#23AAC5] transition-all">
-                    Redacta un email formal
-                  </button>
-                  <button class="suggestion-chip px-4 py-2 bg-white border border-slate-200 rounded-full text-sm text-slate-600 hover:border-[#23AAC5] hover:text-[#23AAC5] transition-all">
-                    Resume este documento
-                  </button>
-                  <button class="suggestion-chip px-4 py-2 bg-white border border-slate-200 rounded-full text-sm text-slate-600 hover:border-[#23AAC5] hover:text-[#23AAC5] transition-all">
-                    Traduce al inglés
-                  </button>
-                  <button class="suggestion-chip px-4 py-2 bg-white border border-slate-200 rounded-full text-sm text-slate-600 hover:border-[#23AAC5] hover:text-[#23AAC5] transition-all">
-                    Genera ideas para...
-                  </button>
-                  <button class="suggestion-chip px-4 py-2 bg-white border border-slate-200 rounded-full text-sm text-slate-600 hover:border-[#23AAC5] hover:text-[#23AAC5] transition-all">
-                    Mejora este texto
-                  </button>
-                </div>
-              </div>
+            <!-- Footer hint -->
+            <div class="text-center pb-6 text-sm text-slate-400">
+              <span class="inline-flex items-center gap-2">
+                <kbd class="kbd">⌘</kbd> + <kbd class="kbd">K</kbd> para abrir desde cualquier lugar
+              </span>
             </div>
             
           </div>
@@ -1615,46 +1657,13 @@ $useTabsJs = true; // Habilitar manejo JS de tabs en index.php
   </script>
   
   <script>
-    // Dynamic Greeting based on time of day
-    (function() {
-      const greetingEl = document.getElementById('greeting-text');
-      if (!greetingEl) return;
-      
-      const hour = new Date().getHours();
-      let greeting = 'Buenas noches';
-      
-      if (hour >= 6 && hour < 12) {
-        greeting = 'Buenos días';
-      } else if (hour >= 12 && hour < 20) {
-        greeting = 'Buenas tardes';
-      }
-      
-      greetingEl.textContent = greeting;
-    })();
-    
-    // Suggestion chips - insert into chat input
-    (function() {
-      const chips = document.querySelectorAll('.suggestion-chip');
-      const inputEl = document.getElementById('chat-input-empty');
-      
-      chips.forEach(chip => {
-        chip.addEventListener('click', () => {
-          if (inputEl) {
-            inputEl.value = chip.textContent.trim();
-            inputEl.focus();
-          }
-        });
-      });
-    })();
-    
     // Gestures Navigation - redirige a páginas individuales de cada gesto
     (function() {
       const gestureRoutes = {
         'write-article': '/gestures/write-article.php',
-        // Próximamente más gestos
-        // 'translate': '/gestures/translate.php',
-        // 'summarize': '/gestures/summarize.php',
-        // 'analyze': '/gestures/analyze.php',
+        'write-document': '/gestures/write-article.php',
+        'translate': '/gestures/write-article.php', // TODO: crear página dedicada
+        'summarize': '/gestures/write-article.php'  // TODO: crear página dedicada
       };
       
       const gestureCards = document.querySelectorAll('[data-gesture]');
@@ -1663,17 +1672,46 @@ $useTabsJs = true; // Habilitar manejo JS de tabs en index.php
           const gestureId = card.getAttribute('data-gesture');
           if (gestureRoutes[gestureId]) {
             window.location.href = gestureRoutes[gestureId];
-          } else {
-            // Gesto no disponible aún - mostrar toast o similar
-            const toast = document.createElement('div');
-            toast.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 bg-slate-800 text-white text-sm rounded-lg shadow-lg z-50';
-            toast.textContent = 'Este gesto estará disponible próximamente';
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 2500);
           }
         });
       });
     })();
+    
+    // Suggestion chips - insertan texto en el input
+    (function() {
+      const suggestions = {
+        'Redactar email': 'Ayúdame a redactar un email profesional para ',
+        'Corregir texto': 'Corrige y mejora el siguiente texto: ',
+        'Generar ideas': 'Dame 5 ideas creativas para '
+      };
+      
+      document.querySelectorAll('.suggestion-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          const chipText = chip.textContent.trim();
+          const suggestion = Object.entries(suggestions).find(([key]) => chipText.includes(key));
+          if (suggestion) {
+            const inputEl = document.getElementById('chat-input-empty');
+            if (inputEl) {
+              inputEl.value = suggestion[1];
+              inputEl.focus();
+              // Posicionar cursor al final
+              inputEl.setSelectionRange(inputEl.value.length, inputEl.value.length);
+            }
+          }
+        });
+      });
+    })();
+    
+    // Keyboard shortcut ⌘K - focus en input
+    document.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        const inputEl = document.getElementById('chat-input-empty') || document.getElementById('chat-input');
+        if (inputEl) {
+          inputEl.focus();
+        }
+      }
+    });
   </script>
 </body>
 </html>
