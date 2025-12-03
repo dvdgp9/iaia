@@ -12,10 +12,11 @@ if (!$user) {
 $csrfToken = $_SESSION['csrf_token'] ?? '';
 $activeTab = 'conversations'; // Tab activa por defecto
 $useTabsJs = true; // Habilitar manejo JS de tabs en index.php
+$userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
 ?><!DOCTYPE html>
 <html lang="es">
 <?php include __DIR__ . '/includes/head.php'; ?>
-<body class="bg-gray-100 text-slate-900 overflow-hidden">
+<body class="bg-mesh text-slate-900 overflow-hidden">
   <div class="min-h-screen flex h-screen">
     <?php include __DIR__ . '/includes/left-tabs.php'; ?>
 
@@ -208,41 +209,50 @@ $useTabsJs = true; // Habilitar manejo JS de tabs en index.php
           <div class="max-w-6xl mx-auto py-8">
             
             <!-- Hero Input Section -->
-            <div class="text-center mb-8">
-              <h2 class="text-2xl font-bold text-slate-900 mb-2">¿Qué quieres hacer hoy?</h2>
-              <p class="text-sm text-slate-600 mb-6">Escribe una pregunta, elige una voz o inicia una acción rápida</p>
+            <div class="text-center mb-10">
+              <!-- Status indicator -->
+              <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-slate-200/50 shadow-sm mb-6">
+                <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
+                <span class="text-sm text-slate-600">Listo para ayudarte</span>
+              </div>
               
-              <!-- Input principal -->
-              <form id="chat-form-empty" class="max-w-2xl mx-auto mb-4">
-                <!-- Preview de archivo adjunto en estado vacío -->
-                <div id="file-preview-empty" class="hidden mb-3 p-3 bg-slate-50 border border-slate-200 rounded-lg flex items-center gap-3">
-                  <div class="flex-1 flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-[#23AAC5]/10 to-[#115c6c]/10 flex items-center justify-center flex-shrink-0">
-                      <i id="file-icon-empty" class="iconoir-page text-xl text-[#23AAC5]"></i>
+              <h2 class="text-3xl font-bold text-slate-900 mb-3">
+                Hola, <span class="text-transparent bg-clip-text gradient-brand"><?php echo $userName; ?></span> 👋
+              </h2>
+              <p class="text-base text-slate-500 mb-8 max-w-lg mx-auto">¿En qué puedo ayudarte hoy? Escribe tu pregunta o elige una opción de abajo.</p>
+              
+              <!-- Input principal con glassmorphism -->
+              <div class="glass-strong rounded-3xl p-5 border border-slate-200/50 shadow-lg glow-soft max-w-2xl mx-auto">
+                <form id="chat-form-empty" class="w-full">
+                  <!-- Preview de archivo adjunto en estado vacío -->
+                  <div id="file-preview-empty" class="hidden mb-4 p-3 bg-slate-50 rounded-xl flex items-center gap-3">
+                    <div class="flex-1 flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-[#23AAC5]/10 to-[#115c6c]/10 flex items-center justify-center flex-shrink-0">
+                        <i id="file-icon-empty" class="iconoir-page text-xl text-[#23AAC5]"></i>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <div id="file-name-empty" class="text-sm font-medium text-slate-800 truncate"></div>
+                        <div id="file-size-empty" class="text-xs text-slate-500"></div>
+                      </div>
                     </div>
-                    <div class="flex-1 min-w-0">
-                      <div id="file-name-empty" class="text-sm font-medium text-slate-800 truncate"></div>
-                      <div id="file-size-empty" class="text-xs text-slate-500"></div>
-                    </div>
-                  </div>
-                  <button type="button" id="remove-file-empty" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-                    <i class="iconoir-xmark"></i>
-                  </button>
-                </div>
-                
-                <div class="relative flex gap-2">
-                  <input type="file" id="file-input-empty" class="hidden" accept=".pdf,.png,.jpg,.jpeg,.gif,.webp" />
-                  <button type="button" id="attach-btn-empty" class="p-4 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/5 rounded-2xl transition-all border-2 border-slate-300 hover:border-[#23AAC5]" title="Adjuntar archivo">
-                    <i class="iconoir-attachment text-xl"></i>
-                  </button>
-                  <div class="flex-1 relative">
-                    <input id="chat-input-empty" class="w-full border-2 border-slate-300 rounded-2xl px-5 py-4 pr-14 focus:outline-none focus:border-[#23AAC5] focus:ring-4 focus:ring-[#23AAC5]/20 transition-all shadow-lg bg-white" placeholder="Escribe tu pregunta o solicitud..." />
-                    <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 gradient-brand-btn text-white rounded-xl hover:shadow-lg hover:opacity-90 transition-all">
-                      <svg class="w-5 h-5 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                    <button type="button" id="remove-file-empty" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-smooth">
+                      <i class="iconoir-xmark"></i>
                     </button>
                   </div>
-                </div>
-              </form>
+                  
+                  <div class="flex gap-3">
+                    <input type="file" id="file-input-empty" class="hidden" accept=".pdf,.png,.jpg,.jpeg,.gif,.webp" />
+                    <button type="button" id="attach-btn-empty" class="p-4 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-2xl transition-smooth border-2 border-slate-200 hover:border-[#23AAC5]" title="Adjuntar archivo (PDF o imagen)">
+                      <i class="iconoir-attachment text-xl"></i>
+                    </button>
+                    <input id="chat-input-empty" class="flex-1 border-2 border-slate-200 rounded-2xl px-5 py-4 text-base input-focus transition-smooth bg-white/80" placeholder="Escribe tu pregunta aquí..." />
+                    <button type="submit" class="px-7 py-4 gradient-brand text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-smooth flex items-center gap-2">
+                      <span>Enviar</span>
+                      <i class="iconoir-send-diagonal text-lg"></i>
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
 
             <!-- Divisor con "o" -->
@@ -256,116 +266,116 @@ $useTabsJs = true; // Habilitar manejo JS de tabs en index.php
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-5xl mx-auto">
               
               <!-- Sección Voces -->
-              <div class="bg-white rounded-2xl border-2 border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
-                <div class="flex items-center gap-2.5 mb-4">
-                  <div class="w-10 h-10 rounded-xl gradient-brand flex items-center justify-center shadow-sm">
-                    <i class="iconoir-voice-square text-xl text-white"></i>
+              <div class="glass-strong rounded-3xl border border-slate-200/50 p-6 card-hover">
+                <div class="flex items-center gap-3 mb-5">
+                  <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg animate-float" style="animation-delay: 0s">
+                    <i class="iconoir-voice-square text-2xl text-white"></i>
                   </div>
                   <div>
-                    <h3 class="font-bold text-slate-900">Hablar con una voz</h3>
-                    <p class="text-xs text-slate-500">Personalidades únicas para distintas tareas</p>
+                    <h3 class="text-lg font-bold text-slate-900">Voces</h3>
+                    <p class="text-sm text-slate-500">Personalidades para cada tarea</p>
                   </div>
                 </div>
                 
-                <div class="space-y-2">
-                  <button class="voice-option w-full p-3 bg-slate-50 hover:bg-[#23AAC5]/5 border border-slate-200 hover:border-[#23AAC5] rounded-xl transition-all text-left group" data-voice="cubo">
+                <div class="space-y-2.5">
+                  <button class="voice-option w-full p-4 bg-white/60 hover:bg-white border border-slate-200/80 hover:border-violet-300 rounded-2xl transition-smooth text-left group hover:shadow-md" data-voice="cubo">
                     <div class="flex items-center gap-3">
-                      <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">C</div>
+                      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-sm group-hover:scale-110 transition-smooth">C</div>
                       <div class="flex-1 min-w-0">
-                        <div class="font-semibold text-slate-800 text-sm group-hover:text-[#23AAC5] transition-colors">Cubo</div>
+                        <div class="font-semibold text-slate-800 group-hover:text-violet-700 transition-smooth">Cubo</div>
                         <div class="text-xs text-slate-500">Analítico y estructurado</div>
                       </div>
-                      <i class="iconoir-arrow-right text-slate-400 group-hover:text-[#23AAC5] transition-colors"></i>
+                      <i class="iconoir-arrow-right text-slate-300 group-hover:text-violet-500 group-hover:translate-x-1 transition-smooth"></i>
                     </div>
                   </button>
 
-                  <button class="voice-option w-full p-3 bg-slate-50 hover:bg-[#23AAC5]/5 border border-slate-200 hover:border-[#23AAC5] rounded-xl transition-all text-left group" data-voice="lex">
+                  <button class="voice-option w-full p-4 bg-white/60 hover:bg-white border border-slate-200/80 hover:border-violet-300 rounded-2xl transition-smooth text-left group hover:shadow-md" data-voice="lex">
                     <div class="flex items-center gap-3">
-                      <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">L</div>
+                      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-sm group-hover:scale-110 transition-smooth">L</div>
                       <div class="flex-1 min-w-0">
-                        <div class="font-semibold text-slate-800 text-sm group-hover:text-[#23AAC5] transition-colors">Lex</div>
+                        <div class="font-semibold text-slate-800 group-hover:text-violet-700 transition-smooth">Lex</div>
                         <div class="text-xs text-slate-500">Creativo y dinámico</div>
                       </div>
-                      <i class="iconoir-arrow-right text-slate-400 group-hover:text-[#23AAC5] transition-colors"></i>
+                      <i class="iconoir-arrow-right text-slate-300 group-hover:text-violet-500 group-hover:translate-x-1 transition-smooth"></i>
                     </div>
                   </button>
 
-                  <button class="voice-option w-full p-3 bg-slate-50 hover:bg-[#23AAC5]/5 border border-slate-200 hover:border-[#23AAC5] rounded-xl transition-all text-left group" data-voice="uniges">
+                  <button class="voice-option w-full p-4 bg-white/60 hover:bg-white border border-slate-200/80 hover:border-violet-300 rounded-2xl transition-smooth text-left group hover:shadow-md" data-voice="uniges">
                     <div class="flex items-center gap-3">
-                      <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">U</div>
+                      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-sm group-hover:scale-110 transition-smooth">U</div>
                       <div class="flex-1 min-w-0">
-                        <div class="font-semibold text-slate-800 text-sm group-hover:text-[#23AAC5] transition-colors">Uniges</div>
+                        <div class="font-semibold text-slate-800 group-hover:text-violet-700 transition-smooth">Uniges</div>
                         <div class="text-xs text-slate-500">Profesional y técnico</div>
                       </div>
-                      <i class="iconoir-arrow-right text-slate-400 group-hover:text-[#23AAC5] transition-colors"></i>
+                      <i class="iconoir-arrow-right text-slate-300 group-hover:text-violet-500 group-hover:translate-x-1 transition-smooth"></i>
                     </div>
                   </button>
 
-                  <button id="view-all-voices" class="w-full p-3 bg-white hover:bg-[#23AAC5]/5 border-2 border-dashed border-slate-300 hover:border-[#23AAC5] rounded-xl transition-all text-center group">
-                    <div class="flex items-center justify-center gap-2 text-sm font-medium text-slate-600 group-hover:text-[#23AAC5] transition-colors">
+                  <button id="view-all-voices" class="w-full p-3 mt-1 hover:bg-violet-50 border-2 border-dashed border-slate-200 hover:border-violet-300 rounded-2xl transition-smooth text-center group">
+                    <div class="flex items-center justify-center gap-2 text-sm font-medium text-slate-500 group-hover:text-violet-600 transition-smooth">
                       <span>Ver todas las voces</span>
-                      <i class="iconoir-arrow-right"></i>
+                      <i class="iconoir-arrow-right group-hover:translate-x-1 transition-smooth"></i>
                     </div>
                   </button>
                 </div>
               </div>
 
               <!-- Sección Gestos -->
-              <div class="bg-white rounded-2xl border-2 border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
-                <div class="flex items-center gap-2.5 mb-4">
-                  <div class="w-10 h-10 rounded-xl gradient-brand flex items-center justify-center shadow-sm">
-                    <i class="iconoir-magic-wand text-xl text-white"></i>
+              <div class="glass-strong rounded-3xl border border-slate-200/50 p-6 card-hover">
+                <div class="flex items-center gap-3 mb-5">
+                  <div class="w-12 h-12 rounded-2xl gradient-brand flex items-center justify-center shadow-lg animate-float" style="animation-delay: 0.5s">
+                    <i class="iconoir-magic-wand text-2xl text-white"></i>
                   </div>
                   <div>
-                    <h3 class="font-bold text-slate-900">Acciones rápidas</h3>
-                    <p class="text-xs text-slate-500">Plantillas optimizadas para tareas específicas</p>
+                    <h3 class="text-lg font-bold text-slate-900">Acciones rápidas</h3>
+                    <p class="text-sm text-slate-500">Tareas optimizadas con un clic</p>
                   </div>
                 </div>
                 
-                <div class="space-y-2">
-                  <button class="gesture-option w-full p-3 bg-slate-50 hover:bg-[#23AAC5]/5 border border-slate-200 hover:border-[#23AAC5] rounded-xl transition-all text-left group" data-gesture="write-document">
+                <div class="space-y-2.5">
+                  <button class="gesture-option w-full p-4 bg-white/60 hover:bg-white border border-slate-200/80 hover:border-[#23AAC5]/50 rounded-2xl transition-smooth text-left group hover:shadow-md" data-gesture="write-article">
                     <div class="flex items-center gap-3">
-                      <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#23AAC5]/20 to-[#115c6c]/20 flex items-center justify-center flex-shrink-0">
-                        <i class="iconoir-page text-lg text-[#23AAC5]"></i>
+                      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#23AAC5] to-[#115c6c] flex items-center justify-center flex-shrink-0 shadow-sm group-hover:scale-110 transition-smooth">
+                        <i class="iconoir-page-edit text-lg text-white"></i>
                       </div>
                       <div class="flex-1 min-w-0">
-                        <div class="font-semibold text-slate-800 text-sm group-hover:text-[#23AAC5] transition-colors">Escribir documento</div>
-                        <div class="text-xs text-slate-500">Artículos, informes, ensayos</div>
+                        <div class="font-semibold text-slate-800 group-hover:text-[#115c6c] transition-smooth">Escribir artículo</div>
+                        <div class="text-xs text-slate-500">Blogs, noticias, notas de prensa</div>
                       </div>
-                      <i class="iconoir-arrow-right text-slate-400 group-hover:text-[#23AAC5] transition-colors"></i>
+                      <i class="iconoir-arrow-right text-slate-300 group-hover:text-[#23AAC5] group-hover:translate-x-1 transition-smooth"></i>
                     </div>
                   </button>
 
-                  <button class="gesture-option w-full p-3 bg-slate-50 hover:bg-[#23AAC5]/5 border border-slate-200 hover:border-[#23AAC5] rounded-xl transition-all text-left group" data-gesture="translate">
+                  <button class="gesture-option w-full p-4 bg-white/60 hover:bg-white border border-slate-200/80 hover:border-[#23AAC5]/50 rounded-2xl transition-smooth text-left group hover:shadow-md opacity-60" data-gesture="translate">
                     <div class="flex items-center gap-3">
-                      <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#23AAC5]/20 to-[#115c6c]/20 flex items-center justify-center flex-shrink-0">
-                        <i class="iconoir-translate text-lg text-[#23AAC5]"></i>
+                      <div class="w-10 h-10 rounded-xl bg-slate-200 flex items-center justify-center flex-shrink-0">
+                        <i class="iconoir-translate text-lg text-slate-400"></i>
                       </div>
                       <div class="flex-1 min-w-0">
-                        <div class="font-semibold text-slate-800 text-sm group-hover:text-[#23AAC5] transition-colors">Traducir texto</div>
-                        <div class="text-xs text-slate-500">Múltiples idiomas disponibles</div>
+                        <div class="font-semibold text-slate-500">Traducir texto</div>
+                        <div class="text-xs text-slate-400">Próximamente</div>
                       </div>
-                      <i class="iconoir-arrow-right text-slate-400 group-hover:text-[#23AAC5] transition-colors"></i>
+                      <span class="px-2 py-0.5 text-xs bg-slate-100 text-slate-400 rounded-full">Soon</span>
                     </div>
                   </button>
 
-                  <button class="gesture-option w-full p-3 bg-slate-50 hover:bg-[#23AAC5]/5 border border-slate-200 hover:border-[#23AAC5] rounded-xl transition-all text-left group" data-gesture="summarize">
+                  <button class="gesture-option w-full p-4 bg-white/60 hover:bg-white border border-slate-200/80 hover:border-[#23AAC5]/50 rounded-2xl transition-smooth text-left group hover:shadow-md opacity-60" data-gesture="summarize">
                     <div class="flex items-center gap-3">
-                      <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#23AAC5]/20 to-[#115c6c]/20 flex items-center justify-center flex-shrink-0">
-                        <i class="iconoir-compress text-lg text-[#23AAC5]"></i>
+                      <div class="w-10 h-10 rounded-xl bg-slate-200 flex items-center justify-center flex-shrink-0">
+                        <i class="iconoir-compress text-lg text-slate-400"></i>
                       </div>
                       <div class="flex-1 min-w-0">
-                        <div class="font-semibold text-slate-800 text-sm group-hover:text-[#23AAC5] transition-colors">Resumir contenido</div>
-                        <div class="text-xs text-slate-500">Extrae lo más importante</div>
+                        <div class="font-semibold text-slate-500">Resumir contenido</div>
+                        <div class="text-xs text-slate-400">Próximamente</div>
                       </div>
-                      <i class="iconoir-arrow-right text-slate-400 group-hover:text-[#23AAC5] transition-colors"></i>
+                      <span class="px-2 py-0.5 text-xs bg-slate-100 text-slate-400 rounded-full">Soon</span>
                     </div>
                   </button>
 
-                  <button id="view-all-gestures" class="w-full p-3 bg-white hover:bg-[#23AAC5]/5 border-2 border-dashed border-slate-300 hover:border-[#23AAC5] rounded-xl transition-all text-center group">
-                    <div class="flex items-center justify-center gap-2 text-sm font-medium text-slate-600 group-hover:text-[#23AAC5] transition-colors">
+                  <button id="view-all-gestures" class="w-full p-3 mt-1 hover:bg-[#23AAC5]/5 border-2 border-dashed border-slate-200 hover:border-[#23AAC5]/50 rounded-2xl transition-smooth text-center group">
+                    <div class="flex items-center justify-center gap-2 text-sm font-medium text-slate-500 group-hover:text-[#23AAC5] transition-smooth">
                       <span>Ver todos los gestos</span>
-                      <i class="iconoir-arrow-right"></i>
+                      <i class="iconoir-arrow-right group-hover:translate-x-1 transition-smooth"></i>
                     </div>
                   </button>
                 </div>
