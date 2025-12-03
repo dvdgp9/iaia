@@ -1435,8 +1435,7 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
 
     if (viewAllVoicesBtn) {
       viewAllVoicesBtn.addEventListener('click', () => {
-        const voicesTab = document.querySelector('[data-tab="voices"]');
-        if (voicesTab) voicesTab.click();
+        window.location.href = '/voices/';
       });
     }
 

@@ -19,7 +19,7 @@ $tabs = [
     'voices' => [
         'icon' => 'iconoir-voice-square',
         'label' => 'Voces',
-        'href' => '/voices/lex.php',
+        'href' => '/voices/',
         'title' => 'Voces especializadas'
     ],
     'gestures' => [

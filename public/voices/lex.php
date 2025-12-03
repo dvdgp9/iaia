@@ -66,7 +66,7 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
         
         <!-- Panel de documentos toggle -->
         <button id="toggle-docs-panel" class="flex items-center gap-2 px-3 py-1.5 text-sm text-slate-600 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-smooth">
-          <i class="iconoir-folder-document"></i>
+          <i class="iconoir-folder"></i>
           <span>Documentos</span>
           <i class="iconoir-nav-arrow-right text-xs" id="docs-arrow"></i>
         </button>
@@ -148,7 +148,7 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
         <aside id="docs-panel" class="hidden w-80 glass-strong border-l border-slate-200/50 flex flex-col shrink-0">
           <div class="p-4 border-b border-slate-200/50">
             <h3 class="font-semibold text-slate-800 flex items-center gap-2">
-              <i class="iconoir-folder-document text-rose-500"></i>
+              <i class="iconoir-folder text-rose-500"></i>
               Documentos disponibles
             </h3>
             <p class="text-xs text-slate-500 mt-1">Fuentes de conocimiento de Lex</p>

@@ -231,7 +231,7 @@
       
       historyList.innerHTML = items.map(item => `
         <div class="history-item w-full p-3 hover:bg-rose-50/50 border-b border-slate-100 transition-smooth cursor-pointer group flex items-start gap-2" data-id="${item.id}">
-          <i class="iconoir-scale text-rose-400 mt-0.5"></i>
+          <i class="iconoir-book text-rose-400 mt-0.5"></i>
           <div class="flex-1 min-w-0">
             <p class="text-sm font-medium text-slate-700 truncate group-hover:text-rose-600">${escapeHtml(item.title)}</p>
             <span class="text-xs text-slate-400">${timeAgo(item.created_at)}</span>
