@@ -17,11 +17,11 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
 <html lang="es">
 <?php include __DIR__ . '/includes/head.php'; ?>
 <body class="bg-mesh text-slate-900 overflow-hidden">
-  <div class="min-h-screen flex h-screen px-4 py-4">
+  <div class="min-h-screen flex h-screen">
     <?php include __DIR__ . '/includes/left-tabs.php'; ?>
 
     <!-- Sidebar conversaciones -->
-    <aside id="conversations-sidebar" class="w-80 glass-strong border border-slate-200/70 flex flex-col shadow-sm rounded-3xl overflow-hidden">
+    <aside id="conversations-sidebar" class="w-80 bg-white border-r border-slate-200 flex flex-col shadow-sm">
       <div class="p-5 border-b border-slate-200">
         <div class="flex items-center gap-3 mb-6">
           <div class="h-10 w-10 rounded-xl gradient-brand flex items-center justify-center text-white font-bold text-lg shadow-md">E</div>
@@ -83,7 +83,7 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
     </aside>
     
     <!-- Sidebar gestos -->
-    <aside id="gestures-sidebar" class="hidden w-80 glass-strong border border-slate-200/70 flex flex-col shadow-sm rounded-3xl overflow-hidden">
+    <aside id="gestures-sidebar" class="hidden w-80 bg-white border-r border-slate-200 flex flex-col shadow-sm">
       <div class="p-5 border-b border-slate-200">
         <div class="flex items-center gap-3 mb-4">
           <div class="h-10 w-10 rounded-xl gradient-brand flex items-center justify-center text-white shadow-md">
@@ -129,7 +129,7 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
     </aside>
 
     <main class="flex-1 flex flex-col">
-      <header class="h-[60px] px-6 border-b border-slate-200 glass-strong flex items-center justify-between shadow-sm sticky top-0 z-10 rounded-3xl rounded-b-none">
+      <header class="h-[60px] px-6 border-b border-slate-200 bg-white/95 backdrop-blur-sm flex items-center justify-between shadow-sm sticky top-0 z-10">
         <!-- Título conversación -->
         <div class="flex items-center gap-3 min-w-0">
           <!-- Título conversación activa -->
@@ -182,7 +182,7 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
       </header>
       
       <!-- Workspace de Gestos (oculto por defecto) -->
-      <section id="gestures-workspace" class="hidden flex-1 overflow-auto bg-gradient-to-b from-slate-50/40 to-white/80">
+      <section id="gestures-workspace" class="hidden flex-1 overflow-auto bg-mesh">
         <!-- Estado inicial: selecciona un gesto -->
         <div id="gesture-welcome" class="h-full flex items-center justify-center p-6">
           <div class="text-center max-w-md">
@@ -197,7 +197,7 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
         
       </section>
       
-      <section class="flex-1 overflow-auto bg-gradient-to-b from-slate-50/40 to-white/80 relative rounded-3xl rounded-t-none" id="messages-container">
+      <section class="flex-1 overflow-auto bg-mesh relative" id="messages-container">
         <div id="context-warning" class="hidden mx-6 mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
           <i class="iconoir-info-circle text-amber-600 text-lg mt-0.5"></i>
           <div class="flex-1 text-sm">
