@@ -81,52 +81,6 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
         </div>
       </div>
     </aside>
-    
-    <!-- Sidebar gestos -->
-    <aside id="gestures-sidebar" class="hidden w-80 bg-white border-r border-slate-200 flex flex-col shadow-sm">
-      <div class="p-5 border-b border-slate-200">
-        <div class="flex items-center gap-3 mb-4">
-          <div class="h-10 w-10 rounded-xl gradient-brand flex items-center justify-center text-white shadow-md">
-            <i class="iconoir-magic-wand text-xl"></i>
-          </div>
-          <div>
-            <strong class="text-xl font-semibold text-slate-800">Gestos</strong>
-            <div class="text-xs text-slate-500">Acciones rápidas</div>
-          </div>
-        </div>
-        <p class="text-sm text-slate-600">Selecciona un gesto para empezar una tarea específica.</p>
-      </div>
-      <div class="flex-1 overflow-y-auto p-4">
-        <div class="grid grid-cols-1 gap-3" id="gestures-list">
-          <!-- Gesto: Escribir artículos -->
-          <button data-gesture="write-article" class="gesture-card group p-4 bg-gradient-to-br from-[#23AAC5]/5 to-[#115c6c]/5 hover:from-[#23AAC5]/10 hover:to-[#115c6c]/10 border-2 border-[#23AAC5]/40 hover:border-[#23AAC5] rounded-xl transition-all duration-200 text-left">
-            <div class="flex items-start gap-3">
-              <div class="w-10 h-10 rounded-lg bg-[#23AAC5] flex items-center justify-center text-white shadow-sm group-hover:scale-110 transition-transform">
-                <i class="iconoir-page-edit text-lg"></i>
-              </div>
-              <div class="flex-1 min-w-0">
-                <h3 class="font-semibold text-slate-800 group-hover:text-[#115c6c] transition-colors">Escribir artículos</h3>
-                <p class="text-xs text-slate-600 mt-0.5 line-clamp-2">Genera artículos de blog, noticias o contenido editorial con el estilo que elijas.</p>
-              </div>
-              <i class="iconoir-arrow-right text-slate-400 group-hover:text-[#23AAC5] group-hover:translate-x-1 transition-all"></i>
-            </div>
-          </button>
-          
-          <!-- Gesto: Próximamente 1 -->
-          <div class="gesture-card p-4 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl opacity-60">
-            <div class="flex items-start gap-3">
-              <div class="w-10 h-10 rounded-lg bg-slate-300 flex items-center justify-center text-white">
-                <i class="iconoir-plus text-lg"></i>
-              </div>
-              <div class="flex-1 min-w-0">
-                <h3 class="font-semibold text-slate-500">Próximamente</h3>
-                <p class="text-xs text-slate-400 mt-0.5">Nuevos gestos en desarrollo...</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </aside>
 
     <main class="flex-1 flex flex-col">
       <header class="h-[60px] px-6 border-b border-slate-200 bg-white/95 backdrop-blur-sm flex items-center justify-between shadow-sm sticky top-0 z-10">
@@ -180,22 +134,6 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
           </div>
         </div>
       </header>
-      
-      <!-- Workspace de Gestos (oculto por defecto) -->
-      <section id="gestures-workspace" class="hidden flex-1 overflow-auto bg-mesh">
-        <!-- Estado inicial: selecciona un gesto -->
-        <div id="gesture-welcome" class="h-full flex items-center justify-center p-6">
-          <div class="text-center max-w-md">
-            <div class="w-20 h-20 rounded-2xl gradient-brand flex items-center justify-center mx-auto mb-6 shadow-lg">
-              <i class="iconoir-magic-wand text-4xl text-white"></i>
-            </div>
-            <h2 class="text-2xl font-bold text-slate-900 mb-3">Gestos de Ebonia</h2>
-            <p class="text-slate-600 mb-6">Los gestos son acciones predefinidas que te ayudan a realizar tareas específicas de forma rápida y consistente.</p>
-            <p class="text-sm text-slate-500">← Selecciona un gesto del panel lateral para empezar</p>
-          </div>
-        </div>
-        
-      </section>
       
       <section class="flex-1 overflow-auto bg-mesh relative" id="messages-container">
         <div id="context-warning" class="hidden mx-6 mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
@@ -1340,26 +1278,6 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
       });
     });
 
-    // Manejar clics en gestos
-    document.querySelectorAll('.gesture-option').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const gesture = btn.getAttribute('data-gesture');
-        const gestureName = btn.querySelector('.font-semibold').textContent;
-        
-        // Mostrar mensaje temporal (próximamente)
-        const tempMsg = document.createElement('div');
-        tempMsg.className = 'fixed top-20 left-1/2 -translate-x-1/2 bg-[#23AAC5] text-white px-6 py-3 rounded-xl shadow-lg z-50 flex items-center gap-2';
-        tempMsg.innerHTML = `<i class="iconoir-magic-wand"></i><span>Acción <strong>${gestureName}</strong> disponible próximamente</span>`;
-        document.body.appendChild(tempMsg);
-        
-        setTimeout(() => {
-          tempMsg.style.opacity = '0';
-          tempMsg.style.transition = 'opacity 0.3s';
-          setTimeout(() => tempMsg.remove(), 300);
-        }, 2000);
-      });
-    });
-
     async function highlightActive(){
       const items = convListEl.querySelectorAll('li');
       items.forEach(li => li.classList.remove('bg-gray-100'));
@@ -1382,25 +1300,13 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
         btn.classList.add('active', 'text-white/80');
         btn.classList.remove('text-white/60');
         
-        // Mostrar/ocultar sidebars y workspaces según tab
-        const gesturesSidebar = document.getElementById('gestures-sidebar');
-        const gesturesWorkspace = document.getElementById('gestures-workspace');
-        const messagesContainer = document.getElementById('messages-container');
-        const chatForm = document.getElementById('chat-form');
-        
-        if (tab === 'conversations') {
-          conversationsSidebar.classList.remove('hidden');
-          gesturesSidebar.classList.add('hidden');
-          gesturesWorkspace.classList.add('hidden');
-          messagesContainer.classList.remove('hidden');
-          if (chatForm) chatForm.classList.remove('hidden');
-        } else if (tab === 'gestures') {
-          // Redirigir a la vista general de gestos
+        // Redirigir a las vistas correspondientes
+        if (tab === 'gestures') {
           window.location.href = '/gestos/';
         } else if (tab === 'voices') {
-          // Redirigir a la vista general de voces
           window.location.href = '/voices/';
         }
+        // 'conversations' es la vista actual, no necesita acción
       });
     });
 
