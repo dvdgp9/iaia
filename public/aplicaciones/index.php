@@ -69,6 +69,39 @@ $apps = [
         'url_label' => 'Abrir Passwords'
     ],
     [
+        'id' => 'prisma',
+        'name' => 'Prisma',
+        'tagline' => 'Cambios y mejoras',
+        'description' => 'Gestión de cambios en las aplicaciones y solicitudes de mejora o reporte de fallos.',
+        'icon' => 'iconoir-git-branches',
+        'color' => 'from-sky-500 to-blue-600',
+        'features' => ['Solicitar nuevas funcionalidades', 'Reportar incidencias en apps', 'Trazabilidad de cambios', 'Canal único con informática'],
+        'url' => 'https://prisma.wthefox.com/solicitud.php?empresa=Ebone',
+        'url_label' => 'Abrir Prisma'
+    ],
+    [
+        'id' => 'campus',
+        'name' => 'Campus',
+        'tagline' => 'Formación online',
+        'description' => 'Plataforma Moodle 5.1 para formación interna y cursos de equipo.',
+        'icon' => 'iconoir-graduate-cap',
+        'color' => 'from-indigo-500 to-blue-700',
+        'features' => ['Cursos online para el equipo', 'Seguimiento de progreso', 'Recursos siempre disponibles', 'Integrado con servicios de Ebone'],
+        'url' => 'https://campus.ebone.es',
+        'url_label' => 'Abrir Campus'
+    ],
+    [
+        'id' => 'firmas',
+        'name' => 'Firmas',
+        'tagline' => 'Firmas de correo',
+        'description' => 'Plataforma para generar y actualizar firmas de correo corporativas.',
+        'icon' => 'iconoir-mail-opened',
+        'color' => 'from-pink-500 to-rose-600',
+        'features' => ['Generación guiada de firmas', 'Plantillas corporativas', 'Actualización rápida', 'Contraseña de acceso: firmaEBO'],
+        'url' => 'https://firmas.ebone.es',
+        'url_label' => 'Abrir Firmas'
+    ],
+    [
         'id' => 'ebonia',
         'name' => 'Ebonia',
         'tagline' => 'Asistente IA',
