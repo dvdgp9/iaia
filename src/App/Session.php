@@ -55,6 +55,24 @@ class Session {
         if (empty($_SESSION['csrf_token'])) {
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
         }
+        
+        // Si no hay usuario en sesión pero hay cookie de remember, intentar restaurar
+        if (empty($_SESSION['user']) && !empty($_COOKIE['ebonia_remember'])) {
+            self::tryRestoreFromRemember();
+        }
+    }
+    
+    /**
+     * Intentar restaurar la sesión desde un token de "Recordarme".
+     */
+    private static function tryRestoreFromRemember(): void {
+        // Cargar RememberService solo cuando sea necesario
+        require_once __DIR__ . '/../Auth/RememberService.php';
+        
+        $user = \Auth\RememberService::validateAndRestore();
+        if ($user) {
+            $_SESSION['user'] = $user;
+        }
     }
 
     public static function requireCsrf(): void {

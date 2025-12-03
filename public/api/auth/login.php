@@ -1,10 +1,12 @@
 <?php
 require_once __DIR__ . '/../../../src/App/bootstrap.php';
 require_once __DIR__ . '/../../../src/Auth/AuthService.php';
+require_once __DIR__ . '/../../../src/Auth/RememberService.php';
 
 use App\Response;
 use App\Session;
 use Auth\AuthService;
+use Auth\RememberService;
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     Response::error('method_not_allowed', 'Sólo POST', 405);
@@ -22,7 +24,8 @@ if ($email === '' || $password === '') {
 $user = AuthService::login($email, $password);
 
 if ($remember) {
-    Session::rememberDays(30);
+    // Crear token persistente en BD + cookie
+    RememberService::createToken((int)$user['id']);
 }
 
 Response::json([

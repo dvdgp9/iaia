@@ -13,6 +13,9 @@ Este documento refleja el **estado real** de la base de datos de Ebonia tras la 
 - ✅ **Migración 001_init.sql** aplicada (estructura base)
 - ✅ **Migración 002_seed_core.sql** aplicada (datos iniciales)
 - ✅ **Migración 003_add_favorites.sql** aplicada (campo is_favorite)
+- ✅ **Migración 004_gesture_executions.sql** aplicada (historial de gestos)
+- ✅ **Migración 005_voice_executions.sql** aplicada (historial de voces)
+- ✅ **Migración 006_remember_tokens.sql** aplicada (tokens de recordarme)
 
 ### Estadísticas
 
@@ -28,6 +31,9 @@ Este documento refleja el **estado real** de la base de datos de Ebonia tras la 
 | folders | 0 | ⚪ Vacía |
 | voices | 0 | ⚪ Vacía |
 | gestures | 0 | ⚪ Vacía |
+| gesture_executions | 0 | ⚪ Vacía |
+| voice_executions | 0 | ⚪ Vacía |
+| remember_tokens | 0 | ⚪ Vacía |
 | user_roles | 0 | ⚠️ Vacía (crítico) |
 | role_permissions | 0 | ⚠️ Vacía (crítico) |
 
@@ -207,6 +213,31 @@ CREATE TABLE user_roles (
 
 ---
 
+### 2.6. `remember_tokens`
+Tokens persistentes para la funcionalidad **Recordarme (30 días)**. Permiten restaurar la sesión de usuario aunque la sesión PHP haya expirado, manteniendo la seguridad mediante tokens rotativos almacenados en la base de datos.
+
+**Estructura:**
+```sql
+CREATE TABLE remember_tokens (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  user_id BIGINT UNSIGNED NOT NULL,
+  token_hash VARCHAR(64) NOT NULL,  -- SHA256 del token (nunca guardamos el token en claro)
+  expires_at DATETIME NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  
+  KEY idx_remember_user (user_id),
+  KEY idx_remember_token (token_hash),
+  KEY idx_remember_expires (expires_at),
+  
+  CONSTRAINT fk_remember_user FOREIGN KEY (user_id) 
+    REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
+
+**Datos actuales:** ⚪ **VACÍA** (0 registros, se crean al usar "Recordarme")
+
+---
+
 ### 2.5. `role_permissions`
 Relación muchos a muchos entre roles y permisos.
 
@@ -337,6 +368,67 @@ CREATE TABLE folders (
 ```
 
 **Datos actuales:** ⚪ VACÍA (funcionalidad no implementada)
+
+---
+
+### 4.3. `gesture_executions`
+Historial de ejecuciones de gestos (por ejemplo, el gesto **Escribir contenido**). Guarda tanto los parámetros de entrada como el contenido generado y permite marcar favoritos.
+
+**Estructura:**
+```sql
+CREATE TABLE gesture_executions (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  user_id BIGINT UNSIGNED NOT NULL,
+  gesture_type VARCHAR(50) NOT NULL,           -- 'write-article', 'translate', etc.
+  title VARCHAR(200) NOT NULL,                 -- Título auto-generado del resultado
+  input_data JSON NOT NULL,                    -- Datos del formulario
+  output_content LONGTEXT NOT NULL,            -- Contenido generado
+  content_type VARCHAR(50) NULL,               -- Subtipo: 'informativo', 'blog', 'nota-prensa'
+  business_line VARCHAR(50) NULL,              -- 'ebone', 'cubofit', 'uniges'
+  model VARCHAR(120) NULL,                     -- Modelo LLM usado
+  is_favorite TINYINT(1) NOT NULL DEFAULT 0,   -- Para marcar favoritos
+  created_at DATETIME NOT NULL,
+  updated_at DATETIME NOT NULL,
+  
+  KEY gesture_executions_user_id_idx (user_id),
+  KEY gesture_executions_type_idx (gesture_type),
+  KEY gesture_executions_user_type_idx (user_id, gesture_type, created_at DESC),
+  
+  CONSTRAINT fk_gesture_executions_user_id 
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
+
+**Datos actuales:** ⚪ **VACÍA** (MVP recién creado)
+
+---
+
+### 4.4. `voice_executions`
+Historial de ejecuciones de **voces especializadas** (por ejemplo, Lex). Cada registro representa un chat con una voz, incluyendo el contexto de entrada y la última respuesta generada.
+
+**Estructura:**
+```sql
+CREATE TABLE voice_executions (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  user_id BIGINT UNSIGNED NOT NULL,
+  voice_id VARCHAR(50) NOT NULL,                 -- 'lex', 'cubo', 'uniges', etc.
+  title VARCHAR(200) NOT NULL,                   -- Título auto-generado del chat
+  input_data JSON NOT NULL,                      -- Historial de mensajes
+  output_content LONGTEXT NOT NULL,              -- Última respuesta generada
+  model VARCHAR(120) NULL,                       -- Modelo LLM usado
+  created_at DATETIME NOT NULL,
+  updated_at DATETIME NOT NULL,
+  
+  KEY voice_executions_user_id_idx (user_id),
+  KEY voice_executions_voice_idx (voice_id),
+  KEY voice_executions_user_voice_idx (user_id, voice_id, updated_at DESC),
+  
+  CONSTRAINT fk_voice_executions_user_id 
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
+
+**Datos actuales:** ⚪ **VACÍA** (MVP Lex recién creado)
 
 ---
 
