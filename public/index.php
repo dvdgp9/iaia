@@ -1334,6 +1334,8 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
           window.location.href = '/gestos/';
         } else if (tab === 'voices') {
           window.location.href = '/voices/';
+        } else if (tab === 'apps') {
+          window.location.href = '/aplicaciones/';
         }
         // 'conversations' es la vista actual, no necesita acción
       });
