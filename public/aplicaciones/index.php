@@ -7,8 +7,53 @@ use Auth\AuthService;
 $user = AuthService::requireAuth();
 $activeTab = 'apps';
 
-// Catálogo de aplicaciones Ebone
+// Catálogo de aplicaciones Ebone (orden alfabético por nombre)
 $apps = [
+    [
+        'id' => 'campus',
+        'name' => 'Campus',
+        'tagline' => 'Formación online',
+        'description' => 'Plataforma Moodle 5.1 para formación interna y cursos de equipo.',
+        'icon' => 'iconoir-book',
+        'color' => 'from-indigo-500 to-blue-700',
+        'features' => ['Cursos online para el equipo', 'Seguimiento de progreso', 'Recursos siempre disponibles', 'Integrado con servicios de Ebone'],
+        'url' => 'https://campus.ebone.es',
+        'url_label' => 'Abrir Campus'
+    ],
+    [
+        'id' => 'ebonia',
+        'name' => 'Ebonia',
+        'tagline' => 'Asistente IA',
+        'description' => 'Asistente de inteligencia artificial con voces especializadas y gestos automatizados para el equipo.',
+        'icon' => 'iconoir-flash',
+        'color' => 'from-[#23AAC5] to-[#1a8a9f]',
+        'features' => ['Chat con contexto corporativo', 'Voces especializadas', 'Gestos automatizados', 'Documentos inteligentes'],
+        'url' => '/',
+        'url_label' => 'Ya estás aquí',
+        'is_current' => true
+    ],
+    [
+        'id' => 'firmas',
+        'name' => 'Firmas',
+        'tagline' => 'Firmas de correo',
+        'description' => 'Plataforma para generar y actualizar firmas de correo corporativas.',
+        'icon' => 'iconoir-mail',
+        'color' => 'from-pink-500 to-rose-600',
+        'features' => ['Generación guiada de firmas', 'Plantillas corporativas', 'Actualización rápida', 'Contraseña de acceso: firmaEBO'],
+        'url' => 'https://firmas.ebone.es',
+        'url_label' => 'Abrir Firmas'
+    ],
+    [
+        'id' => 'happy',
+        'name' => 'Happy',
+        'tagline' => 'Encuestas',
+        'description' => 'Encuestas y cuestionarios alojados en servidores propios. Coordinadores acceden solo a su ámbito para decisiones rápidas.',
+        'icon' => 'iconoir-emoji',
+        'color' => 'from-yellow-500 to-amber-600',
+        'features' => ['Constructor de formularios', 'Resultados en servidor propio', 'Accesos segmentados', 'Soporte a mejora continua'],
+        'url' => 'https://happy.ebone.es',
+        'url_label' => 'Abrir Happy'
+    ],
     [
         'id' => 'loop',
         'name' => 'Loop',
@@ -19,6 +64,28 @@ $apps = [
         'features' => ['Calendario editorial unificado', 'Publicación automática en WordPress', 'Compartición selectiva', 'Feedback trazado por correo'],
         'url' => 'https://loop.ebone.es',
         'url_label' => 'Abrir Loop'
+    ],
+    [
+        'id' => 'passwords',
+        'name' => 'Passwords',
+        'tagline' => 'Gestor seguro',
+        'description' => 'Interfaz web sencilla con búsqueda. Cifrado y control de accesos. Comparte credenciales de forma segura en el equipo.',
+        'icon' => 'iconoir-lock',
+        'color' => 'from-slate-500 to-zinc-700',
+        'features' => ['Acceso individual con visibilidad propia', 'Entradas compartidas por departamento', 'Cifrado y backups', 'Buscador rápido'],
+        'url' => 'https://passwords.ebone.es/gestionar',
+        'url_label' => 'Abrir Passwords'
+    ],
+    [
+        'id' => 'prisma',
+        'name' => 'Prisma',
+        'tagline' => 'Cambios y mejoras',
+        'description' => 'Gestión de cambios en las aplicaciones y solicitudes de mejora o reporte de fallos.',
+        'icon' => 'iconoir-folder',
+        'color' => 'from-sky-500 to-blue-600',
+        'features' => ['Solicitar nuevas funcionalidades', 'Reportar incidencias en apps', 'Trazabilidad de cambios', 'Canal único con informática'],
+        'url' => 'https://prisma.wthefox.com/solicitud.php?empresa=Ebone',
+        'url_label' => 'Abrir Prisma'
     ],
     [
         'id' => 'puri',
@@ -45,73 +112,6 @@ $apps = [
         'url_label' => 'App socorristas',
         'admin_url' => 'https://resq.ebone.es/admin',
         'admin_label' => 'Panel admin'
-    ],
-    [
-        'id' => 'happy',
-        'name' => 'Happy',
-        'tagline' => 'Encuestas',
-        'description' => 'Encuestas y cuestionarios alojados en servidores propios. Coordinadores acceden solo a su ámbito para decisiones rápidas.',
-        'icon' => 'iconoir-emoji',
-        'color' => 'from-yellow-500 to-amber-600',
-        'features' => ['Constructor de formularios', 'Resultados en servidor propio', 'Accesos segmentados', 'Soporte a mejora continua'],
-        'url' => 'https://happy.ebone.es',
-        'url_label' => 'Abrir Happy'
-    ],
-    [
-        'id' => 'passwords',
-        'name' => 'Passwords',
-        'tagline' => 'Gestor seguro',
-        'description' => 'Interfaz web sencilla con búsqueda. Cifrado y control de accesos. Comparte credenciales de forma segura en el equipo.',
-        'icon' => 'iconoir-lock',
-        'color' => 'from-slate-500 to-zinc-700',
-        'features' => ['Acceso individual con visibilidad propia', 'Entradas compartidas por departamento', 'Cifrado y backups', 'Buscador rápido'],
-        'url' => 'https://passwords.ebone.es/gestionar',
-        'url_label' => 'Abrir Passwords'
-    ],
-    [
-        'id' => 'prisma',
-        'name' => 'Prisma',
-        'tagline' => 'Cambios y mejoras',
-        'description' => 'Gestión de cambios en las aplicaciones y solicitudes de mejora o reporte de fallos.',
-        'icon' => 'iconoir-git-branches',
-        'color' => 'from-sky-500 to-blue-600',
-        'features' => ['Solicitar nuevas funcionalidades', 'Reportar incidencias en apps', 'Trazabilidad de cambios', 'Canal único con informática'],
-        'url' => 'https://prisma.wthefox.com/solicitud.php?empresa=Ebone',
-        'url_label' => 'Abrir Prisma'
-    ],
-    [
-        'id' => 'campus',
-        'name' => 'Campus',
-        'tagline' => 'Formación online',
-        'description' => 'Plataforma Moodle 5.1 para formación interna y cursos de equipo.',
-        'icon' => 'iconoir-graduate-cap',
-        'color' => 'from-indigo-500 to-blue-700',
-        'features' => ['Cursos online para el equipo', 'Seguimiento de progreso', 'Recursos siempre disponibles', 'Integrado con servicios de Ebone'],
-        'url' => 'https://campus.ebone.es',
-        'url_label' => 'Abrir Campus'
-    ],
-    [
-        'id' => 'firmas',
-        'name' => 'Firmas',
-        'tagline' => 'Firmas de correo',
-        'description' => 'Plataforma para generar y actualizar firmas de correo corporativas.',
-        'icon' => 'iconoir-mail-opened',
-        'color' => 'from-pink-500 to-rose-600',
-        'features' => ['Generación guiada de firmas', 'Plantillas corporativas', 'Actualización rápida', 'Contraseña de acceso: firmaEBO'],
-        'url' => 'https://firmas.ebone.es',
-        'url_label' => 'Abrir Firmas'
-    ],
-    [
-        'id' => 'ebonia',
-        'name' => 'Ebonia',
-        'tagline' => 'Asistente IA',
-        'description' => 'Asistente de inteligencia artificial con voces especializadas y gestos automatizados para el equipo.',
-        'icon' => 'iconoir-flash',
-        'color' => 'from-[#23AAC5] to-[#1a8a9f]',
-        'features' => ['Chat con contexto corporativo', 'Voces especializadas', 'Gestos automatizados', 'Documentos inteligentes'],
-        'url' => '/',
-        'url_label' => 'Ya estás aquí',
-        'is_current' => true
     ]
 ];
 ?>
