@@ -273,7 +273,7 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
                   </div>
                   <div>
                     <h3 class="text-lg font-bold text-slate-900">Voces</h3>
-                    <p class="text-sm text-slate-500">Personalidades para cada tarea</p>
+                    <p class="text-sm text-slate-500">Saben todo lo que necesitas</p>
                   </div>
                 </div>
                 
@@ -327,8 +327,8 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
                     <i class="iconoir-magic-wand text-2xl text-white"></i>
                   </div>
                   <div>
-                    <h3 class="text-lg font-bold text-slate-900">Acciones rápidas</h3>
-                    <p class="text-sm text-slate-500">Tareas optimizadas con un clic</p>
+                    <h3 class="text-lg font-bold text-slate-900">Gestos</h3>
+                    <p class="text-sm text-slate-500">Acciones rápidas optimizadas</p>
                   </div>
                 </div>
                 
