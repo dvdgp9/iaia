@@ -25,8 +25,8 @@ $tabs = [
     'gestures' => [
         'icon' => 'iconoir-magic-wand',
         'label' => 'Gestos',
-        'href' => '/#gestures',
-        'title' => 'Gestos'
+        'href' => '/gestos/',
+        'title' => 'Flujos automatizados'
     ]
 ];
 ?>

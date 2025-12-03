@@ -1395,11 +1395,8 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
           messagesContainer.classList.remove('hidden');
           if (chatForm) chatForm.classList.remove('hidden');
         } else if (tab === 'gestures') {
-          conversationsSidebar.classList.add('hidden');
-          gesturesSidebar.classList.remove('hidden');
-          gesturesWorkspace.classList.remove('hidden');
-          messagesContainer.classList.add('hidden');
-          if (chatForm) chatForm.classList.add('hidden');
+          // Redirigir a la vista general de gestos
+          window.location.href = '/gestos/';
         } else if (tab === 'voices') {
           // Redirigir a la vista general de voces
           window.location.href = '/voices/';
@@ -1419,8 +1416,7 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
 
     if (viewAllGesturesBtn) {
       viewAllGesturesBtn.addEventListener('click', () => {
-        const gesturesTab = document.querySelector('[data-tab="gestures"]');
-        if (gesturesTab) gesturesTab.click();
+        window.location.href = '/gestos/';
       });
     }
   </script>
@@ -1658,7 +1654,7 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
     // Gestures Navigation - redirige a páginas individuales de cada gesto
     (function() {
       const gestureRoutes = {
-        'write-article': '/gestures/write-article.php'
+        'write-article': '/gestos/escribir-articulo.php'
       };
       
       const gestureCards = document.querySelectorAll('[data-gesture]');
