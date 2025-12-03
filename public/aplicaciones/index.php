@@ -123,100 +123,102 @@ $apps = [
   <title>Aplicaciones · Ebonia</title>
   <?php include __DIR__ . '/../includes/head.php'; ?>
 </head>
-<body class="bg-mesh text-slate-100 min-h-screen flex">
-  <!-- Sidebar izquierdo -->
-  <?php include __DIR__ . '/../includes/left-tabs.php'; ?>
+<body class="bg-mesh text-slate-900 min-h-screen overflow-hidden">
+  <div class="flex h-screen">
+    <!-- Sidebar izquierdo (fixed) -->
+    <?php include __DIR__ . '/../includes/left-tabs.php'; ?>
 
-  <!-- Contenido principal -->
-  <main class="flex-1 overflow-auto">
-    <!-- Header -->
-    <header class="sticky top-0 z-10 bg-slate-900/80 backdrop-blur-sm border-b border-white/5 px-8 py-6">
-      <div class="max-w-6xl mx-auto">
-        <div class="flex items-center gap-3 mb-2">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#23AAC5] to-[#1a8a9f] flex items-center justify-center">
-            <i class="iconoir-view-grid text-xl text-white"></i>
-          </div>
-          <div>
-            <h1 class="text-2xl font-bold text-white">Aplicaciones Ebone</h1>
-            <p class="text-slate-400 text-sm">Suite de herramientas del equipo IT</p>
+    <!-- Contenido principal -->
+    <main class="flex-1 overflow-y-auto">
+      <!-- Header -->
+      <header class="sticky top-0 z-10 bg-white/70 backdrop-blur-md border-b border-slate-200/50 px-8 py-6">
+        <div class="max-w-6xl mx-auto">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#23AAC5] to-[#1a8a9f] flex items-center justify-center shadow-lg shadow-[#23AAC5]/20">
+              <i class="iconoir-view-grid text-xl text-white"></i>
+            </div>
+            <div>
+              <h1 class="text-2xl font-bold text-slate-800">Aplicaciones Ebone</h1>
+              <p class="text-slate-500 text-sm">Suite de herramientas del equipo IT</p>
+            </div>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
 
-    <!-- Grid de aplicaciones -->
-    <section class="px-8 py-8">
-      <div class="max-w-6xl mx-auto">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <?php foreach ($apps as $app): ?>
-            <div class="group relative bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-white/10 overflow-hidden hover:border-white/20 transition-all duration-300 hover:shadow-xl hover:shadow-black/20 hover:-translate-y-1">
-              <!-- Header con gradiente -->
-              <div class="h-24 bg-gradient-to-br <?php echo $app['color']; ?> p-5 flex items-start justify-between">
-                <div class="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                  <i class="<?php echo $app['icon']; ?> text-2xl text-white"></i>
-                </div>
-                <?php if (!empty($app['is_current'])): ?>
-                  <span class="px-2 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs text-white font-medium">
-                    Actual
-                  </span>
-                <?php endif; ?>
-              </div>
-              
-              <!-- Contenido -->
-              <div class="p-5">
-                <h3 class="text-lg font-semibold text-white mb-1"><?php echo htmlspecialchars($app['name']); ?></h3>
-                <p class="text-sm text-[#23AAC5] font-medium mb-3"><?php echo htmlspecialchars($app['tagline']); ?></p>
-                <p class="text-sm text-slate-400 mb-4 line-clamp-2"><?php echo htmlspecialchars($app['description']); ?></p>
-                
-                <!-- Features -->
-                <ul class="space-y-1.5 mb-5">
-                  <?php foreach (array_slice($app['features'], 0, 3) as $feature): ?>
-                    <li class="flex items-center gap-2 text-xs text-slate-400">
-                      <i class="iconoir-check text-emerald-400"></i>
-                      <span><?php echo htmlspecialchars($feature); ?></span>
-                    </li>
-                  <?php endforeach; ?>
-                </ul>
-                
-                <!-- Botones -->
-                <div class="flex gap-2">
-                  <?php if (empty($app['is_current'])): ?>
-                    <a href="<?php echo htmlspecialchars($app['url']); ?>" 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       class="flex-1 px-4 py-2.5 bg-gradient-to-r <?php echo $app['color']; ?> text-white text-sm font-medium rounded-xl text-center hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
-                      <span><?php echo htmlspecialchars($app['url_label']); ?></span>
-                      <i class="iconoir-arrow-up-right text-sm"></i>
-                    </a>
-                    <?php if (!empty($app['admin_url'])): ?>
-                      <a href="<?php echo htmlspecialchars($app['admin_url']); ?>" 
-                         target="_blank" 
-                         rel="noopener noreferrer"
-                         class="px-4 py-2.5 bg-slate-700 hover:bg-slate-600 text-white text-sm font-medium rounded-xl transition-colors flex items-center gap-2">
-                        <i class="iconoir-settings text-sm"></i>
-                        <span>Admin</span>
-                      </a>
-                    <?php endif; ?>
-                  <?php else: ?>
-                    <span class="flex-1 px-4 py-2.5 bg-slate-700/50 text-slate-400 text-sm font-medium rounded-xl text-center cursor-default">
-                      Ya estás aquí
+      <!-- Grid de aplicaciones -->
+      <section class="px-8 py-8">
+        <div class="max-w-6xl mx-auto">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <?php foreach ($apps as $app): ?>
+              <div class="group relative bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200/50 overflow-hidden hover:border-slate-300 transition-all duration-300 hover:shadow-xl hover:shadow-slate-900/10 hover:-translate-y-1">
+                <!-- Header con gradiente -->
+                <div class="h-20 bg-gradient-to-br <?php echo $app['color']; ?> p-4 flex items-start justify-between">
+                  <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                    <i class="<?php echo $app['icon']; ?> text-xl text-white"></i>
+                  </div>
+                  <?php if (!empty($app['is_current'])): ?>
+                    <span class="px-2 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs text-white font-medium">
+                      Actual
                     </span>
                   <?php endif; ?>
                 </div>
+                
+                <!-- Contenido -->
+                <div class="p-5">
+                  <h3 class="text-lg font-semibold text-slate-800 mb-1"><?php echo htmlspecialchars($app['name']); ?></h3>
+                  <p class="text-sm text-[#23AAC5] font-medium mb-2"><?php echo htmlspecialchars($app['tagline']); ?></p>
+                  <p class="text-sm text-slate-500 mb-4 line-clamp-2"><?php echo htmlspecialchars($app['description']); ?></p>
+                  
+                  <!-- Features -->
+                  <ul class="space-y-1.5 mb-5">
+                    <?php foreach (array_slice($app['features'], 0, 3) as $feature): ?>
+                      <li class="flex items-center gap-2 text-xs text-slate-500">
+                        <i class="iconoir-check text-emerald-500"></i>
+                        <span><?php echo htmlspecialchars($feature); ?></span>
+                      </li>
+                    <?php endforeach; ?>
+                  </ul>
+                  
+                  <!-- Botones -->
+                  <div class="flex gap-2">
+                    <?php if (empty($app['is_current'])): ?>
+                      <a href="<?php echo htmlspecialchars($app['url']); ?>" 
+                         target="_blank" 
+                         rel="noopener noreferrer"
+                         class="flex-1 px-4 py-2.5 bg-gradient-to-r <?php echo $app['color']; ?> text-white text-sm font-medium rounded-xl text-center hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-md">
+                        <span><?php echo htmlspecialchars($app['url_label']); ?></span>
+                        <i class="iconoir-arrow-up-right text-sm"></i>
+                      </a>
+                      <?php if (!empty($app['admin_url'])): ?>
+                        <a href="<?php echo htmlspecialchars($app['admin_url']); ?>" 
+                           target="_blank" 
+                           rel="noopener noreferrer"
+                           class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium rounded-xl transition-colors flex items-center gap-2">
+                          <i class="iconoir-settings text-sm"></i>
+                          <span>Admin</span>
+                        </a>
+                      <?php endif; ?>
+                    <?php else: ?>
+                      <span class="flex-1 px-4 py-2.5 bg-slate-100 text-slate-400 text-sm font-medium rounded-xl text-center cursor-default">
+                        Ya estás aquí
+                      </span>
+                    <?php endif; ?>
+                  </div>
+                </div>
               </div>
-            </div>
-          <?php endforeach; ?>
+            <?php endforeach; ?>
+          </div>
+          
+          <!-- Footer info -->
+          <div class="mt-12 text-center pb-8">
+            <p class="text-slate-500 text-sm">
+              ¿Necesitas acceso a alguna aplicación? Escribe a 
+              <a href="mailto:it@ebone.es" class="text-[#23AAC5] hover:underline font-medium">it@ebone.es</a>
+            </p>
+          </div>
         </div>
-        
-        <!-- Footer info -->
-        <div class="mt-12 text-center">
-          <p class="text-slate-500 text-sm">
-            ¿Necesitas acceso a alguna aplicación? Escribe a 
-            <a href="mailto:it@ebone.es" class="text-[#23AAC5] hover:underline">it@ebone.es</a>
-          </p>
-        </div>
-      </div>
-    </section>
-  </main>
+      </section>
+    </main>
+  </div>
 </body>
 </html>
