@@ -13,9 +13,21 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 $user = AuthService::requireAuth();
-Session::requireCsrf();
 
-$input = json_decode(file_get_contents('php://input'), true) ?? [];
+// Soportar tanto JSON como FormData (para sendBeacon al cerrar página)
+$contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+if (strpos($contentType, 'application/json') !== false) {
+    $input = json_decode(file_get_contents('php://input'), true) ?? [];
+    Session::requireCsrf();
+} else {
+    // FormData - leer de $_POST y validar CSRF manualmente
+    $input = $_POST;
+    $csrfToken = $_POST['csrf_token'] ?? '';
+    if ($csrfToken !== ($_SESSION['csrf_token'] ?? '')) {
+        Response::error('csrf_error', 'Token CSRF inválido', 403);
+    }
+}
+
 $id = (int)($input['id'] ?? 0);
 if ($id <= 0) {
     Response::error('validation_error', 'Campo id es obligatorio', 400);

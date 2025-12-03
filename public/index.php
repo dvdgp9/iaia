@@ -497,6 +497,33 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
       inputEmptyEl?.focus();
     }
 
+    // Eliminar conversación vacía (sin mensajes) para evitar acumulación
+    async function cleanupEmptyConversation(exceptId = null) {
+      if (emptyConversationId && emptyConversationId !== exceptId) {
+        const idToDelete = emptyConversationId;
+        emptyConversationId = null;
+        try {
+          await api('/api/conversations/delete.php', { 
+            method: 'POST', 
+            body: { id: idToDelete } 
+          });
+        } catch (e) {
+          console.warn('Error limpiando conversación vacía:', e);
+        }
+      }
+    }
+
+    // Limpiar conversación vacía al salir de la página
+    window.addEventListener('beforeunload', () => {
+      if (emptyConversationId) {
+        // Usar sendBeacon para petición asíncrona que sobrevive al cierre
+        const data = new FormData();
+        data.append('id', emptyConversationId);
+        data.append('csrf_token', csrf);
+        navigator.sendBeacon('/api/conversations/delete.php', data);
+      }
+    });
+
     function escapeHtml(str){
       return str.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
     }
@@ -918,6 +945,8 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
         btn.appendChild(starBtn);
         btn.appendChild(textContainer);
         btn.addEventListener('click', async () => {
+          // Limpiar conversación vacía antes de cambiar (excepto si es la que vamos a abrir)
+          await cleanupEmptyConversation(c.id);
           currentConversationId = c.id;
           updateConvTitle(c.title);
           await loadConversations();
