@@ -33,18 +33,6 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
         <button id="new-conv-btn" class="w-full py-2.5 px-4 rounded-lg gradient-brand-btn text-white font-medium shadow-md hover:shadow-lg hover:opacity-90 transition-all duration-200 flex items-center justify-center gap-2">
           <span class="text-lg">+</span> Nueva conversación
         </button>
-        
-        <!-- Acceso rápido a Voces -->
-        <a href="/voices/" class="mt-3 w-full inline-flex items-center justify-between px-3 py-2 rounded-xl border border-slate-200/80 bg-white/80 hover:bg-violet-50 hover:border-violet-300 transition-smooth text-sm text-slate-700 group">
-          <div class="flex items-center gap-2">
-            <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 text-white text-xs font-semibold shadow-sm">V</span>
-            <span class="font-medium">Voces especializadas</span>
-          </div>
-          <span class="flex items-center gap-1 text-xs text-violet-600 group-hover:translate-x-0.5 transition-smooth">
-            <span>Lex legal</span>
-            <i class="iconoir-arrow-right"></i>
-          </span>
-        </a>
       </div>
       <div class="flex-1 overflow-y-auto p-3">
         <!-- Sección Carpetas -->
@@ -1413,30 +1401,8 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
           messagesContainer.classList.add('hidden');
           if (chatForm) chatForm.classList.add('hidden');
         } else if (tab === 'voices') {
-          conversationsSidebar.classList.add('hidden');
-          gesturesSidebar.classList.add('hidden');
-          gesturesWorkspace.classList.add('hidden');
-          messagesContainer.classList.remove('hidden');
-          // Mostrar mensaje "próximamente" para Voces
-          const main = document.querySelector('main');
-          if (main && !main.querySelector('.coming-soon')) {
-            const comingSoon = document.createElement('div');
-            comingSoon.className = 'coming-soon absolute inset-0 flex items-center justify-center bg-white/95 z-50';
-            comingSoon.innerHTML = `
-              <div class="text-center">
-                <i class="iconoir-hourglass text-6xl text-[#23AAC5] mb-4"></i>
-                <h2 class="text-2xl font-bold text-gray-900 mb-2">Voces</h2>
-                <p class="text-gray-600">Función disponible próximamente</p>
-              </div>
-            `;
-            main.style.position = 'relative';
-            main.appendChild(comingSoon);
-            
-            setTimeout(() => {
-              comingSoon.remove();
-              document.querySelector('[data-tab="conversations"]').click();
-            }, 2000);
-          }
+          // Redirigir a la vista general de voces
+          window.location.href = '/voices/';
         }
       });
     });
