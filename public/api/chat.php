@@ -32,7 +32,10 @@ $conversationId = isset($input['conversation_id']) ? (int)$input['conversation_i
 $file = $input['file'] ?? null;
 
 // Opcional: permitir elegir modelo desde el cliente (formato: provider/model)
-$modelName = isset($input['model']) ? (string)$input['model'] : null;
+// Para pruebas, si no se envía modelo, usamos qwen/qwen-plus por defecto
+$modelName = isset($input['model']) && $input['model'] !== ''
+    ? (string)$input['model']
+    : 'qwen/qwen-plus';
 
 // Validar que haya mensaje o archivo
 if ($message === '' && !$file) {
