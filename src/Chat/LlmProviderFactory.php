@@ -6,39 +6,27 @@ use App\Response;
 
 class LlmProviderFactory
 {
+    /**
+     * Crea un proveedor LLM.
+     * 
+     * Desde la migración a OpenRouter, todos los modelos se acceden a través
+     * del gateway unificado. El parámetro $model permite especificar el modelo
+     * en formato "provider/model" (ej: "google/gemini-2.5-flash", "qwen/qwen-plus").
+     * 
+     * @param string|null $provider Ignorado (siempre usa OpenRouter)
+     * @param string|null $model Modelo a usar (formato: provider/model)
+     */
     public static function create(?string $provider = null, ?string $model = null): LlmProvider
     {
-        // Default: OpenRouter (gateway unificado para todos los modelos)
-        $providerName = strtolower($provider ?? (Env::get('LLM_PROVIDER') ?? 'openrouter'));
-
-        // Construir el contexto corporativo (común a todos los proveedores)
+        // Construir el contexto corporativo
         $contextBuilder = new ContextBuilder();
         $systemPrompt = $contextBuilder->buildSystemPrompt();
 
-        switch ($providerName) {
-            case 'openrouter':
-                // OpenRouter: gateway unificado (Gemini, Qwen, GPT, Claude, etc.)
-                $client = $model !== null
-                    ? new OpenRouterClient(null, $model, $systemPrompt)
-                    : new OpenRouterClient(null, null, $systemPrompt);
-                return new OpenRouterProvider($client, $contextBuilder);
-
-            case 'gemini':
-                // Gemini directo (legacy, usar OpenRouter preferiblemente)
-                $client = $model !== null
-                    ? new GeminiClient(null, $model, $systemPrompt)
-                    : new GeminiClient(null, null, $systemPrompt);
-                return new GeminiProvider($client, $contextBuilder);
-
-            case 'qwen':
-                // Qwen directo (legacy, usar OpenRouter preferiblemente)
-                $client = $model !== null
-                    ? new QwenClient(null, $model, $systemPrompt)
-                    : new QwenClient(null, null, $systemPrompt);
-                return new QwenProvider($client, $contextBuilder);
-
-            default:
-                Response::error('llm_provider_not_supported', 'Proveedor LLM no soportado: ' . $providerName, 400);
-        }
+        // OpenRouter: gateway unificado para todos los modelos
+        $client = $model !== null
+            ? new OpenRouterClient(null, $model, $systemPrompt)
+            : new OpenRouterClient(null, null, $systemPrompt);
+        
+        return new OpenRouterProvider($client, $contextBuilder);
     }
 }
