@@ -8,10 +8,8 @@
 require_once __DIR__ . '/../../../src/App/bootstrap.php';
 require_once __DIR__ . '/../../../src/Chat/ContextBuilder.php';
 require_once __DIR__ . '/../../../src/Chat/LlmProvider.php';
-require_once __DIR__ . '/../../../src/Chat/GeminiClient.php';
-require_once __DIR__ . '/../../../src/Chat/GeminiProvider.php';
-require_once __DIR__ . '/../../../src/Chat/QwenClient.php';
-require_once __DIR__ . '/../../../src/Chat/QwenProvider.php';
+require_once __DIR__ . '/../../../src/Chat/OpenRouterClient.php';
+require_once __DIR__ . '/../../../src/Chat/OpenRouterProvider.php';
 require_once __DIR__ . '/../../../src/Chat/LlmProviderFactory.php';
 require_once __DIR__ . '/../../../src/Voices/VoiceExecutionsRepo.php';
 require_once __DIR__ . '/../../../src/Voices/VoiceContextBuilder.php';
@@ -19,7 +17,7 @@ require_once __DIR__ . '/../../../src/Voices/VoiceContextBuilder.php';
 use App\Session;
 use App\Response;
 use App\Env;
-use Chat\GeminiClient;
+use Chat\OpenRouterClient;
 use Voices\VoiceExecutionsRepo;
 use Voices\VoiceContextBuilder;
 
@@ -80,11 +78,11 @@ $messages[] = [
     'content' => $message
 ];
 
-// Crear cliente Gemini directamente con el system prompt de la voz
+// Crear cliente OpenRouter con el system prompt de la voz
 try {
-    $client = new GeminiClient(
-        Env::get('GEMINI_API_KEY'),
-        Env::get('GEMINI_MODEL', 'gemini-1.5-flash'),
+    $client = new OpenRouterClient(
+        Env::get('OPENROUTER_API_KEY'),
+        Env::get('OPENROUTER_MODEL', 'google/gemini-2.5-flash'),
         $systemPrompt
     );
     
@@ -125,7 +123,7 @@ if ($executionId) {
         'title' => $title,
         'input_data' => $inputData,
         'output_content' => $reply,
-        'model' => Env::get('GEMINI_MODEL', 'gemini-1.5-flash')
+        'model' => $client->getModel()
     ]);
 }
 

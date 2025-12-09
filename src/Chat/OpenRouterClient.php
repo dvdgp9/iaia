@@ -4,12 +4,25 @@ namespace Chat;
 use App\Env;
 use App\Response;
 
-class QwenClient {
+/**
+ * Cliente para OpenRouter (https://openrouter.ai)
+ * 
+ * OpenRouter es un gateway que provee acceso unificado a múltiples LLMs
+ * (Gemini, GPT, Claude, Qwen, etc.) con una API compatible con OpenAI.
+ * 
+ * Modelos se especifican como "provider/model":
+ * - google/gemini-2.5-flash
+ * - qwen/qwen-plus
+ * - openai/gpt-4o
+ * - anthropic/claude-3.5-sonnet
+ */
+class OpenRouterClient {
     private string $apiKey;
     private string $model;
     private ?string $systemInstruction;
     private ?float $temperature;
     private ?int $maxTokens;
+    private string $baseUrl = 'https://openrouter.ai/api/v1/chat/completions';
 
     public function __construct(
         ?string $apiKey = null, 
@@ -18,8 +31,8 @@ class QwenClient {
         ?float $temperature = null,
         ?int $maxTokens = null
     ) {
-        $this->apiKey = $apiKey ?? (Env::get('QWEN_API_KEY') ?? '');
-        $this->model = $model ?? (Env::get('QWEN_MODEL') ?? 'qwen-plus');
+        $this->apiKey = $apiKey ?? (Env::get('OPENROUTER_API_KEY') ?? '');
+        $this->model = $model ?? (Env::get('OPENROUTER_MODEL') ?? 'google/gemini-2.5-flash');
         $this->systemInstruction = $systemInstruction;
         $this->temperature = $temperature;
         $this->maxTokens = $maxTokens;
@@ -38,12 +51,8 @@ class QwenClient {
     public function generateWithMessages(array $messages): string
     {
         if (!$this->apiKey) {
-            Response::error('qwen_api_key_missing', 'Falta QWEN_API_KEY en .env', 500);
+            Response::error('openrouter_api_key_missing', 'Falta OPENROUTER_API_KEY en .env', 500);
         }
-
-        // Qwen usa el endpoint compatible con OpenAI
-        $url = 'https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions';
-
 
         // Construir mensajes en formato OpenAI
         $messagesPayload = [];
@@ -63,7 +72,7 @@ class QwenClient {
             // Agregar archivo si existe (para mensajes de usuario)
             if (isset($m['file']) && $m['role'] === 'user') {
                 $file = $m['file'];
-                // Qwen soporta imágenes en formato base64
+                // OpenRouter/OpenAI soporta imágenes en formato base64
                 if (str_starts_with($file['mime_type'], 'image/')) {
                     $content[] = [
                         'type' => 'image_url',
@@ -72,11 +81,13 @@ class QwenClient {
                         ]
                     ];
                 }
+                // Para PDFs, incluir como texto si es posible
+                // (OpenRouter no soporta PDFs nativamente, se podría preprocesar)
             }
             
-            // Agregar texto si no está vacío
+            // Agregar texto
             if (!empty($m['content'])) {
-                if (isset($m['file'])) {
+                if (!empty($content)) {
                     // Si hay archivo, usar formato array de contenido
                     $content[] = [
                         'type' => 'text',
@@ -107,16 +118,18 @@ class QwenClient {
             $payload['max_tokens'] = $this->maxTokens;
         }
 
-        $ch = curl_init($url);
+        $ch = curl_init($this->baseUrl);
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST => true,
             CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json',
-                'Authorization: Bearer ' . $this->apiKey
+                'Authorization: Bearer ' . $this->apiKey,
+                'HTTP-Referer: ' . (Env::get('APP_URL') ?? 'https://ebonia.es'),
+                'X-Title: Ebonia'
             ],
             CURLOPT_POSTFIELDS => json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
-            CURLOPT_TIMEOUT => 30,
+            CURLOPT_TIMEOUT => 60,
         ]);
         $raw = curl_exec($ch);
         $err = curl_error($ch);
@@ -124,18 +137,18 @@ class QwenClient {
         curl_close($ch);
 
         if ($raw === false || $err) {
-            Response::error('qwen_request_failed', 'Fallo al contactar con Qwen: ' . $err, 502);
+            Response::error('openrouter_request_failed', 'Fallo al contactar con OpenRouter: ' . $err, 502);
         }
 
         $data = json_decode($raw, true);
         if ($status < 200 || $status >= 300) {
             $msg = $data['error']['message'] ?? $data['message'] ?? ('HTTP '.$status);
-            Response::error('qwen_bad_response', 'Error de Qwen: ' . $msg, 502);
+            Response::error('openrouter_bad_response', 'Error de OpenRouter: ' . $msg, 502);
         }
 
         $text = $data['choices'][0]['message']['content'] ?? '';
         if ($text === '') {
-            Response::error('qwen_empty', 'Respuesta vacía de Qwen', 502);
+            Response::error('openrouter_empty', 'Respuesta vacía de OpenRouter', 502);
         }
         return $text;
     }

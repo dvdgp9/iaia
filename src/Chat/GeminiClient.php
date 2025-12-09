@@ -104,4 +104,12 @@ class GeminiClient {
         }
         return $text;
     }
+
+    /**
+     * Obtiene el modelo actual configurado
+     */
+    public function getModel(): string
+    {
+        return $this->model;
+    }
 }

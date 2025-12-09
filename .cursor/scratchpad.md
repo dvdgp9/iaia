@@ -212,6 +212,65 @@ Las "voces" son asistentes especializados con conocimiento profundo de dominios 
    - Vector store + embeddings
    - Success: Búsqueda semántica en documentos
 
+---
+
+## Feature: Migración a OpenRouter
+
+### Motivación
+Consolidar todos los proveedores LLM (Gemini, Qwen, etc.) en un único gateway: **OpenRouter**. Esto simplifica la gestión de API keys, permite cambiar modelos sin código, y unifica la facturación.
+
+### Decisiones técnicas
+- **Endpoint**: `https://openrouter.ai/api/v1/chat/completions` (compatible OpenAI)
+- **Modelos**: Se especifican como `provider/model` (ej: `google/gemini-2.5-flash`, `qwen/qwen-plus`)
+- **Headers extras**: `HTTP-Referer` y `X-Title` opcionales para rankings
+- **API Key**: Único para todos los modelos
+
+### Archivos a modificar
+1. **Nuevo**: `src/Chat/OpenRouterClient.php` - Cliente único basado en API OpenAI
+2. **Nuevo**: `src/Chat/OpenRouterProvider.php` - Implementa LlmProvider
+3. **Modificar**: `src/Chat/LlmProviderFactory.php` - Añadir caso 'openrouter'
+4. **Modificar**: `.env` - Añadir `OPENROUTER_API_KEY` y `OPENROUTER_MODEL`
+5. **Modificar**: `public/api/chat.php` - Actualizar requires y lógica de modelo
+6. **Modificar**: `public/api/faq.php` - Usar OpenRouter
+7. **Modificar**: `public/api/gestures/generate.php` - Usar OpenRouter
+8. **Modificar**: `public/api/voices/chat.php` - Usar OpenRouter
+
+### Tareas de implementación
+
+1. [x] **Crear OpenRouterClient.php**
+   - Endpoint: `https://openrouter.ai/api/v1/chat/completions`
+   - Formato mensajes: OpenAI compatible (system, user, assistant)
+   - Soporte para imágenes base64
+   - Temperature y max_tokens opcionales
+   - ✅ Completado
+
+2. [x] **Crear OpenRouterProvider.php**
+   - Implementa LlmProvider
+   - Usa ContextBuilder para system prompt
+   - ✅ Completado
+
+3. [x] **Actualizar LlmProviderFactory.php**
+   - Añadir caso 'openrouter'
+   - Cambiar default a 'openrouter'
+   - ✅ Completado
+
+4. [x] **Actualizar .env**
+   - Añadir OPENROUTER_API_KEY
+   - Añadir OPENROUTER_MODEL (default)
+   - ✅ Completado
+
+5. [x] **Actualizar endpoints API**
+   - chat.php, faq.php, gestures/generate.php, voices/chat.php
+   - Cambiar requires a OpenRouter
+   - ✅ Completado
+
+6. [ ] **Testing**
+   - Probar chat general
+   - Probar FAQ
+   - Probar gestos
+   - Probar voces
+   - Success: Todo funcional
+
 # Executor's Feedback or Assistance Requests
 
 - Proveedor LLM: Gemini 1.5 Flash confirmado. API Key recibida (se gestionará vía `.env`, no se registrará en repo ni logs).

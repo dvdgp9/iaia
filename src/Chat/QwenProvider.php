@@ -26,4 +26,12 @@ class QwenProvider implements LlmProvider
     {
         return $this->client->generateWithMessages($messages);
     }
+
+    /**
+     * Obtiene el modelo usado por el cliente
+     */
+    public function getModel(): string
+    {
+        return $this->client->getModel();
+    }
 }

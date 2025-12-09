@@ -2,10 +2,8 @@
 require_once __DIR__ . '/../../src/App/bootstrap.php';
 require_once __DIR__ . '/../../src/Chat/ContextBuilder.php';
 require_once __DIR__ . '/../../src/Chat/LlmProvider.php';
-require_once __DIR__ . '/../../src/Chat/GeminiClient.php';
-require_once __DIR__ . '/../../src/Chat/GeminiProvider.php';
-require_once __DIR__ . '/../../src/Chat/QwenClient.php';
-require_once __DIR__ . '/../../src/Chat/QwenProvider.php';
+require_once __DIR__ . '/../../src/Chat/OpenRouterClient.php';
+require_once __DIR__ . '/../../src/Chat/OpenRouterProvider.php';
 require_once __DIR__ . '/../../src/Chat/LlmProviderFactory.php';
 require_once __DIR__ . '/../../src/Chat/ChatService.php';
 require_once __DIR__ . '/../../src/Auth/AuthService.php';
@@ -54,8 +52,8 @@ if ($file) {
         Response::error('validation_error', 'Tipo de archivo no soportado', 400);
     }
     
-    // QWEN no soporta archivos/imágenes → forzar Gemini para multimodal
-    $providerName = 'gemini';
+    // Para multimodal usar modelos que lo soporten (Gemini por defecto lo soporta vía OpenRouter)
+    // No es necesario forzar proveedor, OpenRouter maneja las capacidades
 }
 
 $convos = new ConversationsRepo();
@@ -116,9 +114,7 @@ if (count($history) > 20) {
 $assistantMsg = $svc->replyWithHistory($history);
 
 // Determinar el modelo usado
-// Si se forzó Gemini por archivo, usar ese modelo
-$effectiveProvider = $providerName ?? getenv('LLM_PROVIDER') ?: 'qwen';
-$usedModel = $modelName ?? ($effectiveProvider === 'gemini' ? getenv('GEMINI_MODEL') : getenv('QWEN_MODEL'));
+$usedModel = $provider->getModel();
 
 // Guardar respuesta de asistente
 $assistantMsgId = $msgs->create($conversationId, null, 'assistant', $assistantMsg['content'], $usedModel ?: null, null, null);

@@ -13,4 +13,9 @@ interface LlmProvider
      * @param array<int, array{role:string, content:string, file?:array}> $messages
      */
     public function generate(array $messages): string;
+
+    /**
+     * Obtiene el modelo usado por el proveedor
+     */
+    public function getModel(): string;
 }

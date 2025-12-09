@@ -23,10 +23,8 @@ set_exception_handler(function($e) {
 require_once __DIR__ . '/../../../src/App/bootstrap.php';
 require_once __DIR__ . '/../../../src/Chat/ContextBuilder.php';
 require_once __DIR__ . '/../../../src/Chat/LlmProvider.php';
-require_once __DIR__ . '/../../../src/Chat/GeminiClient.php';
-require_once __DIR__ . '/../../../src/Chat/GeminiProvider.php';
-require_once __DIR__ . '/../../../src/Chat/QwenClient.php';
-require_once __DIR__ . '/../../../src/Chat/QwenProvider.php';
+require_once __DIR__ . '/../../../src/Chat/OpenRouterClient.php';
+require_once __DIR__ . '/../../../src/Chat/OpenRouterProvider.php';
 require_once __DIR__ . '/../../../src/Chat/LlmProviderFactory.php';
 
 use App\Session;
@@ -88,7 +86,7 @@ $executionId = $repo->create([
     'output_content' => $response,
     'content_type' => $contentType,
     'business_line' => $businessLine,
-    'model' => $_ENV['LLM_PROVIDER'] ?? 'gemini',
+    'model' => $provider->getModel(),
 ]);
 
 Response::json([

@@ -1,11 +1,11 @@
 <?php
 namespace Chat;
 
-class GeminiProvider implements LlmProvider
+class OpenRouterProvider implements LlmProvider
 {
-    private GeminiClient $client;
+    private OpenRouterClient $client;
 
-    public function __construct(?GeminiClient $client = null, ?ContextBuilder $contextBuilder = null)
+    public function __construct(?OpenRouterClient $client = null, ?ContextBuilder $contextBuilder = null)
     {
         // Construir el contexto corporativo
         $contextBuilder = $contextBuilder ?? new ContextBuilder();
@@ -13,7 +13,7 @@ class GeminiProvider implements LlmProvider
 
         // Si no se pasó un cliente, crearlo con el contexto
         if ($client === null) {
-            $this->client = new GeminiClient(null, null, $systemPrompt);
+            $this->client = new OpenRouterClient(null, null, $systemPrompt);
         } else {
             $this->client = $client;
         }

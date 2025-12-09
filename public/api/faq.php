@@ -9,14 +9,14 @@
  * El modelo está instruido para NO inventar información.
  */
 require_once __DIR__ . '/../../src/App/bootstrap.php';
-require_once __DIR__ . '/../../src/Chat/QwenClient.php';
+require_once __DIR__ . '/../../src/Chat/OpenRouterClient.php';
 require_once __DIR__ . '/../../src/Chat/ContextBuilder.php';
 require_once __DIR__ . '/../../src/Auth/AuthService.php';
 
 use App\Response;
 use App\Session;
 use Auth\AuthService;
-use Chat\QwenClient;
+use Chat\OpenRouterClient;
 use Chat\ContextBuilder;
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -51,16 +51,16 @@ $faqContextDir = dirname(dirname(__DIR__)) . '/docs/context_faq';
 $contextBuilder = new ContextBuilder($faqContextDir);
 $systemPrompt = $contextBuilder->buildSystemPrompt();
 
-// Crear cliente QWEN con modelo plus (más preciso)
-// - qwen-plus: mejor comprensión y precisión que turbo
+// Crear cliente OpenRouter con modelo rápido para FAQ
+// - qwen/qwen-plus: buena relación calidad/precio para FAQ
 // - temperature 0.1: respuestas muy deterministas, menos creatividad = menos alucinaciones
 // - max_tokens 600: respuestas cortas pero suficientes
-$qwenClient = new QwenClient(
-    null,           // API key desde .env
-    'qwen-plus',    // Modelo más preciso
+$llmClient = new OpenRouterClient(
+    null,                   // API key desde .env
+    'qwen/qwen-plus',       // Modelo rápido vía OpenRouter
     $systemPrompt,
-    0.1,            // Temperature muy baja para máxima fiabilidad
-    600             // Tokens suficientes para respuestas concisas
+    0.1,                    // Temperature muy baja para máxima fiabilidad
+    600                     // Tokens suficientes para respuestas concisas
 );
 
 // Construir mensajes: historial + mensaje actual
@@ -77,11 +77,11 @@ foreach ($history as $h) {
 $messages[] = ['role' => 'user', 'content' => $message];
 
 try {
-    $reply = $qwenClient->generateWithMessages($messages);
+    $reply = $llmClient->generateWithMessages($messages);
     
     Response::json([
         'reply' => $reply,
-        'model' => 'qwen-plus'
+        'model' => $llmClient->getModel()
     ]);
 } catch (\Exception $e) {
     Response::error('faq_error', 'Error al procesar pregunta: ' . $e->getMessage(), 500);
