@@ -31,8 +31,7 @@ $message = trim((string)($input['message'] ?? ''));
 $conversationId = isset($input['conversation_id']) ? (int)$input['conversation_id'] : 0;
 $file = $input['file'] ?? null;
 
-// Opcional: permitir elegir proveedor/modelo desde el cliente (validado por la factoría)
-$providerName = isset($input['provider']) ? (string)$input['provider'] : null;
+// Opcional: permitir elegir modelo desde el cliente (formato: provider/model)
 $modelName = isset($input['model']) ? (string)$input['model'] : null;
 
 // Validar que haya mensaje o archivo
@@ -69,7 +68,7 @@ $userMsgId = $msgs->create($conversationId, (int)$user['id'], 'user', $message, 
 // Auto-titular si el título sigue siendo el genérico
 $convos->autoTitle($conversationId, $message);
 
-$provider = LlmProviderFactory::create($providerName, $modelName);
+$provider = LlmProviderFactory::create($modelName);
 $svc = new ChatService($provider);
 // Construir historial: incluir todos los mensajes de la conversación (ya incluye el del usuario)
 $allMessages = $msgs->listByConversation($conversationId);

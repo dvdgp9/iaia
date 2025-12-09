@@ -1,31 +1,27 @@
 <?php
 namespace Chat;
 
-use App\Env;
-use App\Response;
-
+/**
+ * Factoría para crear proveedores LLM.
+ * 
+ * Todos los modelos se acceden a través de OpenRouter.
+ * Por defecto usa `openrouter/auto` (selección automática inteligente).
+ */
 class LlmProviderFactory
 {
     /**
-     * Crea un proveedor LLM.
+     * Crea un proveedor LLM vía OpenRouter.
      * 
-     * Desde la migración a OpenRouter, todos los modelos se acceden a través
-     * del gateway unificado. El parámetro $model permite especificar el modelo
-     * en formato "provider/model" (ej: "google/gemini-2.5-flash", "qwen/qwen-plus").
-     * 
-     * @param string|null $provider Ignorado (siempre usa OpenRouter)
      * @param string|null $model Modelo a usar (formato: provider/model)
+     *                           Ejemplos: openrouter/auto, google/gemini-2.5-flash, qwen/qwen-plus
+     *                           Si es null, usa OPENROUTER_MODEL del .env o 'openrouter/auto'
      */
-    public static function create(?string $provider = null, ?string $model = null): LlmProvider
+    public static function create(?string $model = null): LlmProvider
     {
-        // Construir el contexto corporativo
         $contextBuilder = new ContextBuilder();
         $systemPrompt = $contextBuilder->buildSystemPrompt();
 
-        // OpenRouter: gateway unificado para todos los modelos
-        $client = $model !== null
-            ? new OpenRouterClient(null, $model, $systemPrompt)
-            : new OpenRouterClient(null, null, $systemPrompt);
+        $client = new OpenRouterClient(null, $model, $systemPrompt);
         
         return new OpenRouterProvider($client, $contextBuilder);
     }

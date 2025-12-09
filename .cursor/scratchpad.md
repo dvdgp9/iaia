@@ -264,12 +264,15 @@ Consolidar todos los proveedores LLM (Gemini, Qwen, etc.) en un único gateway: 
    - Cambiar requires a OpenRouter
    - ✅ Completado
 
-6. [ ] **Testing**
-   - Probar chat general
-   - Probar FAQ
-   - Probar gestos
-   - Probar voces
-   - Success: Todo funcional
+6. [x] **Testing**
+   - ✅ Chat, FAQ, Gestos, Voces funcionando
+   
+7. [x] **Limpieza y optimización**
+   - ✅ Modelo por defecto: `openrouter/auto` (selección automática)
+   - ✅ Captura modelo real usado en respuesta (para tracking)
+   - ✅ Eliminado parámetro `$provider` de LlmProviderFactory (ignorado)
+   - ✅ Eliminados archivos legacy: GeminiClient, GeminiProvider, QwenClient, QwenProvider
+   - ✅ Limpiado .env: solo OPENROUTER_API_KEY y OPENROUTER_MODEL
 
 # Executor's Feedback or Assistance Requests
 

@@ -11,6 +11,7 @@ use App\Response;
  * (Gemini, GPT, Claude, Qwen, etc.) con una API compatible con OpenAI.
  * 
  * Modelos se especifican como "provider/model":
+ * - openrouter/auto (selección automática inteligente)
  * - google/gemini-2.5-flash
  * - qwen/qwen-plus
  * - openai/gpt-4o
@@ -19,6 +20,7 @@ use App\Response;
 class OpenRouterClient {
     private string $apiKey;
     private string $model;
+    private ?string $usedModel = null; // Modelo real usado (para openrouter/auto)
     private ?string $systemInstruction;
     private ?float $temperature;
     private ?int $maxTokens;
@@ -32,7 +34,7 @@ class OpenRouterClient {
         ?int $maxTokens = null
     ) {
         $this->apiKey = $apiKey ?? (Env::get('OPENROUTER_API_KEY') ?? '');
-        $this->model = $model ?? (Env::get('OPENROUTER_MODEL') ?? 'google/gemini-2.5-flash');
+        $this->model = $model ?? (Env::get('OPENROUTER_MODEL') ?? 'openrouter/auto');
         $this->systemInstruction = $systemInstruction;
         $this->temperature = $temperature;
         $this->maxTokens = $maxTokens;
@@ -150,13 +152,26 @@ class OpenRouterClient {
         if ($text === '') {
             Response::error('openrouter_empty', 'Respuesta vacía de OpenRouter', 502);
         }
+        
+        // Capturar el modelo real usado (importante para openrouter/auto)
+        $this->usedModel = $data['model'] ?? $this->model;
+        
         return $text;
     }
 
     /**
-     * Obtiene el modelo actual configurado
+     * Obtiene el modelo usado en la última generación.
+     * Si se usó openrouter/auto, devuelve el modelo real seleccionado.
      */
     public function getModel(): string
+    {
+        return $this->usedModel ?? $this->model;
+    }
+
+    /**
+     * Obtiene el modelo configurado (antes de auto-selección)
+     */
+    public function getConfiguredModel(): string
     {
         return $this->model;
     }

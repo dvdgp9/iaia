@@ -2,10 +2,9 @@
 namespace Chat;
 
 /**
- * Interfaz común para cualquier proveedor de LLM.
+ * Interfaz común para proveedores de LLM.
  *
- * Recibe un historial de mensajes en el mismo formato que ya usa GeminiClient::generateWithMessages:
- * array<int, array{role:string, content:string, file?:array}>
+ * Formato de mensajes: array<int, array{role:string, content:string, file?:array}>
  */
 interface LlmProvider
 {
