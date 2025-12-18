@@ -61,8 +61,14 @@ if (!$gestureType || !$prompt) {
     Response::error('missing_params', 'Faltan parámetros requeridos', 400);
 }
 
+// Modelo específico por tipo de gesto
+$modelByGesture = [
+    'social-media' => 'google/gemini-2.5-flash-preview',
+];
+$model = $modelByGesture[$gestureType] ?? null;
+
 // Crear cliente LLM (usa ContextBuilder y system prompt internamente)
-$provider = LlmProviderFactory::create();
+$provider = LlmProviderFactory::create($model);
 
 // Generar contenido
 try {

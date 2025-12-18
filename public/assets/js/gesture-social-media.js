@@ -72,6 +72,7 @@
   let lastInputData = {};
   let lastBusinessLine = '';
   let lastGeneratedContent = '';
+  let lastHashtags = '';
 
   // === Submit del formulario ===
   if (socialMediaForm) {
@@ -289,12 +290,20 @@ IMPORTANTE:
       const parsed = parseResponse(data.content);
       lastGeneratedContent = parsed.post;
 
+      // Mantener hashtags si la variante no devuelve nuevos
+      const hashtags = (parsed.hashtags || '').trim();
+      if (!isVariant) {
+        lastHashtags = hashtags;
+      } else if (hashtags) {
+        lastHashtags = hashtags;
+      }
+
       // Mostrar resultado
       postContent.textContent = parsed.post;
-      hashtagsContent.textContent = parsed.hashtags;
+      hashtagsContent.textContent = lastHashtags;
       
       // Resumen editorial
-      renderEditorialSummary(inputData);
+      renderEditorialSummary(isVariant ? lastInputData : inputData);
 
       postResult.classList.remove('hidden');
       postResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -413,6 +422,9 @@ IMPORTANTE:
 PUBLICACIÓN ORIGINAL:
 "${lastGeneratedContent}"
 
+HASHTAGS ORIGINALES (si existen):
+"${lastHashtags}"
+
 CONTEXTO ORIGINAL:
 "${lastInputData.context}"
 
@@ -529,7 +541,10 @@ Devuelve SOLO el texto reescrito de la publicación, sin explicaciones ni marcad
 
       // Mostrar contenido
       postContent.textContent = parsed.post;
-      hashtagsContent.textContent = parsed.hashtags;
+      if ((parsed.hashtags || '').trim()) {
+        lastHashtags = parsed.hashtags.trim();
+      }
+      hashtagsContent.textContent = lastHashtags;
       lastGeneratedContent = parsed.post;
 
       // Resumen editorial
