@@ -94,7 +94,7 @@ if ($file && count($history) > 0) {
 $contextTruncated = false;
 if (count($history) > 20) {
     $totalChars = array_sum(array_map(fn($m) => mb_strlen($m['content']), $history));
-    $maxContextChars = 150000;
+    $maxContextChars = 50000;
     
     if ($totalChars > $maxContextChars) {
         $contextTruncated = true;

@@ -102,7 +102,7 @@ Response::json([
 function generateTitle(array $inputData, ?string $contentType): string
 {
     // Intentar extraer el tema/asunto principal
-    $topic = $inputData['topic'] ?? $inputData['what'] ?? $inputData['theme'] ?? '';
+    $topic = $inputData['topic'] ?? $inputData['what'] ?? $inputData['context'] ?? $inputData['theme'] ?? '';
     
     if ($topic) {
         // Truncar a 80 caracteres
@@ -113,6 +113,8 @@ function generateTitle(array $inputData, ?string $contentType): string
             'informativo' => 'Artículo informativo',
             'blog' => 'Post de blog',
             'nota-prensa' => 'Nota de prensa',
+            'original' => 'Publicación',
+            'variant' => 'Variante',
         ];
         $title = $typeLabels[$contentType] ?? 'Contenido generado';
         $title .= ' - ' . date('d/m H:i');

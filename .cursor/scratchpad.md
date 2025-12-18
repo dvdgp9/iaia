@@ -85,6 +85,14 @@ Chatbot ligero para preguntas rápidas sobre el Grupo Ebone. Usa QWEN Turbo (`qw
 - [x] Endpoints mínimos auth/login, auth/logout y chat.
 - [x] `.env` local configurado.
 
+## Gesto: Redes Sociales (en progreso)
+
+- [ ] Crear página `/public/gestos/redes-sociales.php`
+- [ ] Crear JS `/public/assets/js/gesture-social-media.js`
+- [ ] Actualizar `/public/gestos/index.php` con tarjeta del gesto
+- [ ] Actualizar `generate.php` para tipo `social-media`
+- [ ] Testing manual del flujo completo
+
 ---
 
 ## Feature: Sistema de Gestos
