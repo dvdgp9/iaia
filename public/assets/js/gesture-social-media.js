@@ -26,8 +26,11 @@
   // === Mapas de valores ===
   const businessLineMap = {
     'ebone': 'Grupo Ebone',
+    'ebone-servicios': 'Ebone Servicios',
     'cubofit': 'CUBOFIT',
-    'uniges': 'UNIGES-3'
+    'uniges': 'UNIGES-3',
+    'cide': 'CIDE',
+    'teia': 'Teià (El CIM)'
   };
 
   const intentionMap = {
@@ -111,7 +114,10 @@
       closing
     };
 
-    const prompt = buildPrompt(inputData, businessName);
+    // Obtener últimas publicaciones de esta línea de negocio
+    const recentPosts = await fetchRecentPosts(businessLine);
+
+    const prompt = buildPrompt(inputData, businessName, recentPosts);
     
     lastPrompt = prompt;
     lastInputData = inputData;
@@ -120,8 +126,24 @@
     await sendPrompt(prompt, inputData, businessLine);
   }
 
+  // === Obtener publicaciones recientes de la línea de negocio ===
+  async function fetchRecentPosts(businessLine) {
+    try {
+      const res = await fetch(`/api/gestures/recent.php?type=${GESTURE_TYPE}&business_line=${businessLine}&limit=5`, {
+        credentials: 'include'
+      });
+      const data = await res.json();
+      if (res.ok && data.posts) {
+        return data.posts;
+      }
+    } catch (err) {
+      console.warn('No se pudieron obtener publicaciones recientes:', err);
+    }
+    return [];
+  }
+
   // === Construir prompt ===
-  function buildPrompt(data, businessName) {
+  function buildPrompt(data, businessName, recentPosts = []) {
     const { context, intention, channel, narrative, length, closing } = data;
 
     // Instrucciones según intención
@@ -208,6 +230,11 @@
 - Profesionalidad sin frialdad
 - Valores: compromiso, experiencia, cercanía con administraciones y ciudadanía
 - Habla en primera persona del plural (nosotros)`,
+      'ebone-servicios': `ESTILO EBONE SERVICIOS:
+- Tono institucional pero cercano
+- Profesionalidad sin frialdad
+- Valores: compromiso, experiencia, cercanía con administraciones y ciudadanía
+- Habla en primera persona del plural (nosotros)`,
       'cubofit': `ESTILO CUBOFIT:
 - Tono energético, moderno y motivador
 - Lenguaje dinámico y positivo
@@ -219,7 +246,20 @@
 - Profesional y orientado a resultados
 - Valores: gestión deportiva, eficiencia, servicio público
 - Balance entre institucional y cercano
-- Conecta con la comunidad deportiva y municipal`
+- Conecta con la comunidad deportiva y municipal`,
+      'cide': `ESTILO CIDE (Cátedra de Innovación Deportiva):
+- Tono académico pero accesible
+- Autoridad en innovación y gestión deportiva
+- Valores: conocimiento, investigación, transferencia, vanguardia
+- Conecta con profesionales del sector, universidades y entidades deportivas
+- Puede incluir datos, tendencias o reflexiones del sector`,
+      'teia': `ESTILO TEIÀ - EL CIM (Polideportivo Municipal):
+- IMPORTANTE: Escribe SIEMPRE en CATALÁN
+- Tono cercano y comunitario
+- Valores: salud, actividad física, comunidad local, servicio público
+- Contenidos típicos: eventos deportivos, consejos de salud/ejercicio, actividades ofertadas, horarios
+- Conecta con los vecinos y usuarios del polideportivo
+- Usa un lenguaje inclusivo y motivador`
     };
 
     return `Eres el community manager de ${businessName}. Construye una publicación para redes sociales.
@@ -246,6 +286,14 @@ Devuelve la publicación en el siguiente formato exacto:
 [Hashtags relevantes separados por espacios, entre 5-10]
 
 ---FIN---
+${recentPosts.length > 0 ? `
+PUBLICACIONES ANTERIORES DE ESTA MARCA (para evitar repetirte):
+${recentPosts.map((post, i) => `${i + 1}. "${post.substring(0, 200)}${post.length > 200 ? '...' : ''}"`).join('\n')}
+
+Ten en cuenta estas publicaciones para:
+- NO repetir frases, estructuras o aperturas similares
+- Variar el estilo y enfoque
+- Aportar frescura y originalidad` : ''}
 
 IMPORTANTE:
 - El texto debe estar listo para publicar, sin explicaciones ni comentarios.
@@ -484,8 +532,11 @@ Devuelve SOLO el texto reescrito de la publicación, sin explicaciones ni marcad
 
     const businessColors = {
       'ebone': 'bg-blue-100 text-blue-700',
+      'ebone-servicios': 'bg-blue-100 text-blue-700',
       'cubofit': 'bg-orange-100 text-orange-700',
-      'uniges': 'bg-purple-100 text-purple-700'
+      'uniges': 'bg-purple-100 text-purple-700',
+      'cide': 'bg-emerald-100 text-emerald-700',
+      'teia': 'bg-amber-100 text-amber-700'
     };
 
     historyList.innerHTML = items.map(item => {

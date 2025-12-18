@@ -120,23 +120,41 @@ $activeTab = 'gestures';
             <!-- LÍNEA DE NEGOCIO -->
             <div>
               <label class="block text-sm font-semibold text-slate-700 mb-2">Línea de negocio</label>
-              <div class="flex gap-2">
-                <label class="cursor-pointer flex-1">
+              <div class="grid grid-cols-3 gap-2">
+                <label class="cursor-pointer">
                   <input type="radio" name="business-line" value="ebone" class="hidden peer" checked />
-                  <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-violet-500 peer-checked:bg-violet-500/10 peer-checked:text-violet-700 hover:border-violet-400 transition-all font-medium text-center">
+                  <div class="px-2 py-2 text-xs border-2 border-slate-200 rounded-lg peer-checked:border-violet-500 peer-checked:bg-violet-500/10 peer-checked:text-violet-700 hover:border-violet-400 transition-all font-medium text-center">
                     Grupo Ebone
                   </div>
                 </label>
-                <label class="cursor-pointer flex-1">
+                <label class="cursor-pointer">
+                  <input type="radio" name="business-line" value="ebone-servicios" class="hidden peer" />
+                  <div class="px-2 py-2 text-xs border-2 border-slate-200 rounded-lg peer-checked:border-violet-500 peer-checked:bg-violet-500/10 peer-checked:text-violet-700 hover:border-violet-400 transition-all font-medium text-center">
+                    Ebone Servicios
+                  </div>
+                </label>
+                <label class="cursor-pointer">
                   <input type="radio" name="business-line" value="cubofit" class="hidden peer" />
-                  <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-violet-500 peer-checked:bg-violet-500/10 peer-checked:text-violet-700 hover:border-violet-400 transition-all font-medium text-center">
+                  <div class="px-2 py-2 text-xs border-2 border-slate-200 rounded-lg peer-checked:border-violet-500 peer-checked:bg-violet-500/10 peer-checked:text-violet-700 hover:border-violet-400 transition-all font-medium text-center">
                     CUBOFIT
                   </div>
                 </label>
-                <label class="cursor-pointer flex-1">
+                <label class="cursor-pointer">
                   <input type="radio" name="business-line" value="uniges" class="hidden peer" />
-                  <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-violet-500 peer-checked:bg-violet-500/10 peer-checked:text-violet-700 hover:border-violet-400 transition-all font-medium text-center">
+                  <div class="px-2 py-2 text-xs border-2 border-slate-200 rounded-lg peer-checked:border-violet-500 peer-checked:bg-violet-500/10 peer-checked:text-violet-700 hover:border-violet-400 transition-all font-medium text-center">
                     UNIGES-3
+                  </div>
+                </label>
+                <label class="cursor-pointer">
+                  <input type="radio" name="business-line" value="cide" class="hidden peer" />
+                  <div class="px-2 py-2 text-xs border-2 border-slate-200 rounded-lg peer-checked:border-violet-500 peer-checked:bg-violet-500/10 peer-checked:text-violet-700 hover:border-violet-400 transition-all font-medium text-center">
+                    CIDE
+                  </div>
+                </label>
+                <label class="cursor-pointer">
+                  <input type="radio" name="business-line" value="teia" class="hidden peer" />
+                  <div class="px-2 py-2 text-xs border-2 border-slate-200 rounded-lg peer-checked:border-violet-500 peer-checked:bg-violet-500/10 peer-checked:text-violet-700 hover:border-violet-400 transition-all font-medium text-center">
+                    Teià (El CIM)
                   </div>
                 </label>
               </div>

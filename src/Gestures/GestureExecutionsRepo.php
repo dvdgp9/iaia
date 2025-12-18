@@ -121,4 +121,28 @@ class GestureExecutionsRepo
         $stmt->execute(['id' => $id, 'user_id' => $userId]);
         return $stmt->rowCount() > 0;
     }
+
+    /**
+     * Obtiene las últimas publicaciones originales de una línea de negocio
+     */
+    public function getRecentByBusinessLine(int $userId, string $gestureType, string $businessLine, int $limit = 5): array
+    {
+        $sql = "SELECT output_content 
+                FROM gesture_executions 
+                WHERE user_id = :user_id 
+                  AND gesture_type = :gesture_type 
+                  AND business_line = :business_line
+                  AND content_type = 'original'
+                ORDER BY created_at DESC 
+                LIMIT :limit";
+        
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue('user_id', $userId, PDO::PARAM_INT);
+        $stmt->bindValue('gesture_type', $gestureType, PDO::PARAM_STR);
+        $stmt->bindValue('business_line', $businessLine, PDO::PARAM_STR);
+        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
