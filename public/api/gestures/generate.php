@@ -63,7 +63,7 @@ if (!$gestureType || !$prompt) {
 
 // Modelo específico por tipo de gesto
 $modelByGesture = [
-    'social-media' => 'google/gemini-2.5-flash-preview',
+    'social-media' => 'google/gemini-3-flash-preview',
 ];
 $model = $modelByGesture[$gestureType] ?? null;
 
