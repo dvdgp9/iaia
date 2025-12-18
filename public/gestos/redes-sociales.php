@@ -163,30 +163,53 @@ $activeTab = 'gestures';
             <!-- CANAL -->
             <div>
               <label class="block text-sm font-semibold text-slate-700 mb-2">Canal</label>
-              <div class="flex gap-2">
-                <label class="cursor-pointer flex-1">
+              <div class="grid grid-cols-2 gap-2">
+                <label class="cursor-pointer">
                   <input type="radio" name="channel" value="instagram" class="hidden peer" checked />
                   <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-violet-500 peer-checked:bg-violet-500/10 peer-checked:text-violet-700 hover:border-violet-400 transition-all font-medium text-center flex items-center justify-center gap-1">
                     <i class="iconoir-instagram"></i> Instagram
                   </div>
                 </label>
-                <label class="cursor-pointer flex-1">
+                <label class="cursor-pointer">
                   <input type="radio" name="channel" value="facebook" class="hidden peer" />
                   <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-violet-500 peer-checked:bg-violet-500/10 peer-checked:text-violet-700 hover:border-violet-400 transition-all font-medium text-center flex items-center justify-center gap-1">
                     <i class="iconoir-facebook"></i> Facebook
                   </div>
                 </label>
-                <label class="cursor-pointer flex-1">
+                <label class="cursor-pointer">
                   <input type="radio" name="channel" value="linkedin" class="hidden peer" />
                   <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-violet-500 peer-checked:bg-violet-500/10 peer-checked:text-violet-700 hover:border-violet-400 transition-all font-medium text-center flex items-center justify-center gap-1">
                     <i class="iconoir-linkedin"></i> LinkedIn
                   </div>
                 </label>
-                <label class="cursor-pointer flex-1">
+                <label class="cursor-pointer">
                   <input type="radio" name="channel" value="transversal" class="hidden peer" />
                   <div class="px-3 py-2 text-sm border-2 border-slate-200 rounded-lg peer-checked:border-violet-500 peer-checked:bg-violet-500/10 peer-checked:text-violet-700 hover:border-violet-400 transition-all font-medium text-center flex items-center justify-center gap-1">
                     <i class="iconoir-multi-window"></i> Multi
                   </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- LONGITUD -->
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 mb-2">Longitud</label>
+              <div class="grid grid-cols-4 gap-2">
+                <label class="cursor-pointer">
+                  <input type="radio" name="length" value="" class="hidden peer" checked />
+                  <div class="px-2 py-2 text-xs border-2 border-slate-200 rounded-lg peer-checked:border-violet-500 peer-checked:bg-violet-500/10 hover:border-violet-400 transition-all text-center font-medium text-slate-600">Auto</div>
+                </label>
+                <label class="cursor-pointer">
+                  <input type="radio" name="length" value="corto" class="hidden peer" />
+                  <div class="px-2 py-2 text-xs border-2 border-slate-200 rounded-lg peer-checked:border-violet-500 peer-checked:bg-violet-500/10 hover:border-violet-400 transition-all text-center font-medium text-slate-600">Corto</div>
+                </label>
+                <label class="cursor-pointer">
+                  <input type="radio" name="length" value="medio" class="hidden peer" />
+                  <div class="px-2 py-2 text-xs border-2 border-slate-200 rounded-lg peer-checked:border-violet-500 peer-checked:bg-violet-500/10 hover:border-violet-400 transition-all text-center font-medium text-slate-600">Medio</div>
+                </label>
+                <label class="cursor-pointer">
+                  <input type="radio" name="length" value="largo" class="hidden peer" />
+                  <div class="px-2 py-2 text-xs border-2 border-slate-200 rounded-lg peer-checked:border-violet-500 peer-checked:bg-violet-500/10 hover:border-violet-400 transition-all text-center font-medium text-slate-600">Largo</div>
                 </label>
               </div>
             </div>
@@ -227,29 +250,6 @@ $activeTab = 'gestures';
                     <label class="cursor-pointer">
                       <input type="radio" name="narrative" value="vision" class="hidden peer" />
                       <div class="px-2 py-1 text-xs border border-slate-200 rounded peer-checked:border-violet-500 peer-checked:bg-violet-500/10 hover:border-violet-400 transition-all">Visión</div>
-                    </label>
-                  </div>
-                </div>
-                
-                <!-- Longitud -->
-                <div>
-                  <label class="block text-xs font-medium text-slate-600 mb-1.5">Longitud</label>
-                  <div class="flex gap-1.5">
-                    <label class="cursor-pointer flex-1">
-                      <input type="radio" name="length" value="" class="hidden peer" checked />
-                      <div class="px-2 py-1 text-xs border border-slate-200 rounded peer-checked:border-violet-500 peer-checked:bg-violet-500/10 hover:border-violet-400 transition-all text-center">Auto</div>
-                    </label>
-                    <label class="cursor-pointer flex-1">
-                      <input type="radio" name="length" value="corto" class="hidden peer" />
-                      <div class="px-2 py-1 text-xs border border-slate-200 rounded peer-checked:border-violet-500 peer-checked:bg-violet-500/10 hover:border-violet-400 transition-all text-center">Corto</div>
-                    </label>
-                    <label class="cursor-pointer flex-1">
-                      <input type="radio" name="length" value="medio" class="hidden peer" />
-                      <div class="px-2 py-1 text-xs border border-slate-200 rounded peer-checked:border-violet-500 peer-checked:bg-violet-500/10 hover:border-violet-400 transition-all text-center">Medio</div>
-                    </label>
-                    <label class="cursor-pointer flex-1">
-                      <input type="radio" name="length" value="largo" class="hidden peer" />
-                      <div class="px-2 py-1 text-xs border border-slate-200 rounded peer-checked:border-violet-500 peer-checked:bg-violet-500/10 hover:border-violet-400 transition-all text-center">Largo</div>
                     </label>
                   </div>
                 </div>
