@@ -12,7 +12,9 @@
   const postContent = document.getElementById('post-content');
   const hashtagsContent = document.getElementById('hashtags-content');
   const editorialSummary = document.getElementById('editorial-summary');
+  const editorialPanel = document.getElementById('editorial-panel');
   const postLoading = document.getElementById('post-loading');
+  const resultPlaceholder = document.getElementById('result-placeholder');
   const generatePostBtn = document.getElementById('generate-post-btn');
   const copyPostBtn = document.getElementById('copy-post-btn');
   const copyHashtagsBtn = document.getElementById('copy-hashtags-btn');
@@ -254,6 +256,7 @@ IMPORTANTE:
 
   // === Enviar prompt a la API ===
   async function sendPrompt(prompt, inputData, businessLine, isVariant = false) {
+    resultPlaceholder.classList.add('hidden');
     postResult.classList.add('hidden');
     postLoading.classList.remove('hidden');
     generatePostBtn.disabled = true;
@@ -304,9 +307,9 @@ IMPORTANTE:
       
       // Resumen editorial
       renderEditorialSummary(isVariant ? lastInputData : inputData);
+      editorialPanel.classList.remove('hidden');
 
       postResult.classList.remove('hidden');
-      postResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
       // Recargar historial
       loadHistory();
@@ -539,25 +542,60 @@ Devuelve SOLO el texto reescrito de la publicación, sin explicaciones ni marcad
       const exec = data.execution;
       const parsed = parseResponse(exec.output_content);
 
-      // Mostrar contenido
-      postContent.textContent = parsed.post;
+      // Guardar datos
+      lastInputData = exec.input_data || {};
+      lastBusinessLine = exec.business_line || '';
+      lastGeneratedContent = parsed.post;
       if ((parsed.hashtags || '').trim()) {
         lastHashtags = parsed.hashtags.trim();
       }
+
+      // Rellenar formulario con los datos guardados
+      fillFormFromData(lastInputData);
+
+      // Mostrar contenido
+      postContent.textContent = parsed.post;
       hashtagsContent.textContent = lastHashtags;
-      lastGeneratedContent = parsed.post;
 
       // Resumen editorial
-      lastInputData = exec.input_data || {};
-      lastBusinessLine = exec.business_line || '';
       renderEditorialSummary(lastInputData);
+      editorialPanel.classList.remove('hidden');
 
+      // Mostrar resultado, ocultar placeholder
+      resultPlaceholder.classList.add('hidden');
       postResult.classList.remove('hidden');
-      postResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
     } catch (err) {
       alert('Error de conexión');
     }
+  }
+
+  // === Rellenar formulario desde datos guardados ===
+  function fillFormFromData(data) {
+    // Contexto
+    const contextEl = document.getElementById('post-context');
+    if (contextEl && data.context) {
+      contextEl.value = data.context;
+    }
+
+    // Radio buttons
+    const radioFields = [
+      { name: 'intention', value: data.intention },
+      { name: 'business-line', value: data.businessLine },
+      { name: 'channel', value: data.channel },
+      { name: 'narrative', value: data.narrative || '' },
+      { name: 'length', value: data.length || '' },
+      { name: 'closing', value: data.closing || '' }
+    ];
+
+    radioFields.forEach(field => {
+      if (field.value !== undefined) {
+        const radio = document.querySelector(`input[name="${field.name}"][value="${field.value}"]`);
+        if (radio) {
+          radio.checked = true;
+        }
+      }
+    });
   }
 
   async function deleteExecution(id) {
@@ -591,7 +629,11 @@ Devuelve SOLO el texto reescrito de la publicación, sin explicaciones ni marcad
     newPostBtn.addEventListener('click', () => {
       socialMediaForm.reset();
       postResult.classList.add('hidden');
-      socialMediaForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      editorialPanel.classList.add('hidden');
+      resultPlaceholder.classList.remove('hidden');
+      lastGeneratedContent = '';
+      lastHashtags = '';
+      lastInputData = {};
     });
   }
 
