@@ -44,7 +44,14 @@ $sourceType = $body['source_type'] ?? 'url'; // 'url', 'pdf', 'text'
 $sourceUrl = $body['url'] ?? '';
 $sourceText = $body['text'] ?? '';
 $sourcePdf = $body['pdf_base64'] ?? '';
-$action = $body['action'] ?? 'full'; // 'extract', 'script', 'audio', 'full'
+$action = $body['action'] ?? 'full'; // 'extract', 'script', 'audio_chunk', 'full'
+
+// Inputs para audio por chunks
+$audioChunk = $body['audio_chunk'] ?? '';
+$speaker1In = $body['speaker1'] ?? 'Ana';
+$speaker2In = $body['speaker2'] ?? 'Carlos';
+$voice1In = $body['voice1'] ?? 'Aoede';
+$voice2In = $body['voice2'] ?? 'Orus';
 
 // Validaciones
 if ($sourceType === 'url' && empty($sourceUrl)) {
@@ -58,7 +65,7 @@ if ($sourceType === 'pdf' && empty($sourcePdf)) {
 }
 
 // Verificar API Key de Gemini para TTS
-if ($action !== 'extract' && $action !== 'script') {
+if ($action === 'full' || $action === 'audio_chunk') {
     $geminiKey = Env::get('GEMINI_API_KEY');
     if (empty($geminiKey)) {
         Response::error('missing_gemini_key', 'Falta GEMINI_API_KEY en .env para generar audio', 500);
@@ -66,6 +73,39 @@ if ($action !== 'extract' && $action !== 'script') {
 }
 
 try {
+    // === MODO: audio por chunks (sin extracción ni guion) ===
+    if ($action === 'audio_chunk') {
+        if (!is_string($audioChunk) || trim($audioChunk) === '') {
+            Response::error('missing_audio_chunk', 'Falta audio_chunk', 400);
+        }
+
+        $ttsClient = new GeminiTtsClient();
+        $audioResult = $ttsClient->generateMultiSpeaker(
+            $audioChunk,
+            $speaker1In,
+            $speaker2In,
+            $voice1In,
+            $voice2In
+        );
+
+        if (!$audioResult['success']) {
+            Response::error('audio_failed', $audioResult['error'], 500);
+        }
+
+        Response::json([
+            'success' => true,
+            'step' => 'audio_chunk',
+            'audio' => [
+                // Gemini devuelve PCM (inlineData) en base64.
+                'pcm_base64' => $audioResult['audio_data'],
+                'mime_type' => 'audio/pcm',
+                'sample_rate' => $audioResult['sample_rate'] ?? 24000,
+                'channels' => $audioResult['channels'] ?? 1,
+                'bit_depth' => $audioResult['bit_depth'] ?? 16,
+            ],
+        ]);
+    }
+
     $extractor = new ContentExtractor();
     $content = null;
     $title = '';
