@@ -21,6 +21,10 @@ use Audio\PodcastScriptGenerator;
 use Audio\GeminiTtsClient;
 use Gestures\GestureExecutionsRepo;
 
+// Este proceso puede tardar 2-4 minutos (generación de guion + audio)
+set_time_limit(300); // 5 minutos
+ini_set('max_execution_time', '300');
+
 Session::start();
 $user = Session::user();
 

@@ -1,0 +1,15 @@
+# Configuración de Nginx para endpoints de podcast
+# Añadir esto en tu bloque location de la API de gestures
+
+location ~ ^/api/gestures/(podcast)\.php$ {
+    fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;  # Ajustar versión PHP
+    fastcgi_index index.php;
+    include fastcgi_params;
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    
+    # Timeouts aumentados para generación de podcast (2-4 minutos)
+    fastcgi_read_timeout 300s;
+    fastcgi_send_timeout 300s;
+    proxy_read_timeout 300s;
+    proxy_send_timeout 300s;
+}
