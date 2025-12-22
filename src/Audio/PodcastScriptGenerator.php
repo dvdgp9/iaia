@@ -16,7 +16,7 @@ class PodcastScriptGenerator
     {
         $this->llmClient = $llmClient ?? new OpenRouterClient(
             null,
-            'google/gemini-2.5-flash-preview-05-20',
+            'google/gemini-3-flash-preview',
             null,
             0.7,
             8192
