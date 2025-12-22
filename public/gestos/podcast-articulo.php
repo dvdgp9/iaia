@@ -2,8 +2,11 @@
 require_once __DIR__ . '/../../src/App/bootstrap.php';
 use App\Session;
 Session::start();
-Session::requireAuth();
 $user = Session::user();
+if (!$user) {
+    header('Location: /login.php');
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
