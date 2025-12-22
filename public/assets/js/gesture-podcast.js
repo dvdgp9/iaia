@@ -131,7 +131,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await response.json();
 
       if (!response.ok || !data.success) {
-        throw new Error(data.message || data.error || 'Error al generar el podcast');
+        const errorMsg = data.error?.message || data.message || 'Error al generar el podcast';
+        throw new Error(errorMsg);
       }
 
       updateProgress('Sintetizando audio...', 'Convirtiendo texto a voz con IA');

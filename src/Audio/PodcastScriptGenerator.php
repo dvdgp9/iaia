@@ -40,8 +40,8 @@ class PodcastScriptGenerator
         $targetWords = $targetMinutes * 150;
         
         // Ajustar si el artículo es muy corto
-        if ($wordCount < 200) {
-            return ['success' => false, 'error' => 'El artículo es demasiado corto para generar un podcast'];
+        if ($wordCount < 100) {
+            return ['success' => false, 'error' => 'El artículo es demasiado corto para generar un podcast (mínimo ~100 palabras)'];
         }
         
         if ($wordCount < $targetWords / 2) {
