@@ -117,6 +117,35 @@ $activeTab = 'gestures';
               </div>
             </a>
 
+            <!-- Gesto: Podcast desde artículo -->
+            <a href="/gestos/podcast-articulo.php" class="glass-strong rounded-3xl p-6 border border-slate-200/50 card-hover block">
+              <div class="flex items-start gap-4 mb-4">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-rose-500 to-orange-500 flex items-center justify-center text-white shadow-lg">
+                  <i class="iconoir-podcast text-2xl"></i>
+                </div>
+                <div class="flex-1">
+                  <h3 class="text-lg font-bold text-slate-900 mb-1">Podcast desde artículo</h3>
+                  <p class="text-sm text-slate-500">Audio con 2 voces IA</p>
+                </div>
+                <span class="px-2 py-1 text-xs bg-emerald-100 text-emerald-700 rounded-full font-medium">Nuevo</span>
+              </div>
+              
+              <p class="text-sm text-slate-600 mb-4">
+                Convierte cualquier artículo web o documento en un podcast con dos presentadores. Audio generado con Gemini TTS.
+              </p>
+              
+              <div class="flex items-center justify-between text-xs text-slate-400 pt-4 border-t border-slate-200/50">
+                <div class="flex items-center gap-1">
+                  <i class="iconoir-clock"></i>
+                  <span>~2 min</span>
+                </div>
+                <div class="flex items-center gap-2 text-rose-600 font-medium">
+                  <span>Usar gesto</span>
+                  <i class="iconoir-arrow-right"></i>
+                </div>
+              </div>
+            </a>
+
             <!-- Gesto: Analizar documento (próximamente) -->
             <div class="glass-strong rounded-3xl p-6 border border-slate-200/50 opacity-60">
               <div class="flex items-start gap-4 mb-4">
