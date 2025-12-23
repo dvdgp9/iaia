@@ -95,9 +95,9 @@ $msgs = new MessagesRepo();
 // Limpieza de imágenes antiguas (5 días)
 $msgs->purgeImagesOlderThan(5);
 
-// Validar conversación
+// Si no hay conversación, crear una nueva
 if ($conversationId <= 0) {
-    Response::error('validation_error', 'conversation_id es obligatorio', 400);
+    $conversationId = $convos->create((int)$user['id'], null);
 }
 
 // Guardar mensaje de usuario (con file_id si existe)
