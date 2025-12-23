@@ -82,51 +82,59 @@ class PodcastScriptGenerator
         $titleSection = $title ? "TÍTULO: {$title}\n\n" : '';
         
         return <<<PROMPT
-Eres un guionista experto en podcasts informativos y divulgativos. Tu tarea es transformar el siguiente artículo en un guion de podcast conversacional entre dos presentadores: {$this->speaker1} (mujer) y {$this->speaker2} (hombre).
+Eres un guionista experto en podcasts de tecnología y divulgación con un estilo narrativo único, similar a "Deep Dive" o charlas informales entre expertos. Tu tarea es transformar el siguiente artículo en un guion de podcast extremadamente natural, dinámico y conversacional entre {$this->speaker1} (mujer) y {$this->speaker2} (hombre).
 
 {$titleSection}CONTENIDO DEL ARTÍCULO:
 ---
 {$content}
 ---
 
-INSTRUCCIONES:
+INSTRUCCIONES DE ESTILO Y TONO (CRÍTICO):
 
-1. DURACIÓN OBJETIVO: Aproximadamente {$targetMinutes} minutos (~{$this->calculateTargetWords($targetMinutes)} palabras de diálogo)
+1. **TONO CONVERSACIONAL REAL, NO LEÍDO**:
+   - Olvida que es un texto escrito. Debe sonar a dos colegas expertos charlando en una cafetería.
+   - Usa expresiones coloquiales y naturales: "Ojo", "El pan de cada día", "La madre del cordero", "Te explota la cabeza", "Es un marrón".
+   - Usa muletillas naturales con moderación: "A ver...", "Pues...", "Claro, es que...", "¿No?".
+   - Evita el lenguaje enciclopédico o robótico. No digas "El artículo afirma que...", di "Lo que me ha flipado es que...".
 
-2. ESTRUCTURA DEL PODCAST:
-   - APERTURA: Saludo breve y presentación del tema (30 segundos)
-   - DESARROLLO: Exploración del contenido principal con intercambio natural (80% del tiempo)
-   - CIERRE: Resumen de puntos clave y despedida (30 segundos)
+2. **DINÁMICA DE INTERACCIÓN**:
+   - **¡NO hagas entrevista!** No es Q&A. Es una charla bidireccional.
+   - Ambos saben del tema, se complementan, se quitan la palabra, se dan la razón.
+   - Usa **intervenciones cortas y rápidas**. Evita monólogos largos.
+   - Haz que se interrumpan o terminen las frases del otro.
+   - Incluye "backchanneling" (reacciones breves mientras el otro habla): "Claro", "Totalmente", "Uff, ya ves", "Exacto".
 
-3. ESTILO:
-   - Conversación natural y fluida, como dos amigos informados hablando
-   - {$this->speaker1}: Suele introducir temas y hacer preguntas que guían la conversación
-   - {$this->speaker2}: Aporta datos, contexto y reflexiones complementarias
-   - Alternar turnos de forma natural (no mecánica)
-   - Incluir pequeñas reacciones naturales ("Exacto", "Es interesante", "Fíjate que...")
-   - Evitar jerga excesiva, hacer accesible el contenido
+3. **STORYTELLING Y EMOCIÓN**:
+   - Empieza con una anécdota, una situación vivida o un "hook" emocional, no con "Hoy vamos a hablar de...".
+   - Ejemplo de inicio: "El otro día me pasó algo que me hizo acordarme de este tema..." o "A ver, confiesa, ¿cuántas veces te has peleado con...?"
+   - Conecta los conceptos técnicos con dolores reales del día a día (frustración, cansancio, alegría).
+   - Usa metáforas visuales potentes (ej: "buscar una aguja en un pajar", "es como jugar a detectives con una mano atada").
 
-4. REGLAS CRÍTICAS:
-   - SOLO usar información del artículo. NO inventar datos, cifras, fechas o nombres.
-   - Si falta información, omitir o ser genérico, nunca inventar.
-   - El diálogo debe ser en ESPAÑOL de España.
-   - Cada intervención debe ser sustancial (2-4 frases), no monosílabos.
+4. **ESTRUCTURA**:
+   - **Inicio (Hook)**: Anécdota o planteamiento del problema desde la experiencia personal.
+   - **Nudo (Análisis)**: Desgranan el contenido del artículo como si lo estuvieran descubriendo o debatiendo. Se sorprenden mutuamente.
+   - **Desenlace (Conclusión)**: Reflexión final abierta o "takeaway" práctico, despedida informal.
 
-5. FORMATO DE SALIDA:
-   Primero escribe un breve resumen del tema (1-2 líneas) entre marcadores:
-   ---RESUMEN---
-   [Resumen aquí]
-   ---FIN_RESUMEN---
+5. **REGLAS TÉCNICAS**:
+   - Duración: ~{$targetMinutes} minutos (~{$this->calculateTargetWords($targetMinutes)} palabras).
+   - Idioma: ESPAÑOL de España (Castellano).
+   - Solo usa información del artículo, pero adáptala a este estilo. Si falta info, usa generalidades lógicas, no inventes datos.
 
-   Luego el guion con este formato exacto:
-   ---GUION---
-   {$this->speaker1}: [Texto de la intervención]
-   {$this->speaker2}: [Texto de la intervención]
-   {$this->speaker1}: [Texto de la intervención]
-   ...
-   ---FIN_GUION---
+FORMATO DE SALIDA:
 
-Genera el guion completo ahora.
+Primero escribe un breve resumen del tema (1-2 líneas) entre marcadores:
+---RESUMEN---
+[Resumen aquí]
+---FIN_RESUMEN---
+
+Luego el guion con este formato exacto:
+---GUION---
+{$this->speaker1}: [Texto...]
+{$this->speaker2}: [Texto...]
+...
+---FIN_GUION---
+
+Genera el guion ahora. Hazlo brillante, humano y enganchante.
 PROMPT;
     }
 
