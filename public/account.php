@@ -22,24 +22,50 @@ if (!$user) {
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/iconoir-icons/iconoir@main/css/iconoir.css">
 </head>
-<body class="bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
-  <div class="max-w-4xl mx-auto p-6">
-    <!-- Header -->
-    <div class="flex items-center justify-between mb-8">
-      <div>
-        <a href="/" class="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors mb-3">
-          <i class="iconoir-arrow-left"></i>
-          <span class="text-sm">Volver al chat</span>
-        </a>
-        <h1 class="text-3xl font-bold text-slate-800">Mi cuenta</h1>
-      </div>
-      <div class="h-16 w-16 rounded-2xl bg-gradient-to-br from-[#23AAC5] to-[#115c6c] flex items-center justify-center text-white text-2xl font-bold shadow-lg" id="avatar-big">
-        <?php 
-          $initials = strtoupper(substr($user['first_name'], 0, 1) . substr($user['last_name'], 0, 1));
-          echo htmlspecialchars($initials);
-        ?>
-      </div>
-    </div>
+<body class="bg-mesh text-slate-900">
+  <div class="min-h-screen flex">
+    <?php 
+      $activeTab = 'apps'; 
+      $useTabsJs = false;
+      include __DIR__ . '/includes/left-tabs.php'; 
+    ?>
+
+    <div class="flex-1 flex flex-col bg-gradient-to-br from-slate-50 to-slate-100">
+      <!-- Topbar -->
+      <header class="h-16 px-6 flex items-center justify-between border-b border-slate-200 bg-white/80 backdrop-blur">
+        <div class="flex items-center gap-3">
+          <i class="iconoir-search text-slate-400"></i>
+          <span class="text-sm text-slate-500">Buscar en Ebonia</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="px-3 py-1 text-xs font-semibold rounded-full bg-[#23AAC5]/10 text-[#23AAC5]">Chatbot</span>
+          <div class="h-10 w-10 rounded-full bg-gradient-to-br from-[#23AAC5] to-[#115c6c] flex items-center justify-center text-white text-sm font-bold shadow" id="avatar-top">
+            <?php 
+              $initials = strtoupper(substr($user['first_name'], 0, 1) . substr($user['last_name'], 0, 1));
+              echo htmlspecialchars($initials);
+            ?>
+          </div>
+        </div>
+      </header>
+
+      <main class="flex-1 overflow-y-auto">
+        <div class="max-w-4xl mx-auto p-6">
+          <!-- Header -->
+          <div class="flex items-center justify-between mb-8">
+            <div>
+              <a href="/" class="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors mb-3">
+                <i class="iconoir-arrow-left"></i>
+                <span class="text-sm">Volver al chat</span>
+              </a>
+              <h1 class="text-3xl font-bold text-slate-800">Mi cuenta</h1>
+            </div>
+            <div class="h-16 w-16 rounded-2xl bg-gradient-to-br from-[#23AAC5] to-[#115c6c] flex items-center justify-center text-white text-2xl font-bold shadow-lg" id="avatar-big">
+              <?php 
+                $initials = strtoupper(substr($user['first_name'], 0, 1) . substr($user['last_name'], 0, 1));
+                echo htmlspecialchars($initials);
+              ?>
+            </div>
+          </div>
 
     <!-- Perfil -->
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
