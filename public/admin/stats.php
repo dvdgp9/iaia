@@ -384,6 +384,7 @@ $chartData = array_map(fn($d) => (int)$d['messages'], $dailyStats);
               <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Email</th>
               <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Conversaciones</th>
               <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Mensajes</th>
+              <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Imágenes</th>
               <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Gestos</th>
               <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Voces</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Último acceso</th>
@@ -403,6 +404,7 @@ $chartData = array_map(fn($d) => (int)$d['messages'], $dailyStats);
               <td class="px-6 py-4 text-sm text-slate-600"><?= htmlspecialchars($u['email']) ?></td>
               <td class="px-6 py-4 text-sm text-slate-800 text-right font-medium"><?= number_format($u['conversations']) ?></td>
               <td class="px-6 py-4 text-sm text-slate-800 text-right font-medium"><?= number_format($u['messages']) ?></td>
+              <td class="px-6 py-4 text-sm text-slate-800 text-right font-medium"><?= number_format($u['images']) ?></td>
               <td class="px-6 py-4 text-sm text-slate-800 text-right font-medium"><?= number_format($u['gestures']) ?></td>
               <td class="px-6 py-4 text-sm text-slate-800 text-right font-medium"><?= number_format($u['voices']) ?></td>
               <td class="px-6 py-4 text-sm text-slate-600">
