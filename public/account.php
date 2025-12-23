@@ -32,7 +32,7 @@ if (!$user) {
 </head>
 <body class="bg-slate-50 text-slate-900 overflow-hidden">
   <div class="min-h-screen flex h-screen">
-    <?php $activeTab = ''; include __DIR__ . '/includes/left-tabs.php'; ?>
+    <?php $activeTab = 'account'; include __DIR__ . '/includes/left-tabs.php'; ?>
 
     <main class="flex-1 flex flex-col min-w-0">
       <?php $pageTitle = 'Mi cuenta'; include __DIR__ . '/includes/header.php'; ?>

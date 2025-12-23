@@ -77,7 +77,11 @@ $tabs = [
   <div class="flex-1"></div>
   
   <!-- Tab Mi cuenta -->
-  <a href="/account.php" class="tab-item w-full py-4 flex flex-col items-center gap-1.5 text-white/60 hover:text-white/80" title="Mi cuenta">
+  <?php 
+    $isAccountActive = ($activeTab === 'account');
+    $accountClasses = $isAccountActive ? 'text-white' : 'text-white/60 hover:text-white/80';
+  ?>
+  <a href="/account.php" class="tab-item w-full py-4 flex flex-col items-center gap-1.5 <?php echo $accountClasses; ?>" title="Mi cuenta">
     <i class="iconoir-user text-2xl"></i>
     <span class="text-[10px] font-medium">Cuenta</span>
   </a>
