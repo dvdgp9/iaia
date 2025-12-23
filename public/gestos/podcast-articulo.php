@@ -189,8 +189,7 @@ $activeTab = 'gestures';
               
               <audio id="audio-player" controls class="w-full mb-4" style="filter: invert(1) hue-rotate(180deg);"></audio>
               
-              <div class="flex items-center justify-between text-sm">
-                <span id="podcast-duration" class="text-white/60"></span>
+              <div class="flex items-center justify-end text-sm">
                 <button id="download-btn" class="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors flex items-center gap-2">
                   <i class="iconoir-download"></i> Descargar
                 </button>

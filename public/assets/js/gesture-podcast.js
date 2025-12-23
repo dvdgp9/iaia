@@ -29,7 +29,6 @@
   const audioPlayer = document.getElementById('audio-player');
   const podcastTitle = document.getElementById('podcast-title');
   const podcastSummary = document.getElementById('podcast-summary');
-  const podcastDuration = document.getElementById('podcast-duration');
   const podcastScript = document.getElementById('podcast-script');
   const downloadBtn = document.getElementById('download-btn');
   
@@ -163,10 +162,9 @@
       audioPlayer.src = audioUrl;
       podcastTitle.textContent = data.title || 'Podcast generado';
       podcastSummary.textContent = data.summary || '';
-      podcastScript.textContent = formatScript(data.script);
+      podcastScript.innerHTML = mdToHtml(formatScript(data.script));
       
-      const durationMinutes = Math.ceil((data.audio.duration_estimate || 0) / 60);
-      podcastDuration.textContent = durationMinutes > 0 ? `~${durationMinutes} min` : '';
+      // Duración visible en el reproductor; no mostramos etiqueta aparte
 
       showResult();
       loadHistory(); // Refresh history
@@ -346,7 +344,7 @@
       // Mostrar resultado
       podcastTitle.textContent = exec.title || 'Podcast';
       podcastSummary.textContent = outputData.summary || '';
-      podcastScript.textContent = formatScript(outputData.script || '');
+      podcastScript.innerHTML = mdToHtml(formatScript(outputData.script || ''));
       
       // Audio
       if (outputData.audio_url) {
@@ -363,8 +361,7 @@
         }
       }
 
-      const durationMinutes = Math.ceil((outputData.duration_estimate || 0) / 60);
-      podcastDuration.textContent = durationMinutes > 0 ? `~${durationMinutes} min` : '';
+      // Sin etiqueta de duración adicional
 
       showResult();
     } catch (err) {
@@ -399,6 +396,20 @@
   function formatScript(script) {
     if (!script) return '';
     return script.replace(/\n(Ana:|Carlos:)/g, '\n\n$1');
+  }
+
+  function mdToHtml(text) {
+    if (!text) return '';
+    // Escape HTML
+    const escaped = text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+    // Minimal markdown: **bold** and __bold__
+    return escaped
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/__(.+?)__/g, '<strong>$1</strong>')
+      .replace(/\n/g, '\n');
   }
 
   function slugify(text) {
