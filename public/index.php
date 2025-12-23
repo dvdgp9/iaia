@@ -174,18 +174,18 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
                     </button>
                   </div>
                   
-                  <div class="flex gap-3">
+                  <div class="flex gap-3 items-center">
                     <input type="file" id="file-input-empty" class="hidden" accept=".pdf,.png,.jpg,.jpeg,.gif,.webp" />
-                    <button type="button" id="attach-btn-empty" class="p-4 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-2xl transition-smooth border-2 border-slate-200 hover:border-[#23AAC5]" title="Adjuntar archivo (PDF o imagen)">
-                      <i class="iconoir-attachment text-xl"></i>
+                    <button type="button" id="attach-btn-empty" class="p-[10px] text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-2xl transition-smooth border-2 border-slate-200 hover:border-[#23AAC5] leading-none" title="Adjuntar archivo (PDF o imagen)">
+                      <i class="iconoir-attachment text-lg"></i>
                     </button>
-                    <button type="button" id="image-mode-btn-empty" class="p-4 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-2xl transition-smooth border-2 border-slate-200 hover:border-amber-400" title="Generar imagen con nanobanana 🍌">
-                      <i class="iconoir-media-image text-xl"></i>
+                    <button type="button" id="image-mode-btn-empty" class="p-[10px] text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-2xl transition-smooth border-2 border-slate-200 hover:border-amber-400 leading-none" title="Generar imagen con nanobanana 🍌">
+                      <i class="iconoir-media-image text-lg"></i>
                     </button>
-                    <input id="chat-input-empty" class="flex-1 border-2 border-slate-200 rounded-2xl px-5 py-4 text-base input-focus transition-smooth bg-white/80" placeholder="Escribe tu pregunta aquí..." />
-                    <button type="submit" class="px-7 py-4 gradient-brand text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-smooth flex items-center gap-2">
+                    <input id="chat-input-empty" class="flex-1 border-2 border-slate-200 rounded-2xl px-5 py-[10px] text-base input-focus transition-smooth bg-white/80" placeholder="Escribe tu pregunta aquí..." />
+                    <button type="submit" class="px-7 py-[10px] gradient-brand text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-smooth flex items-center gap-2 leading-none">
                       <span>Enviar</span>
-                      <i class="iconoir-send-diagonal text-lg"></i>
+                      <i class="iconoir-send-diagonal text-base"></i>
                     </button>
                   </div>
                 </form>
@@ -358,16 +358,16 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
             </button>
           </div>
           
-          <div class="flex gap-3">
+          <div class="flex gap-3 items-center">
             <input type="file" id="file-input" class="hidden" accept=".pdf,.png,.jpg,.jpeg,.gif,.webp" />
-            <button type="button" id="attach-btn" class="p-3 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/5 rounded-xl transition-all border-2 border-slate-200 hover:border-[#23AAC5]" title="Adjuntar archivo">
-              <i class="iconoir-attachment text-xl"></i>
+            <button type="button" id="attach-btn" class="p-[10px] text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/5 rounded-xl transition-all border-2 border-slate-200 hover:border-[#23AAC5] leading-none" title="Adjuntar archivo">
+              <i class="iconoir-attachment text-lg"></i>
             </button>
-            <button type="button" id="image-mode-btn" class="p-3 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-xl transition-all border-2 border-slate-200 hover:border-amber-400" title="Generar imagen con nanobanana 🍌">
-              <i class="iconoir-media-image text-xl"></i>
+            <button type="button" id="image-mode-btn" class="p-[10px] text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-xl transition-all border-2 border-slate-200 hover:border-amber-400 leading-none" title="Generar imagen con nanobanana 🍌">
+              <i class="iconoir-media-image text-lg"></i>
             </button>
-            <input id="chat-input" class="flex-1 border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-all" placeholder="Escribe un mensaje..." />
-            <button type="submit" class="px-6 py-3 gradient-brand-btn text-white rounded-xl font-medium shadow-md hover:shadow-lg hover:opacity-90 transition-all duration-200 flex items-center gap-2">
+            <input id="chat-input" class="flex-1 border-2 border-slate-200 rounded-xl px-4 py-[10px] focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-all" placeholder="Escribe un mensaje..." />
+            <button type="submit" class="px-6 py-[10px] gradient-brand-btn text-white rounded-xl font-medium shadow-md hover:shadow-lg hover:opacity-90 transition-all duration-200 flex items-center gap-2 leading-none">
               <span>Enviar</span>
               <svg class="w-5 h-5 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
             </button>

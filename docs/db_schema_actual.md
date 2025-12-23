@@ -16,6 +16,8 @@ Este documento refleja el **estado real** de la base de datos de Ebonia tras la 
 - ✅ **Migración 004_gesture_executions.sql** aplicada (historial de gestos)
 - ✅ **Migración 005_voice_executions.sql** aplicada (historial de voces)
 - ✅ **Migración 006_remember_tokens.sql** aplicada (tokens de recordarme)
+ - ✅ **Migración 001_add_output_data.sql** aplicada (campo output_data en gesture_executions)
+ - ✅ **Migración 002_chat_files.sql** aplicada (tabla chat_files y FK messages.file_id)
 
 ### Estadísticas
 
@@ -322,6 +324,7 @@ CREATE TABLE messages (
   role ENUM('user','assistant','system') NOT NULL,
   content LONGTEXT NOT NULL,
   model VARCHAR(120) NULL,
+  file_id BIGINT UNSIGNED NULL,
   input_tokens INT NULL,
   output_tokens INT NULL,
   metadata JSON NULL,
@@ -331,7 +334,9 @@ CREATE TABLE messages (
   CONSTRAINT fk_messages_conversation_id FOREIGN KEY (conversation_id)
     REFERENCES conversations(id) ON DELETE CASCADE,
   CONSTRAINT fk_messages_user_id FOREIGN KEY (user_id)
-    REFERENCES users(id) ON DELETE SET NULL
+    REFERENCES users(id) ON DELETE SET NULL,
+  CONSTRAINT fk_messages_file FOREIGN KEY (file_id)
+    REFERENCES chat_files(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ```
 
@@ -342,6 +347,31 @@ CREATE TABLE messages (
 **Distribución:**
 - role='user': ~18 mensajes (con user_id)
 - role='assistant': ~18 mensajes (model='gemini-2.5-flash')
+
+---
+
+### 3.2.a `chat_files`
+Archivos subidos por los usuarios en el chat. Se vinculan opcionalmente a una conversación y/o mensaje, y expiran tras cierto tiempo.
+
+**Estructura:**
+```sql
+CREATE TABLE chat_files (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  user_id BIGINT UNSIGNED NOT NULL,
+  conversation_id BIGINT UNSIGNED NULL,
+  message_id BIGINT UNSIGNED NULL,
+  original_name VARCHAR(255) NOT NULL,
+  stored_name VARCHAR(255) NOT NULL,
+  mime_type VARCHAR(100) NOT NULL,
+  size_bytes BIGINT UNSIGNED NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  expires_at DATETIME NOT NULL,
+  CONSTRAINT fk_chat_files_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  CONSTRAINT fk_chat_files_conversation FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE SET NULL,
+  INDEX idx_expires (expires_at),
+  INDEX idx_user_conv (user_id, conversation_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
 
 ---
 
@@ -383,6 +413,7 @@ CREATE TABLE gesture_executions (
   title VARCHAR(200) NOT NULL,                 -- Título auto-generado del resultado
   input_data JSON NOT NULL,                    -- Datos del formulario
   output_content LONGTEXT NOT NULL,            -- Contenido generado
+  output_data JSON NULL,                       -- Datos estructurados de salida
   content_type VARCHAR(50) NULL,               -- Subtipo: 'informativo', 'blog', 'nota-prensa'
   business_line VARCHAR(50) NULL,              -- 'ebone', 'cubofit', 'uniges'
   model VARCHAR(120) NULL,                     -- Modelo LLM usado
@@ -649,6 +680,9 @@ Todas las FK definidas en las migraciones están correctamente aplicadas:
 | conversations | company_id | companies(id) | SET NULL |
 | messages | conversation_id | conversations(id) | CASCADE |
 | messages | user_id | users(id) | SET NULL |
+| messages | file_id | chat_files(id) | SET NULL |
+| chat_files | user_id | users(id) | CASCADE |
+| chat_files | conversation_id | conversations(id) | SET NULL |
 | voices | scope_company_id | companies(id) | SET NULL |
 | voices | scope_department_id | departments(id) | SET NULL |
 | voices | scope_user_id | users(id) | SET NULL |
