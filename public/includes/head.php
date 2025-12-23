@@ -12,6 +12,8 @@ $pageTitle = $pageTitle ?? 'Ebonia — IA Corporativa';
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title><?php echo htmlspecialchars($pageTitle); ?></title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" href="/assets/images/isotipo.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/iconoir-icons/iconoir@main/css/iconoir.css">
   <script>window.CSRF_TOKEN = '<?php echo $csrfToken; ?>';</script>

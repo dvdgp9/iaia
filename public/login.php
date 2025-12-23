@@ -14,6 +14,8 @@ if ($user) {
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Ebonia — Login</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" href="/assets/images/isotipo.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -64,9 +66,9 @@ if ($user) {
   <!-- Lado derecho - Formulario -->
   <div class="w-full lg:w-1/2 flex items-center justify-center p-8">
     <div class="w-full max-w-md">
-      <!-- Logo Ebonia (colores) - aquí irá tu logo -->
+      <!-- Logo Ebonia -->
       <div class="text-center mb-8">
-        <img src="/assets/images/ebonia-logo.png" alt="Ebonia" class="h-16 mx-auto" />
+        <img src="/assets/images/logo.png" alt="Ebonia" class="h-12 mx-auto" />
       </div>
       
       <div class="text-center mb-8">

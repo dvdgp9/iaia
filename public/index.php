@@ -24,11 +24,7 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
     <aside id="conversations-sidebar" class="w-80 bg-white border-r border-slate-200 flex flex-col shadow-sm">
       <div class="p-5 border-b border-slate-200">
         <div class="flex items-center gap-3 mb-6">
-          <div class="h-10 w-10 rounded-xl gradient-brand flex items-center justify-center text-white font-bold text-lg shadow-md">E</div>
-          <div>
-            <strong class="text-xl font-semibold text-slate-800">Ebonia</strong>
-            <div class="text-xs text-slate-500">IA Corporativa</div>
-          </div>
+          <img src="/assets/images/logo.png" alt="Ebonia" class="h-9">
         </div>
         <button id="new-conv-btn" class="w-full py-2.5 px-4 rounded-lg gradient-brand-btn text-white font-medium shadow-md hover:shadow-lg hover:opacity-90 transition-all duration-200 flex items-center justify-center gap-2">
           <span class="text-lg">+</span> Nueva conversación
