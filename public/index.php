@@ -183,6 +183,9 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
                     <button type="button" id="attach-btn-empty" class="p-4 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-2xl transition-smooth border-2 border-slate-200 hover:border-[#23AAC5]" title="Adjuntar archivo (PDF o imagen)">
                       <i class="iconoir-attachment text-xl"></i>
                     </button>
+                    <button type="button" id="image-mode-btn-empty" class="p-4 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-2xl transition-smooth border-2 border-slate-200 hover:border-amber-400" title="Generar imagen con nanobanana 🍌">
+                      <i class="iconoir-media-image text-xl"></i>
+                    </button>
                     <input id="chat-input-empty" class="flex-1 border-2 border-slate-200 rounded-2xl px-5 py-4 text-base input-focus transition-smooth bg-white/80" placeholder="Escribe tu pregunta aquí..." />
                     <button type="submit" class="px-7 py-4 gradient-brand text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-smooth flex items-center gap-2">
                       <span>Enviar</span>
@@ -477,6 +480,7 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
     
     const fileInputEmpty = document.getElementById('file-input-empty');
     const attachBtnEmpty = document.getElementById('attach-btn-empty');
+    const imageModeBtnEmpty = document.getElementById('image-mode-btn-empty');
     const filePreviewEmpty = document.getElementById('file-preview-empty');
     const fileNameEmpty = document.getElementById('file-name-empty');
     const fileSizeEmpty = document.getElementById('file-size-empty');
@@ -1261,23 +1265,43 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
     // Toggle modo generación de imágenes (nanobanana 🍌)
     const imageModeBtn = document.getElementById('image-mode-btn');
     const chatInput = document.getElementById('chat-input');
+    const chatInputEmpty = document.getElementById('chat-input-empty');
     const defaultPlaceholder = 'Escribe un mensaje...';
+    const defaultPlaceholderEmpty = 'Escribe tu pregunta aquí...';
     const imagePlaceholder = 'Describe la imagen que quieres crear... 🍌';
 
     function updateImageModeUI() {
+      const activeClass = 'p-3 text-amber-600 bg-amber-50 rounded-xl transition-all border-2 border-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.4)] animate-pulse';
+      const inactiveClass = 'p-3 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-xl transition-all border-2 border-slate-200 hover:border-amber-400';
+      const activeClassEmpty = 'p-4 text-amber-600 bg-amber-50 rounded-2xl transition-smooth border-2 border-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.4)] animate-pulse';
+      const inactiveClassEmpty = 'p-4 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-2xl transition-smooth border-2 border-slate-200 hover:border-amber-400';
+      
       if (imageMode) {
-        imageModeBtn.className = 'p-3 text-amber-600 bg-amber-50 rounded-xl transition-all border-2 border-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.4)] animate-pulse';
+        // Botón del chat normal
+        imageModeBtn.className = activeClass;
         chatInput.placeholder = imagePlaceholder;
         attachBtn.disabled = true;
         attachBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        // Botón del estado vacío
+        imageModeBtnEmpty.className = activeClassEmpty;
+        chatInputEmpty.placeholder = imagePlaceholder;
+        attachBtnEmpty.disabled = true;
+        attachBtnEmpty.classList.add('opacity-50', 'cursor-not-allowed');
       } else {
-        imageModeBtn.className = 'p-3 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-xl transition-all border-2 border-slate-200 hover:border-amber-400';
+        // Botón del chat normal
+        imageModeBtn.className = inactiveClass;
         chatInput.placeholder = defaultPlaceholder;
         attachBtn.disabled = false;
         attachBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        // Botón del estado vacío
+        imageModeBtnEmpty.className = inactiveClassEmpty;
+        chatInputEmpty.placeholder = defaultPlaceholderEmpty;
+        attachBtnEmpty.disabled = false;
+        attachBtnEmpty.classList.remove('opacity-50', 'cursor-not-allowed');
       }
     }
 
+    // Event listener para botón de imagen en chat normal
     imageModeBtn.addEventListener('click', () => {
       imageMode = !imageMode;
       updateImageModeUI();
@@ -1376,6 +1400,18 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
     // Manejar adjuntar archivo en estado vacío
     attachBtnEmpty.addEventListener('click', () => {
       fileInputEmpty.click();
+    });
+
+    // Event listener para botón de imagen en estado vacío
+    imageModeBtnEmpty.addEventListener('click', () => {
+      imageMode = !imageMode;
+      updateImageModeUI();
+      // Si se activa modo imagen, limpiar archivo adjunto
+      if (imageMode && currentFileEmpty) {
+        currentFileEmpty = null;
+        fileInputEmpty.value = '';
+        filePreviewEmpty.classList.add('hidden');
+      }
     });
 
     fileInputEmpty.addEventListener('change', (e) => {

@@ -108,7 +108,9 @@ if ($fileId) {
 // Auto-titular si el título sigue siendo el genérico
 $convos->autoTitle($conversationId, $message);
 
-$provider = LlmProviderFactory::create($modelName);
+// Para generación de imágenes (nanobanana), no enviar contexto corporativo
+$withContext = !$imageMode;
+$provider = LlmProviderFactory::create($modelName, $withContext);
 $svc = new ChatService($provider);
 // Construir historial: incluir todos los mensajes de la conversación (ya incluye el del usuario)
 $allMessages = $msgs->listByConversation($conversationId);

@@ -15,11 +15,18 @@ class LlmProviderFactory
      * @param string|null $model Modelo a usar (formato: provider/model)
      *                           Ejemplos: openrouter/auto, google/gemini-2.5-flash, qwen/qwen-plus
      *                           Si es null, usa OPENROUTER_MODEL del .env o 'openrouter/auto'
+     * @param bool $withContext Si true, incluye contexto corporativo. Default: true.
+     *                          Para generación de imágenes (nanobanana), usar false.
      */
-    public static function create(?string $model = null): LlmProvider
+    public static function create(?string $model = null, bool $withContext = true): LlmProvider
     {
-        $contextBuilder = new ContextBuilder();
-        $systemPrompt = $contextBuilder->buildSystemPrompt();
+        $systemPrompt = null;
+        $contextBuilder = null;
+        
+        if ($withContext) {
+            $contextBuilder = new ContextBuilder();
+            $systemPrompt = $contextBuilder->buildSystemPrompt();
+        }
 
         $client = new OpenRouterClient(null, $model, $systemPrompt);
         
