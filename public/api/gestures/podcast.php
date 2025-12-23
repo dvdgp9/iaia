@@ -184,10 +184,17 @@ try {
             'source_type' => $sourceType,
             'source' => $source,
             'url' => $sourceUrl,
-            'word_count' => str_word_count($content),
-            'summary' => $summary
+            'word_count' => str_word_count($content)
         ],
         'output_content' => $script,
+        'output_data' => [
+            'summary' => $summary,
+            'script' => $script,
+            'audio_url' => $wavUrl,
+            'duration_estimate' => $estimatedDuration,
+            'speaker1' => $speaker1,
+            'speaker2' => $speaker2
+        ],
         'content_type' => 'original',
         'business_line' => null,
         'model' => 'gemini-2.5-flash-preview-tts'

@@ -25,16 +25,17 @@ class GestureExecutionsRepo
     public function create(array $data): int
     {
         $sql = "INSERT INTO gesture_executions 
-                (user_id, gesture_type, title, input_data, output_content, content_type, business_line, model, created_at, updated_at)
-                VALUES (:user_id, :gesture_type, :title, :input_data, :output_content, :content_type, :business_line, :model, NOW(), NOW())";
+                (user_id, gesture_type, title, input_data, output_content, output_data, content_type, business_line, model, created_at, updated_at)
+                VALUES (:user_id, :gesture_type, :title, :input_data, :output_content, :output_data, :content_type, :business_line, :model, NOW(), NOW())";
         
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             'user_id' => $data['user_id'],
             'gesture_type' => $data['gesture_type'],
             'title' => $data['title'],
-            'input_data' => json_encode($data['input_data'], JSON_UNESCAPED_UNICODE),
+            'input_data' => json_encode($data['input_data'] ?? [], JSON_UNESCAPED_UNICODE),
             'output_content' => $data['output_content'],
+            'output_data' => isset($data['output_data']) ? json_encode($data['output_data'], JSON_UNESCAPED_UNICODE) : null,
             'content_type' => $data['content_type'] ?? null,
             'business_line' => $data['business_line'] ?? null,
             'model' => $data['model'] ?? null,
@@ -55,7 +56,8 @@ class GestureExecutionsRepo
         
         if (!$row) return null;
         
-        $row['input_data'] = json_decode($row['input_data'], true);
+        $row['input_data'] = json_decode($row['input_data'] ?? '{}', true);
+        $row['output_data'] = json_decode($row['output_data'] ?? '{}', true);
         return $row;
     }
 
@@ -64,7 +66,7 @@ class GestureExecutionsRepo
      */
     public function listByUserAndType(int $userId, string $gestureType, int $limit = 20): array
     {
-        $sql = "SELECT id, title, content_type, business_line, is_favorite, created_at
+        $sql = "SELECT id, title, input_data, content_type, business_line, is_favorite, created_at
                 FROM gesture_executions 
                 WHERE user_id = :user_id AND gesture_type = :gesture_type
                 ORDER BY created_at DESC
@@ -76,7 +78,11 @@ class GestureExecutionsRepo
         $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
         $stmt->execute();
         
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($rows as &$row) {
+            $row['input_data'] = json_decode($row['input_data'] ?? '{}', true);
+        }
+        return $rows;
     }
 
     /**
