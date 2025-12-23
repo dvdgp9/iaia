@@ -136,35 +136,46 @@ $chartData = array_map(fn($d) => (int)$d['messages'], $dailyStats);
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/iconoir-icons/iconoir@main/css/iconoir.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Estilos base para el layout */
+    .gradient-brand { background: linear-gradient(135deg, #23AAC5 0%, #115c6c 100%); }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  </style>
 </head>
-<body class="bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
-  <div class="max-w-7xl mx-auto p-6">
-    <!-- Header -->
-    <div class="flex items-center justify-between mb-8">
-      <div>
-        <a href="/" class="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors mb-3">
-          <i class="iconoir-arrow-left"></i>
-          <span class="text-sm">Volver al chat</span>
-        </a>
-        <h1 class="text-3xl font-bold text-slate-800">Panel de Control</h1>
-        <p class="text-slate-600 mt-1">Estadísticas de uso de Ebonia</p>
-      </div>
-      <div class="flex gap-3">
-        <!-- Filtro de rango -->
-        <div class="flex bg-white rounded-lg border border-slate-200 p-1 shadow-sm">
-          <a href="?range=7" class="px-3 py-1 text-sm rounded-md transition-all <?= $range === '7' ? 'bg-[#23AAC5] text-white font-medium shadow-sm' : 'text-slate-600 hover:bg-slate-50' ?>">7 días</a>
-          <a href="?range=30" class="px-3 py-1 text-sm rounded-md transition-all <?= $range === '30' ? 'bg-[#23AAC5] text-white font-medium shadow-sm' : 'text-slate-600 hover:bg-slate-50' ?>">30 días</a>
-          <a href="?range=all" class="px-3 py-1 text-sm rounded-md transition-all <?= $range === 'all' ? 'bg-[#23AAC5] text-white font-medium shadow-sm' : 'text-slate-600 hover:bg-slate-50' ?>">Todo</a>
-        </div>
+<body class="bg-slate-50 text-slate-900 overflow-hidden">
+  <div class="min-h-screen flex h-screen">
+    <?php $activeTab = ''; include __DIR__ . '/../includes/left-tabs.php'; ?>
 
-        <a href="/admin/users.php" class="px-4 py-2 border border-slate-200 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-all flex items-center gap-2 bg-white shadow-sm">
-          <i class="iconoir-group"></i>
-          <span>Gestión de usuarios</span>
-        </a>
-      </div>
-    </div>
+    <main class="flex-1 flex flex-col min-w-0">
+      <?php $pageTitle = 'Panel de Control'; include __DIR__ . '/../includes/header.php'; ?>
 
-    <!-- Tarjetas resumen -->
+      <div class="flex-1 overflow-auto bg-slate-50">
+        <div class="max-w-7xl mx-auto p-6">
+          <!-- Header -->
+          <div class="flex items-center justify-between mb-8 mt-6">
+            <div>
+              <h1 class="text-3xl font-bold text-slate-800">Panel de Control</h1>
+              <p class="text-slate-600 mt-1">Estadísticas de uso de Ebonia</p>
+            </div>
+            <div class="flex gap-3">
+              <!-- Filtro de rango -->
+              <div class="flex bg-white rounded-lg border border-slate-200 p-1 shadow-sm">
+                <a href="?range=7" class="px-3 py-1 text-sm rounded-md transition-all <?= $range === '7' ? 'bg-[#23AAC5] text-white font-medium shadow-sm' : 'text-slate-600 hover:bg-slate-50' ?>">7 días</a>
+                <a href="?range=30" class="px-3 py-1 text-sm rounded-md transition-all <?= $range === '30' ? 'bg-[#23AAC5] text-white font-medium shadow-sm' : 'text-slate-600 hover:bg-slate-50' ?>">30 días</a>
+                <a href="?range=all" class="px-3 py-1 text-sm rounded-md transition-all <?= $range === 'all' ? 'bg-[#23AAC5] text-white font-medium shadow-sm' : 'text-slate-600 hover:bg-slate-50' ?>">Todo</a>
+              </div>
+
+              <a href="/admin/users.php" class="px-4 py-2 border border-slate-200 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-all flex items-center gap-2 bg-white shadow-sm">
+                <i class="iconoir-group"></i>
+                <span>Gestión de usuarios</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Tarjetas resumen -->
     <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4 mb-8">
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
         <div class="flex items-center gap-3">

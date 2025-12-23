@@ -21,64 +21,48 @@ if (!$user) {
   <link rel="apple-touch-icon" href="/assets/images/isotipo.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/iconoir-icons/iconoir@main/css/iconoir.css">
+  <style>
+    /* Estilos base para el layout */
+    .gradient-brand { background: linear-gradient(135deg, #23AAC5 0%, #115c6c 100%); }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  </style>
 </head>
-<body class="bg-mesh text-slate-900">
-  <div class="min-h-screen flex">
-    <?php 
-      $activeTab = 'apps'; 
-      $useTabsJs = false;
-      include __DIR__ . '/includes/left-tabs.php'; 
-    ?>
+<body class="bg-slate-50 text-slate-900 overflow-hidden">
+  <div class="min-h-screen flex h-screen">
+    <?php $activeTab = ''; include __DIR__ . '/includes/left-tabs.php'; ?>
 
-    <div class="flex-1 flex flex-col bg-gradient-to-br from-slate-50 to-slate-100">
-      <!-- Topbar -->
-      <header class="h-16 px-6 flex items-center justify-between border-b border-slate-200 bg-white/80 backdrop-blur">
-        <div class="flex items-center gap-3">
-          <i class="iconoir-search text-slate-400"></i>
-          <span class="text-sm text-slate-500">Buscar en Ebonia</span>
-        </div>
-        <div class="flex items-center gap-3">
-          <span class="px-3 py-1 text-xs font-semibold rounded-full bg-[#23AAC5]/10 text-[#23AAC5]">Chatbot</span>
-          <div class="h-10 w-10 rounded-full bg-gradient-to-br from-[#23AAC5] to-[#115c6c] flex items-center justify-center text-white text-sm font-bold shadow" id="avatar-top">
-            <?php 
-              $initials = strtoupper(substr($user['first_name'], 0, 1) . substr($user['last_name'], 0, 1));
-              echo htmlspecialchars($initials);
-            ?>
-          </div>
-        </div>
-      </header>
+    <main class="flex-1 flex flex-col min-w-0">
+      <?php $pageTitle = 'Mi cuenta'; include __DIR__ . '/includes/header.php'; ?>
 
-      <main class="flex-1 overflow-y-auto">
+      <div class="flex-1 overflow-auto bg-slate-50">
         <div class="max-w-4xl mx-auto p-6">
-          <!-- Header -->
-          <div class="flex items-center justify-between mb-8">
-            <div>
-              <a href="/" class="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors mb-3">
-                <i class="iconoir-arrow-left"></i>
-                <span class="text-sm">Volver al chat</span>
-              </a>
-              <h1 class="text-3xl font-bold text-slate-800">Mi cuenta</h1>
+          
+          <!-- Perfil -->
+          <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6 mt-6">
+            <div class="flex items-center justify-between mb-6">
+              <div class="flex items-center gap-4">
+                <div class="h-16 w-16 rounded-2xl bg-gradient-to-br from-[#23AAC5] to-[#115c6c] flex items-center justify-center text-white text-2xl font-bold shadow-lg" id="avatar-big">
+                  <?php 
+                    $initials = strtoupper(substr($user['first_name'], 0, 1) . substr($user['last_name'], 0, 1));
+                    echo htmlspecialchars($initials);
+                  ?>
+                </div>
+                <div>
+                  <h2 class="text-xl font-bold text-slate-800">Información personal</h2>
+                  <p class="text-slate-500 text-sm">Gestiona tus datos y preferencias</p>
+                </div>
+              </div>
+              <button id="edit-toggle-btn" class="text-sm text-[#23AAC5] hover:text-[#115c6c] font-medium flex items-center gap-1">
+                <i class="iconoir-edit-pencil"></i>
+                <span>Editar</span>
+              </button>
             </div>
-            <div class="h-16 w-16 rounded-2xl bg-gradient-to-br from-[#23AAC5] to-[#115c6c] flex items-center justify-center text-white text-2xl font-bold shadow-lg" id="avatar-big">
-              <?php 
-                $initials = strtoupper(substr($user['first_name'], 0, 1) . substr($user['last_name'], 0, 1));
-                echo htmlspecialchars($initials);
-              ?>
-            </div>
-          </div>
-
-    <!-- Perfil -->
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
-      <div class="flex items-center justify-between mb-6">
-        <h2 class="text-lg font-semibold text-slate-800">Información personal</h2>
-        <button id="edit-toggle-btn" class="text-sm text-[#23AAC5] hover:text-[#115c6c] font-medium flex items-center gap-1">
-          <i class="iconoir-edit-pencil"></i>
-          <span>Editar</span>
-        </button>
-      </div>
-      
-      <!-- Vista normal -->
-      <div id="profile-view" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- Vista normal -->
+            <div id="profile-view" class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label class="text-xs font-medium text-slate-500 uppercase tracking-wider">Nombre</label>
           <div class="mt-1 text-slate-800 font-medium" id="display-first-name"><?php echo htmlspecialchars($user['first_name']); ?></div>

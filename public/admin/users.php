@@ -27,26 +27,37 @@ if (!$isSuperadmin) {
   <link rel="apple-touch-icon" href="/assets/images/isotipo.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/iconoir-icons/iconoir@main/css/iconoir.css">
+  <style>
+    /* Estilos base para el layout */
+    .gradient-brand { background: linear-gradient(135deg, #23AAC5 0%, #115c6c 100%); }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  </style>
 </head>
-<body class="bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
-  <div class="max-w-7xl mx-auto p-6">
-    <!-- Header -->
-    <div class="flex items-center justify-between mb-8">
-      <div>
-        <a href="/" class="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors mb-3">
-          <i class="iconoir-arrow-left"></i>
-          <span class="text-sm">Volver al chat</span>
-        </a>
-        <h1 class="text-3xl font-bold text-slate-800">Gestión de usuarios</h1>
-        <p class="text-slate-600 mt-1">Crear, editar y gestionar cuentas de usuario</p>
-      </div>
-      <button id="create-user-btn" class="px-4 py-2 bg-gradient-to-r from-[#23AAC5] to-[#115c6c] text-white rounded-lg font-medium hover:opacity-90 hover:shadow-lg transition-all flex items-center gap-2 shadow-md">
-        <i class="iconoir-plus-circle"></i>
-        <span>Nuevo usuario</span>
-      </button>
-    </div>
+<body class="bg-slate-50 text-slate-900 overflow-hidden">
+  <div class="min-h-screen flex h-screen">
+    <?php $activeTab = ''; include __DIR__ . '/../includes/left-tabs.php'; ?>
 
-    <!-- Búsqueda y filtros -->
+    <main class="flex-1 flex flex-col min-w-0">
+      <?php $pageTitle = 'Gestión de usuarios'; include __DIR__ . '/../includes/header.php'; ?>
+
+      <div class="flex-1 overflow-auto bg-slate-50">
+        <div class="max-w-7xl mx-auto p-6">
+          <!-- Header -->
+          <div class="flex items-center justify-between mb-8 mt-6">
+            <div>
+              <h1 class="text-3xl font-bold text-slate-800">Gestión de usuarios</h1>
+              <p class="text-slate-600 mt-1">Crear, editar y gestionar cuentas de usuario</p>
+            </div>
+            <button id="create-user-btn" class="px-4 py-2 bg-gradient-to-r from-[#23AAC5] to-[#115c6c] text-white rounded-lg font-medium hover:opacity-90 hover:shadow-lg transition-all flex items-center gap-2 shadow-md">
+              <i class="iconoir-plus-circle"></i>
+              <span>Nuevo usuario</span>
+            </button>
+          </div>
+
+          <!-- Búsqueda y filtros -->
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mb-6">
       <div class="flex items-center gap-4">
         <div class="flex-1 relative">
