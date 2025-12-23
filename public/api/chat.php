@@ -10,6 +10,7 @@ require_once __DIR__ . '/../../src/Auth/AuthService.php';
 require_once __DIR__ . '/../../src/Repos/ConversationsRepo.php';
 require_once __DIR__ . '/../../src/Repos/MessagesRepo.php';
 require_once __DIR__ . '/../../src/Repos/ChatFilesRepo.php';
+require_once __DIR__ . '/../../src/Repos/UsageLogRepo.php';
 
 use App\Response;
 use App\Session;
@@ -19,6 +20,7 @@ use Chat\LlmProviderFactory;
 use Repos\ConversationsRepo;
 use Repos\MessagesRepo;
 use Repos\ChatFilesRepo;
+use Repos\UsageLogRepo;
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     Response::error('method_not_allowed', 'Sólo POST', 405);
@@ -91,17 +93,24 @@ if ($file) {
 
 $convos = new ConversationsRepo();
 $msgs = new MessagesRepo();
+$usageLog = new UsageLogRepo();
 
 // Limpieza de imágenes antiguas (5 días)
 $msgs->purgeImagesOlderThan(5);
 
 // Si no hay conversación, crear una nueva
-if ($conversationId <= 0) {
+$isNewConversation = $conversationId <= 0;
+if ($isNewConversation) {
     $conversationId = $convos->create((int)$user['id'], null);
+    // Registrar creación de conversación
+    $usageLog->log((int)$user['id'], 'conversation');
 }
 
 // Guardar mensaje de usuario (con file_id si existe)
 $userMsgId = $msgs->create($conversationId, (int)$user['id'], 'user', $message, null, null, null, $fileId);
+
+// Registrar mensaje de usuario
+$usageLog->log((int)$user['id'], 'message');
 
 // Actualizar archivo con conversation_id y message_id si es nuevo
 if ($fileId) {
@@ -252,6 +261,11 @@ if ($generatedImages && !empty($generatedImages)) {
 }
 
 $assistantMsgId = $msgs->create($conversationId, null, 'assistant', $assistantMsg['content'], $usedModel ?: null, null, null, null, $imagesToSave);
+
+// Registrar imágenes generadas (si las hay)
+if ($imagesToSave && count($imagesToSave) > 0) {
+    $usageLog->log((int)$user['id'], 'image', count($imagesToSave));
+}
 
 // Vincular archivos persistidos al mensaje del asistente
 if (!empty($savedFileIds)) {

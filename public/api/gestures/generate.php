@@ -26,11 +26,13 @@ require_once __DIR__ . '/../../../src/Chat/LlmProvider.php';
 require_once __DIR__ . '/../../../src/Chat/OpenRouterClient.php';
 require_once __DIR__ . '/../../../src/Chat/OpenRouterProvider.php';
 require_once __DIR__ . '/../../../src/Chat/LlmProviderFactory.php';
+require_once __DIR__ . '/../../../src/Repos/UsageLogRepo.php';
 
 use App\Session;
 use App\Response;
 use Chat\LlmProviderFactory;
 use Gestures\GestureExecutionsRepo;
+use Repos\UsageLogRepo;
 
 // Session ya se inicia en bootstrap
 $user = Session::user();
@@ -94,6 +96,10 @@ $executionId = $repo->create([
     'business_line' => $businessLine,
     'model' => $provider->getModel(),
 ]);
+
+// Registrar uso de gesto
+$usageLog = new UsageLogRepo();
+$usageLog->log((int)$user['id'], 'gesture', 1, ['gesture_type' => $gestureType]);
 
 Response::json([
     'success' => true,

@@ -41,19 +41,21 @@ function dateCond($prefix = 'WHERE', $col = 'created_at', $alias = '') {
 
 // === ESTADÍSTICAS GENERALES ===
 // Nota: Usuarios siempre mostramos total histórico
+// Usamos usage_log para estadísticas persistentes (no se borran cuando se eliminan mensajes)
 $generalStats = $pdo->query("
     SELECT 
         (SELECT COUNT(*) FROM users) as total_users,
         (SELECT COUNT(*) FROM users WHERE status = 'active') as active_users,
-        (SELECT COUNT(*) FROM conversations " . dateCond('WHERE') . ") as total_conversations,
-        (SELECT COUNT(*) FROM messages " . dateCond('WHERE') . ") as total_messages,
+        (SELECT COALESCE(SUM(count), 0) FROM usage_log WHERE action_type = 'conversation' " . dateCond('AND') . ") as total_conversations,
+        (SELECT COALESCE(SUM(count), 0) FROM usage_log WHERE action_type = 'message' " . dateCond('AND') . ") as total_messages,
         (SELECT COUNT(*) FROM messages WHERE role = 'assistant' " . dateCond('AND') . ") as assistant_messages,
-        (SELECT COALESCE(SUM(JSON_LENGTH(images)), 0) FROM messages WHERE images IS NOT NULL " . dateCond('AND') . ") as total_images,
-        (SELECT COUNT(*) FROM gesture_executions " . dateCond('WHERE') . ") as total_gestures,
-        (SELECT COUNT(*) FROM voice_executions " . dateCond('WHERE') . ") as total_voices
+        (SELECT COALESCE(SUM(count), 0) FROM usage_log WHERE action_type = 'image' " . dateCond('AND') . ") as total_images,
+        (SELECT COALESCE(SUM(count), 0) FROM usage_log WHERE action_type = 'gesture' " . dateCond('AND') . ") as total_gestures,
+        (SELECT COALESCE(SUM(count), 0) FROM usage_log WHERE action_type = 'voice' " . dateCond('AND') . ") as total_voices
 ")->fetch();
 
 // === USO POR USUARIO ===
+// Usamos usage_log para estadísticas persistentes
 $userStats = $pdo->query("
     SELECT 
         u.id,
@@ -61,11 +63,11 @@ $userStats = $pdo->query("
         u.last_name,
         u.email,
         u.last_login_at,
-        (SELECT COUNT(DISTINCT c.id) FROM conversations c WHERE c.user_id = u.id " . dateCond('AND', 'created_at', 'c') . ") as conversations,
-        (SELECT COUNT(DISTINCT m.id) FROM messages m WHERE m.user_id = u.id " . dateCond('AND', 'created_at', 'm') . ") as messages,
-        (SELECT COALESCE(SUM(JSON_LENGTH(m.images)), 0) FROM messages m WHERE m.user_id = u.id AND m.images IS NOT NULL " . dateCond('AND', 'created_at', 'm') . ") as images,
-        (SELECT COUNT(*) FROM gesture_executions ge WHERE ge.user_id = u.id " . dateCond('AND', 'created_at', 'ge') . ") as gestures,
-        (SELECT COUNT(*) FROM voice_executions ve WHERE ve.user_id = u.id " . dateCond('AND', 'created_at', 've') . ") as voices
+        (SELECT COALESCE(SUM(count), 0) FROM usage_log ul WHERE ul.user_id = u.id AND ul.action_type = 'conversation' " . dateCond('AND', 'created_at', 'ul') . ") as conversations,
+        (SELECT COALESCE(SUM(count), 0) FROM usage_log ul WHERE ul.user_id = u.id AND ul.action_type = 'message' " . dateCond('AND', 'created_at', 'ul') . ") as messages,
+        (SELECT COALESCE(SUM(count), 0) FROM usage_log ul WHERE ul.user_id = u.id AND ul.action_type = 'image' " . dateCond('AND', 'created_at', 'ul') . ") as images,
+        (SELECT COALESCE(SUM(count), 0) FROM usage_log ul WHERE ul.user_id = u.id AND ul.action_type = 'gesture' " . dateCond('AND', 'created_at', 'ul') . ") as gestures,
+        (SELECT COALESCE(SUM(count), 0) FROM usage_log ul WHERE ul.user_id = u.id AND ul.action_type = 'voice' " . dateCond('AND', 'created_at', 'ul') . ") as voices
     FROM users u
     ORDER BY messages DESC
 ")->fetchAll();

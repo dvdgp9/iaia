@@ -13,6 +13,7 @@ require_once __DIR__ . '/../../../src/Chat/OpenRouterProvider.php';
 require_once __DIR__ . '/../../../src/Chat/LlmProviderFactory.php';
 require_once __DIR__ . '/../../../src/Voices/VoiceExecutionsRepo.php';
 require_once __DIR__ . '/../../../src/Voices/VoiceContextBuilder.php';
+require_once __DIR__ . '/../../../src/Repos/UsageLogRepo.php';
 
 use App\Session;
 use App\Response;
@@ -20,6 +21,7 @@ use App\Env;
 use Chat\OpenRouterClient;
 use Voices\VoiceExecutionsRepo;
 use Voices\VoiceContextBuilder;
+use Repos\UsageLogRepo;
 
 $user = Session::user();
 if (!$user) {
@@ -108,6 +110,10 @@ $fullHistory[] = ['role' => 'assistant', 'content' => $reply];
 $inputData = [
     'history' => $fullHistory
 ];
+
+// Registrar uso de voz (siempre, independientemente de si es nueva o existente)
+$usageLog = new UsageLogRepo();
+$usageLog->log((int)$user['id'], 'voice', 1, ['voice_id' => $voiceId]);
 
 if ($executionId) {
     // Actualizar ejecución existente
