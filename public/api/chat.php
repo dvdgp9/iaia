@@ -91,9 +91,15 @@ if ($file) {
 
 $convos = new ConversationsRepo();
 $msgs = new MessagesRepo();
+$svc = new ChatService($provider);
 
+// Limpieza de imágenes antiguas (5 días)
+$msgs->purgeImagesOlderThan(5);
+
+// Validar conversación
+$conversationId = (int)($_POST['conversation_id'] ?? 0);
 if ($conversationId <= 0) {
-    $conversationId = $convos->create((int)$user['id'], null);
+    Response::error('validation_error', 'conversation_id es obligatorio', 400);
 }
 
 // Guardar mensaje de usuario (con file_id si existe)
@@ -163,8 +169,91 @@ $usedModel = $provider->getModel();
 // Obtener imágenes generadas si las hay
 $generatedImages = $svc->getLastImages();
 
-// Guardar respuesta de asistente
-$assistantMsgId = $msgs->create($conversationId, null, 'assistant', $assistantMsg['content'], $usedModel ?: null, null, null);
+// Guardar respuesta de asistente (con imágenes persistidas si las hay)
+$imagesToSave = null;
+$savedFileIds = [];
+if ($generatedImages && !empty($generatedImages)) {
+    // Deduplicar por URL
+    $seen = [];
+    $unique = [];
+    foreach ($generatedImages as $img) {
+        $url = $img['image_url']['url'] ?? ($img['imageUrl']['url'] ?? null);
+        if (!$url) continue;
+        if (isset($seen[$url])) continue;
+        $seen[$url] = true;
+        $unique[] = $url;
+    }
+
+    // Normalizar y persistir en chat_files con expiración (5 días) y devolver nuestros URLs
+    $imagesNormalized = [];
+    $storagePath = ChatFilesRepo::getStoragePath();
+    if (!is_dir($storagePath)) { @mkdir($storagePath, 0755, true); }
+    foreach ($unique as $idx => $url) {
+        $binary = null; $mime = null; $ext = null; $origName = 'nanobanana-'.date('Ymd-His')."-$idx";
+        if (strpos($url, 'data:') === 0) {
+            // data URL: data:mime;base64,XXXX
+            if (preg_match('#^data:(.*?);base64,(.*)$#', $url, $m)) {
+                $mime = strtolower(trim($m[1]));
+                $binary = base64_decode($m[2]);
+            }
+        } else if (preg_match('#^https?://#i', $url)) {
+            // Descargar recurso
+            $ctx = stream_context_create([
+                'http' => [
+                    'method' => 'GET',
+                    'header' => "User-Agent: Mozilla/5.0 (compatible; EbonIA/1.0)\r\n",
+                    'timeout' => 30
+                ],
+                'ssl' => [ 'verify_peer' => false, 'verify_peer_name' => false ]
+            ]);
+            $binary = @file_get_contents($url, false, $ctx);
+            if ($binary !== false) {
+                $imgInfo = @getimagesizefromstring($binary);
+                if ($imgInfo && isset($imgInfo['mime'])) { $mime = strtolower($imgInfo['mime']); }
+            }
+        }
+
+        if (!$binary) { continue; }
+        // Validar mime y extensión
+        $map = [ 'image/png' => 'png', 'image/jpeg' => 'jpg', 'image/jpg' => 'jpg', 'image/gif' => 'gif', 'image/webp' => 'webp' ];
+        $ext = $map[$mime] ?? null;
+        if (!$ext) { continue; }
+
+        $storedName = bin2hex(random_bytes(16)) . '.' . $ext;
+        $filePath = $storagePath . '/' . $storedName;
+        if (@file_put_contents($filePath, $binary) === false) { continue; }
+
+        // Registrar en DB (sin message_id todavía)
+        try {
+            $size = strlen($binary);
+            $fileId = $filesRepo->create([
+                'user_id' => (int)$user['id'],
+                'conversation_id' => $conversationId,
+                'original_name' => $origName . '.' . $ext,
+                'stored_name' => $storedName,
+                'mime_type' => $mime,
+                'size_bytes' => $size
+            ]);
+            $savedFileIds[] = $fileId;
+            $imagesNormalized[] = [ 'image_url' => [ 'url' => '/api/files/serve.php?id=' . $fileId ] ];
+        } catch (\Exception $e) {
+            @unlink($filePath);
+        }
+    }
+
+    if (!empty($imagesNormalized)) {
+        $imagesToSave = $imagesNormalized;
+    }
+}
+
+$assistantMsgId = $msgs->create($conversationId, null, 'assistant', $assistantMsg['content'], $usedModel ?: null, null, null, null, $imagesToSave);
+
+// Vincular archivos persistidos al mensaje del asistente
+if (!empty($savedFileIds)) {
+    foreach ($savedFileIds as $fid) {
+        $filesRepo->updateMessageId($fid, $assistantMsgId);
+    }
+}
 
 // Actualizar updated_at de la conversación
 $convos->touch($conversationId);
@@ -180,20 +269,9 @@ $response = [
     'context_truncated' => $contextTruncated
 ];
 
-// Incluir imágenes generadas si las hay
-if ($generatedImages && !empty($generatedImages)) {
-    // Deduplicar por URL (algunos modelos devuelven varias variantes o duplicados)
-    $seen = [];
-    $unique = [];
-    foreach ($generatedImages as $img) {
-        $url = $img['image_url']['url'] ?? ($img['imageUrl']['url'] ?? null);
-        if (!$url) continue;
-        if (isset($seen[$url])) continue;
-        $seen[$url] = true;
-        $unique[] = $img;
-    }
-    // Mostrar todas las imágenes únicas (si hay varias distintas)
-    $response['message']['images'] = $unique;
+// Incluir imágenes generadas si las hay (ya deduplicadas)
+if ($imagesToSave) {
+    $response['message']['images'] = $imagesToSave;
 }
 
 Response::json($response);

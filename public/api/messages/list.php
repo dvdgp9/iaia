@@ -30,7 +30,7 @@ $msgs = new MessagesRepo();
 $filesRepo = new ChatFilesRepo();
 $items = $msgs->listByConversation($conversationId);
 
-// Enriquecer mensajes con información de archivos
+// Enriquecer mensajes con información de archivos e imágenes
 foreach ($items as &$item) {
     if (!empty($item['file_id'])) {
         $file = $filesRepo->findById((int)$item['file_id']);
@@ -43,6 +43,11 @@ foreach ($items as &$item) {
                 'expired' => strtotime($file['expires_at']) < time()
             ];
         }
+    }
+    
+    // Decodificar images JSON si existe
+    if (!empty($item['images'])) {
+        $item['images'] = json_decode($item['images'], true);
     }
 }
 
