@@ -1110,7 +1110,7 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
       if(items.length > 0){
         showChatMode();
         for(const m of items){
-          append(m.role, m.content, m.file || null);
+          append(m.role, m.content, m.file || null, m.images || null);
         }
         emptyConversationId = null;
       } else {
