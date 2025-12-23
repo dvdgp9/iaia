@@ -74,6 +74,13 @@ if ($file) {
     if (!in_array($file['mime_type'], $allowedTypes)) {
         Response::error('validation_error', 'Tipo de archivo no soportado', 400);
     }
+    // Si es imagen y el cliente no ha especificado modelo, forzar uno multimodal (Gemini 3 Flash Preview)
+    if (
+        (!isset($input['model']) || $input['model'] === '')
+        && str_starts_with((string)$file['mime_type'], 'image/')
+    ) {
+        $modelName = 'google/gemini-3-flash-preview';
+    }
 }
 
 $convos = new ConversationsRepo();

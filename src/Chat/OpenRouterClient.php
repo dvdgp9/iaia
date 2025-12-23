@@ -68,6 +68,7 @@ class OpenRouterClient {
         }
         
         // Agregar mensajes del historial
+        $hasPdf = false;
         foreach ($messages as $m) {
             $content = [];
             
@@ -82,9 +83,18 @@ class OpenRouterClient {
                             'url' => 'data:' . $file['mime_type'] . ';base64,' . $file['data']
                         ]
                     ];
+                } elseif ($file['mime_type'] === 'application/pdf') {
+                    // Para PDFs, usar bloque type:file + file-parser plugin
+                    $hasPdf = true;
+                    $filename = $file['name'] ?? 'document.pdf';
+                    $content[] = [
+                        'type' => 'file',
+                        'file' => [
+                            'filename' => $filename,
+                            'fileData' => 'data:application/pdf;base64,' . $file['data']
+                        ]
+                    ];
                 }
-                // Para PDFs, incluir como texto si es posible
-                // (OpenRouter no soporta PDFs nativamente, se podría preprocesar)
             }
             
             // Agregar texto
@@ -111,6 +121,15 @@ class OpenRouterClient {
             'model' => $this->model,
             'messages' => $messagesPayload
         ];
+        // Si hay PDF, añadir plugin file-parser con engine pdf-text por defecto
+        if ($hasPdf) {
+            $payload['plugins'] = [
+                [
+                    'id' => 'file-parser',
+                    'pdf' => [ 'engine' => 'pdf-text' ]
+                ]
+            ];
+        }
         
         // Añadir parámetros opcionales
         if ($this->temperature !== null) {
