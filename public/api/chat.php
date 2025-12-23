@@ -109,8 +109,8 @@ if ($isNewConversation) {
 // Guardar mensaje de usuario (con file_id si existe)
 $userMsgId = $msgs->create($conversationId, (int)$user['id'], 'user', $message, null, null, null, $fileId);
 
-// Registrar mensaje de usuario
-$usageLog->log((int)$user['id'], 'message');
+// Registrar mensaje de usuario con modelo para estadísticas
+$usageLog->log((int)$user['id'], 'message', 1, ['model' => $modelName]);
 
 // Actualizar archivo con conversation_id y message_id si es nuevo
 if ($fileId) {

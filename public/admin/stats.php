@@ -72,51 +72,52 @@ $userStats = $pdo->query("
     ORDER BY messages DESC
 ")->fetchAll();
 
-// === USO POR MODELO ===
+// === USO POR MODELO (desde usage_log metadata.model) ===
 $modelStats = $pdo->query("
     SELECT 
-        COALESCE(model, 'Sin especificar') as model_name,
-        COUNT(*) as usage_count
-    FROM messages 
-    WHERE role = 'assistant' AND model IS NOT NULL " . dateCond('AND') . "
-    GROUP BY model
+        COALESCE(JSON_UNQUOTE(JSON_EXTRACT(metadata, '$.model')), 'Sin especificar') as model_name,
+        SUM(count) as usage_count
+    FROM usage_log
+    WHERE action_type = 'message' " . dateCond('AND') . "
+    GROUP BY model_name
     ORDER BY usage_count DESC
     LIMIT 20
 ")->fetchAll();
 
-// === USO POR DÍA ===
+// === USO POR DÍA (solo mensajes) ===
 // Si el rango es 'all', limitamos a últimos 90 días para que el gráfico no sea ilegible
-$dailyInterval = $range === 'all' ? 'INTERVAL 90 DAY' : $intervalSql;
+$dailyInterval = $range === 'all' ? 'INTERVAL 90 DAY' : ($intervalSql ?: 'INTERVAL 90 DAY');
 $dailyStats = $pdo->query("
     SELECT 
         DATE(created_at) as date,
-        COUNT(*) as messages
-    FROM messages
-    WHERE created_at >= DATE_SUB(NOW(), $dailyInterval)
+        SUM(count) as messages
+    FROM usage_log
+    WHERE action_type = 'message'
+      AND created_at >= DATE_SUB(NOW(), $dailyInterval)
     GROUP BY DATE(created_at)
     ORDER BY date ASC
 ")->fetchAll();
 
-// === GESTOS MÁS USADOS ===
+// === GESTOS MÁS USADOS (desde usage_log) ===
 $gestureStats = $pdo->query("
     SELECT 
-        gesture_type,
-        COUNT(*) as usage_count,
+        COALESCE(JSON_UNQUOTE(JSON_EXTRACT(metadata, '$.gesture_type')), 'sin_tipo') as gesture_type,
+        SUM(count) as usage_count,
         COUNT(DISTINCT user_id) as unique_users
-    FROM gesture_executions
-    WHERE 1=1 " . dateCond('AND') . "
+    FROM usage_log
+    WHERE action_type = 'gesture' " . dateCond('AND') . "
     GROUP BY gesture_type
     ORDER BY usage_count DESC
 ")->fetchAll();
 
-// === VOCES MÁS USADAS ===
+// === VOCES MÁS USADAS (desde usage_log) ===
 $voiceStats = $pdo->query("
     SELECT 
-        voice_id,
-        COUNT(*) as usage_count,
+        COALESCE(JSON_UNQUOTE(JSON_EXTRACT(metadata, '$.voice_id')), 'sin_voz') as voice_id,
+        SUM(count) as usage_count,
         COUNT(DISTINCT user_id) as unique_users
-    FROM voice_executions
-    WHERE 1=1 " . dateCond('AND') . "
+    FROM usage_log
+    WHERE action_type = 'voice' " . dateCond('AND') . "
     GROUP BY voice_id
     ORDER BY usage_count DESC
 ")->fetchAll();
