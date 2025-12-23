@@ -1786,7 +1786,7 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
       const gestureRoutes = {
         'write-article': '/gestos/escribir-articulo.php',
         'social-media': '/gestos/redes-sociales.php',
-        'podcast-from-article': '/gestos/podcast.php'
+        'podcast-from-article': '/gestos/podcast-articulo.php'
       };
       
       const gestureCards = document.querySelectorAll('[data-gesture]');
