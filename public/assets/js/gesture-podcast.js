@@ -368,7 +368,7 @@
     if (!confirm('¿Eliminar este podcast del historial?')) return;
 
     try {
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+      const csrfToken = (typeof window !== 'undefined' && window.CSRF_TOKEN) ? window.CSRF_TOKEN : (document.querySelector('meta[name="csrf-token"]')?.content || '');
       const res = await fetch('/api/gestures/delete.php', {
         method: 'POST',
         headers: {
@@ -376,7 +376,7 @@
           'X-CSRF-Token': csrfToken
         },
         credentials: 'include',
-        body: JSON.stringify({ id })
+        body: JSON.stringify({ id, csrf_token: csrfToken })
       });
 
       if (res.ok) {

@@ -10,6 +10,14 @@ if (!$user) {
     exit;
 }
 $csrfToken = $_SESSION['csrf_token'] ?? '';
+if (!$csrfToken) {
+    try {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(16));
+    } catch (\Exception $e) {
+        $_SESSION['csrf_token'] = bin2hex(openssl_random_pseudo_bytes(16));
+    }
+    $csrfToken = $_SESSION['csrf_token'];
+}
 $pageTitle = 'Podcast desde artículo — Ebonia';
 $activeTab = 'gestures';
 ?><!DOCTYPE html>

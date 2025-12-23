@@ -21,7 +21,13 @@ if (!$user) {
 // Validar CSRF
 $csrfHeader = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
 $csrfSession = $_SESSION['csrf_token'] ?? '';
-if (!$csrfHeader || $csrfHeader !== $csrfSession) {
+
+// Leer cuerpo por si llega el token en JSON (fallback)
+$rawBody = file_get_contents('php://input');
+$body = json_decode($rawBody, true) ?? [];
+$csrfBody = $body['csrf_token'] ?? '';
+
+if ((!$csrfHeader || $csrfHeader !== $csrfSession) && (!$csrfBody || $csrfBody !== $csrfSession)) {
     Response::error('csrf_invalid', 'Token CSRF inválido', 403);
 }
 
@@ -30,7 +36,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
     Response::error('method_not_allowed', 'Solo POST', 405);
 }
 
-$body = json_decode(file_get_contents('php://input'), true) ?? [];
+$body = $body ?: [];
 $id = isset($body['id']) ? (int)$body['id'] : 0;
 
 if ($id <= 0) {
