@@ -186,6 +186,7 @@ if ($generatedImages && !empty($generatedImages)) {
     $imagesNormalized = [];
     $storagePath = ChatFilesRepo::getStoragePath();
     if (!is_dir($storagePath)) { @mkdir($storagePath, 0755, true); }
+    $seenHashes = []; // Deduplicar por contenido binario
     foreach ($unique as $idx => $url) {
         $binary = null; $mime = null; $ext = null; $origName = 'nanobanana-'.date('Ymd-His')."-$idx";
         if (strpos($url, 'data:') === 0) {
@@ -212,6 +213,12 @@ if ($generatedImages && !empty($generatedImages)) {
         }
 
         if (!$binary) { continue; }
+        
+        // Deduplicar por hash del contenido
+        $hash = hash('sha256', $binary);
+        if (isset($seenHashes[$hash])) { continue; }
+        $seenHashes[$hash] = true;
+        
         // Validar mime y extensión
         $map = [ 'image/png' => 'png', 'image/jpeg' => 'jpg', 'image/jpg' => 'jpg', 'image/gif' => 'gif', 'image/webp' => 'webp' ];
         $ext = $map[$mime] ?? null;
