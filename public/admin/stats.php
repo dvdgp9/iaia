@@ -435,6 +435,10 @@ $chartData = array_map(fn($d) => (int)$d['messages'], $dailyStats);
       </div>
     </div>
   </div>
+</div>
+</div>
+</main>
+</div>
 
   <script>
     // Gráfico de actividad

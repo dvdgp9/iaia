@@ -210,6 +210,12 @@ if (!$user) {
       <p>© 2025 Grupo Ebone. Todos los derechos reservados.</p>
     </div>
   </div>
+</div>
+</div>
+</div>
+
+</main>
+</div>
 
   <!-- Modal cambiar contraseña -->
   <div id="password-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
