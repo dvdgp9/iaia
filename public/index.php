@@ -287,6 +287,32 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
                     </div>
                   </button>
 
+                  <button class="gesture-option w-full p-4 bg-white/60 hover:bg-white border border-slate-200/80 hover:border-violet-400/50 rounded-2xl transition-smooth text-left group hover:shadow-md" data-gesture="social-media">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-600 flex items-center justify-center flex-shrink-0 shadow-sm group-hover:scale-110 transition-smooth">
+                        <i class="iconoir-send-diagonal text-lg text-white"></i>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <div class="font-semibold text-slate-800 group-hover:text-violet-600 transition-smooth">Redes sociales</div>
+                        <div class="text-xs text-slate-500">Publicaciones para RRSS</div>
+                      </div>
+                      <i class="iconoir-arrow-right text-slate-300 group-hover:text-violet-500 group-hover:translate-x-1 transition-smooth"></i>
+                    </div>
+                  </button>
+
+                  <button class="gesture-option w-full p-4 bg-white/60 hover:bg-white border border-slate-200/80 hover:border-rose-400/50 rounded-2xl transition-smooth text-left group hover:shadow-md" data-gesture="podcast-from-article">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 to-orange-500 flex items-center justify-center flex-shrink-0 shadow-sm group-hover:scale-110 transition-smooth">
+                        <i class="iconoir-podcast text-lg text-white"></i>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <div class="font-semibold text-slate-800 group-hover:text-rose-600 transition-smooth">Podcast desde artículo</div>
+                        <div class="text-xs text-slate-500">Audio con 2 voces IA</div>
+                      </div>
+                      <i class="iconoir-arrow-right text-slate-300 group-hover:text-rose-500 group-hover:translate-x-1 transition-smooth"></i>
+                    </div>
+                  </button>
+
                   <button class="gesture-option w-full p-4 bg-white/60 hover:bg-white border border-slate-200/80 hover:border-[#23AAC5]/50 rounded-2xl transition-smooth text-left group hover:shadow-md opacity-60" data-gesture="translate">
                     <div class="flex items-center gap-3">
                       <div class="w-10 h-10 rounded-xl bg-slate-200 flex items-center justify-center flex-shrink-0">
