@@ -43,11 +43,13 @@ $userStats = $pdo->query("
         u.last_login_at,
         COUNT(DISTINCT c.id) as conversations,
         COUNT(DISTINCT m.id) as messages,
+        COALESCE(SUM(CASE WHEN ma.role = 'assistant' THEN COALESCE(JSON_LENGTH(ma.images), 0) ELSE 0 END), 0) AS images_generated,
         (SELECT COUNT(*) FROM gesture_executions ge WHERE ge.user_id = u.id) as gestures,
         (SELECT COUNT(*) FROM voice_executions ve WHERE ve.user_id = u.id) as voices
     FROM users u
     LEFT JOIN conversations c ON c.user_id = u.id
     LEFT JOIN messages m ON m.user_id = u.id
+    LEFT JOIN messages ma ON ma.conversation_id = c.id
     GROUP BY u.id
     ORDER BY messages DESC
 ")->fetchAll();
@@ -343,6 +345,7 @@ $chartData = array_map(fn($d) => (int)$d['messages'], $dailyStats);
               <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Email</th>
               <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Conversaciones</th>
               <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Mensajes</th>
+              <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Imágenes</th>
               <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Gestos</th>
               <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Voces</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Último acceso</th>
@@ -362,6 +365,7 @@ $chartData = array_map(fn($d) => (int)$d['messages'], $dailyStats);
               <td class="px-6 py-4 text-sm text-slate-600"><?= htmlspecialchars($u['email']) ?></td>
               <td class="px-6 py-4 text-sm text-slate-800 text-right font-medium"><?= number_format($u['conversations']) ?></td>
               <td class="px-6 py-4 text-sm text-slate-800 text-right font-medium"><?= number_format($u['messages']) ?></td>
+              <td class="px-6 py-4 text-sm text-slate-800 text-right font-medium"><?= number_format((int)$u['images_generated']) ?></td>
               <td class="px-6 py-4 text-sm text-slate-800 text-right font-medium"><?= number_format($u['gestures']) ?></td>
               <td class="px-6 py-4 text-sm text-slate-800 text-right font-medium"><?= number_format($u['voices']) ?></td>
               <td class="px-6 py-4 text-sm text-slate-600">
