@@ -183,7 +183,7 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
                       <i class="iconoir-media-image text-lg"></i>
                     </button>
                     <input id="chat-input-empty" class="flex-1 border-2 border-slate-200 rounded-2xl px-5 py-[10px] text-base input-focus transition-smooth bg-white/80" placeholder="Escribe tu pregunta aquí..." />
-                    <button type="submit" class="px-7 py-[10px] gradient-brand text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-smooth flex items-center gap-2 leading-none">
+                    <button type="submit" class="h-11 px-7 py-[10px] gradient-brand text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-smooth flex items-center gap-2 leading-none">
                       <span>Enviar</span>
                       <i class="iconoir-send-diagonal text-base"></i>
                     </button>
@@ -367,7 +367,7 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
               <i class="iconoir-media-image text-lg"></i>
             </button>
             <input id="chat-input" class="flex-1 border-2 border-slate-200 rounded-xl px-4 py-[10px] focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-all" placeholder="Escribe un mensaje..." />
-            <button type="submit" class="px-6 py-[10px] gradient-brand-btn text-white rounded-xl font-medium shadow-md hover:shadow-lg hover:opacity-90 transition-all duration-200 flex items-center gap-2 leading-none">
+            <button type="submit" class="h-11 px-6 py-[10px] gradient-brand-btn text-white rounded-xl font-medium shadow-md hover:shadow-lg hover:opacity-90 transition-all duration-200 flex items-center gap-2 leading-none">
               <span>Enviar</span>
               <svg class="w-5 h-5 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
             </button>
