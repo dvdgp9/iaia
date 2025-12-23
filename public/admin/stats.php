@@ -1,0 +1,416 @@
+<?php
+require_once __DIR__ . '/../../src/App/bootstrap.php';
+require_once __DIR__ . '/../../src/App/Session.php';
+
+use App\Session;
+use App\DB;
+
+Session::start();
+$user = Session::user();
+if (!$user) {
+    header('Location: /login.php');
+    exit;
+}
+
+// Verificar si es superadmin
+$isSuperadmin = in_array('admin', $user['roles'] ?? [], true);
+if (!$isSuperadmin) {
+    header('Location: /');
+    exit;
+}
+
+$pdo = DB::pdo();
+
+// === ESTADÍSTICAS GENERALES ===
+$generalStats = $pdo->query("
+    SELECT 
+        (SELECT COUNT(*) FROM users) as total_users,
+        (SELECT COUNT(*) FROM users WHERE status = 'active') as active_users,
+        (SELECT COUNT(*) FROM conversations) as total_conversations,
+        (SELECT COUNT(*) FROM messages) as total_messages,
+        (SELECT COUNT(*) FROM messages WHERE role = 'assistant') as assistant_messages,
+        (SELECT COUNT(*) FROM gesture_executions) as total_gestures,
+        (SELECT COUNT(*) FROM voice_executions) as total_voices
+")->fetch();
+
+// === USO POR USUARIO ===
+$userStats = $pdo->query("
+    SELECT 
+        u.id,
+        u.first_name,
+        u.last_name,
+        u.email,
+        u.last_login_at,
+        COUNT(DISTINCT c.id) as conversations,
+        COUNT(DISTINCT m.id) as messages,
+        (SELECT COUNT(*) FROM gesture_executions ge WHERE ge.user_id = u.id) as gestures,
+        (SELECT COUNT(*) FROM voice_executions ve WHERE ve.user_id = u.id) as voices
+    FROM users u
+    LEFT JOIN conversations c ON c.user_id = u.id
+    LEFT JOIN messages m ON m.user_id = u.id
+    GROUP BY u.id
+    ORDER BY messages DESC
+")->fetchAll();
+
+// === USO POR MODELO ===
+$modelStats = $pdo->query("
+    SELECT 
+        COALESCE(model, 'Sin especificar') as model_name,
+        COUNT(*) as usage_count
+    FROM messages 
+    WHERE role = 'assistant' AND model IS NOT NULL
+    GROUP BY model
+    ORDER BY usage_count DESC
+    LIMIT 20
+")->fetchAll();
+
+// === USO POR DÍA (últimos 30 días) ===
+$dailyStats = $pdo->query("
+    SELECT 
+        DATE(created_at) as date,
+        COUNT(*) as messages
+    FROM messages
+    WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+    GROUP BY DATE(created_at)
+    ORDER BY date ASC
+")->fetchAll();
+
+// === GESTOS MÁS USADOS ===
+$gestureStats = $pdo->query("
+    SELECT 
+        gesture_type,
+        COUNT(*) as usage_count,
+        COUNT(DISTINCT user_id) as unique_users
+    FROM gesture_executions
+    GROUP BY gesture_type
+    ORDER BY usage_count DESC
+")->fetchAll();
+
+// === VOCES MÁS USADAS ===
+$voiceStats = $pdo->query("
+    SELECT 
+        voice_id,
+        COUNT(*) as usage_count,
+        COUNT(DISTINCT user_id) as unique_users
+    FROM voice_executions
+    GROUP BY voice_id
+    ORDER BY usage_count DESC
+")->fetchAll();
+
+// Preparar datos para gráfico
+$chartLabels = array_map(fn($d) => date('d/m', strtotime($d['date'])), $dailyStats);
+$chartData = array_map(fn($d) => (int)$d['messages'], $dailyStats);
+?><!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Panel de Control — Ebonia</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" href="/assets/images/isotipo.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/iconoir-icons/iconoir@main/css/iconoir.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
+  <div class="max-w-7xl mx-auto p-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <a href="/" class="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors mb-3">
+          <i class="iconoir-arrow-left"></i>
+          <span class="text-sm">Volver al chat</span>
+        </a>
+        <h1 class="text-3xl font-bold text-slate-800">Panel de Control</h1>
+        <p class="text-slate-600 mt-1">Estadísticas de uso de Ebonia</p>
+      </div>
+      <div class="flex gap-3">
+        <a href="/admin/users.php" class="px-4 py-2 border border-slate-200 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
+          <i class="iconoir-group"></i>
+          <span>Gestión de usuarios</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Tarjetas resumen -->
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8">
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
+            <i class="iconoir-group text-blue-600"></i>
+          </div>
+          <div>
+            <div class="text-2xl font-bold text-slate-800"><?= number_format($generalStats['total_users']) ?></div>
+            <div class="text-xs text-slate-500">Usuarios</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center">
+            <i class="iconoir-check-circle text-green-600"></i>
+          </div>
+          <div>
+            <div class="text-2xl font-bold text-slate-800"><?= number_format($generalStats['active_users']) ?></div>
+            <div class="text-xs text-slate-500">Activos</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center">
+            <i class="iconoir-chat-bubble text-purple-600"></i>
+          </div>
+          <div>
+            <div class="text-2xl font-bold text-slate-800"><?= number_format($generalStats['total_conversations']) ?></div>
+            <div class="text-xs text-slate-500">Conversaciones</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-lg bg-amber-100 flex items-center justify-center">
+            <i class="iconoir-message-text text-amber-600"></i>
+          </div>
+          <div>
+            <div class="text-2xl font-bold text-slate-800"><?= number_format($generalStats['total_messages']) ?></div>
+            <div class="text-xs text-slate-500">Mensajes</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-lg bg-cyan-100 flex items-center justify-center">
+            <i class="iconoir-sparks text-cyan-600"></i>
+          </div>
+          <div>
+            <div class="text-2xl font-bold text-slate-800"><?= number_format($generalStats['assistant_messages']) ?></div>
+            <div class="text-xs text-slate-500">Respuestas IA</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-lg bg-rose-100 flex items-center justify-center">
+            <i class="iconoir-flash text-rose-600"></i>
+          </div>
+          <div>
+            <div class="text-2xl font-bold text-slate-800"><?= number_format($generalStats['total_gestures']) ?></div>
+            <div class="text-xs text-slate-500">Gestos</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-lg bg-indigo-100 flex items-center justify-center">
+            <i class="iconoir-microphone text-indigo-600"></i>
+          </div>
+          <div>
+            <div class="text-2xl font-bold text-slate-800"><?= number_format($generalStats['total_voices']) ?></div>
+            <div class="text-xs text-slate-500">Voces</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <!-- Gráfico de actividad -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <h2 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+          <i class="iconoir-graph-up text-[#23AAC5]"></i>
+          Actividad (últimos 30 días)
+        </h2>
+        <div class="h-64">
+          <canvas id="activityChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Uso por modelo -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <h2 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+          <i class="iconoir-cpu text-[#23AAC5]"></i>
+          Uso por Modelo
+        </h2>
+        <div class="space-y-3 max-h-64 overflow-y-auto">
+          <?php if (empty($modelStats)): ?>
+            <p class="text-slate-500 text-sm">Sin datos de modelos aún</p>
+          <?php else: ?>
+            <?php 
+            $maxModel = max(array_column($modelStats, 'usage_count'));
+            foreach ($modelStats as $model): 
+              $percent = $maxModel > 0 ? ($model['usage_count'] / $maxModel) * 100 : 0;
+            ?>
+            <div>
+              <div class="flex justify-between text-sm mb-1">
+                <span class="text-slate-700 font-medium truncate"><?= htmlspecialchars($model['model_name']) ?></span>
+                <span class="text-slate-500"><?= number_format($model['usage_count']) ?></span>
+              </div>
+              <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-[#23AAC5] to-[#115c6c] rounded-full" style="width: <?= $percent ?>%"></div>
+              </div>
+            </div>
+            <?php endforeach; ?>
+          <?php endif; ?>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <!-- Gestos más usados -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <h2 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+          <i class="iconoir-flash text-rose-500"></i>
+          Gestos más usados
+        </h2>
+        <?php if (empty($gestureStats)): ?>
+          <p class="text-slate-500 text-sm">Sin ejecuciones de gestos aún</p>
+        <?php else: ?>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="bg-slate-50 border-b border-slate-200">
+              <tr>
+                <th class="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase">Gesto</th>
+                <th class="px-4 py-2 text-right text-xs font-medium text-slate-500 uppercase">Usos</th>
+                <th class="px-4 py-2 text-right text-xs font-medium text-slate-500 uppercase">Usuarios</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              <?php foreach ($gestureStats as $g): ?>
+              <tr>
+                <td class="px-4 py-2 text-slate-700"><?= htmlspecialchars($g['gesture_type']) ?></td>
+                <td class="px-4 py-2 text-right text-slate-600"><?= number_format($g['usage_count']) ?></td>
+                <td class="px-4 py-2 text-right text-slate-600"><?= number_format($g['unique_users']) ?></td>
+              </tr>
+              <?php endforeach; ?>
+            </tbody>
+          </table>
+        </div>
+        <?php endif; ?>
+      </div>
+
+      <!-- Voces más usadas -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <h2 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+          <i class="iconoir-microphone text-indigo-500"></i>
+          Voces más usadas
+        </h2>
+        <?php if (empty($voiceStats)): ?>
+          <p class="text-slate-500 text-sm">Sin ejecuciones de voces aún</p>
+        <?php else: ?>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="bg-slate-50 border-b border-slate-200">
+              <tr>
+                <th class="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase">Voz</th>
+                <th class="px-4 py-2 text-right text-xs font-medium text-slate-500 uppercase">Usos</th>
+                <th class="px-4 py-2 text-right text-xs font-medium text-slate-500 uppercase">Usuarios</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              <?php foreach ($voiceStats as $v): ?>
+              <tr>
+                <td class="px-4 py-2 text-slate-700 capitalize"><?= htmlspecialchars($v['voice_id']) ?></td>
+                <td class="px-4 py-2 text-right text-slate-600"><?= number_format($v['usage_count']) ?></td>
+                <td class="px-4 py-2 text-right text-slate-600"><?= number_format($v['unique_users']) ?></td>
+              </tr>
+              <?php endforeach; ?>
+            </tbody>
+          </table>
+        </div>
+        <?php endif; ?>
+      </div>
+    </div>
+
+    <!-- Tabla de uso por usuario -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+      <div class="p-6 border-b border-slate-200">
+        <h2 class="text-lg font-semibold text-slate-800 flex items-center gap-2">
+          <i class="iconoir-user text-[#23AAC5]"></i>
+          Uso por Usuario
+        </h2>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-slate-50 border-b border-slate-200">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Usuario</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Email</th>
+              <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Conversaciones</th>
+              <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Mensajes</th>
+              <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Gestos</th>
+              <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Voces</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Último acceso</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200">
+            <?php foreach ($userStats as $u): ?>
+            <tr class="hover:bg-slate-50 transition-colors">
+              <td class="px-6 py-4">
+                <div class="flex items-center gap-3">
+                  <div class="h-9 w-9 rounded-full bg-gradient-to-br from-[#23AAC5] to-[#115c6c] flex items-center justify-center text-white font-semibold text-sm">
+                    <?= strtoupper(substr($u['first_name'], 0, 1) . substr($u['last_name'], 0, 1)) ?>
+                  </div>
+                  <span class="font-medium text-slate-800"><?= htmlspecialchars($u['first_name'] . ' ' . $u['last_name']) ?></span>
+                </div>
+              </td>
+              <td class="px-6 py-4 text-sm text-slate-600"><?= htmlspecialchars($u['email']) ?></td>
+              <td class="px-6 py-4 text-sm text-slate-800 text-right font-medium"><?= number_format($u['conversations']) ?></td>
+              <td class="px-6 py-4 text-sm text-slate-800 text-right font-medium"><?= number_format($u['messages']) ?></td>
+              <td class="px-6 py-4 text-sm text-slate-800 text-right font-medium"><?= number_format($u['gestures']) ?></td>
+              <td class="px-6 py-4 text-sm text-slate-800 text-right font-medium"><?= number_format($u['voices']) ?></td>
+              <td class="px-6 py-4 text-sm text-slate-600">
+                <?php if ($u['last_login_at']): ?>
+                  <?= date('d/m/Y H:i', strtotime($u['last_login_at'])) ?>
+                <?php else: ?>
+                  <span class="text-slate-400">Nunca</span>
+                <?php endif; ?>
+              </td>
+            </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Gráfico de actividad
+    const ctx = document.getElementById('activityChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: <?= json_encode($chartLabels) ?>,
+        datasets: [{
+          label: 'Mensajes',
+          data: <?= json_encode($chartData) ?>,
+          borderColor: '#23AAC5',
+          backgroundColor: 'rgba(35, 170, 197, 0.1)',
+          fill: true,
+          tension: 0.4,
+          pointRadius: 3,
+          pointHoverRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { precision: 0 }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
