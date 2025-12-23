@@ -113,8 +113,9 @@ try {
     }
 
     // === PASO 2: Generar guion ===
+    // Duración objetivo: 15 minutos para podcasts profundos y naturales
     $scriptGenerator = new PodcastScriptGenerator();
-    $scriptResult = $scriptGenerator->generate($content, $title, 10);
+    $scriptResult = $scriptGenerator->generate($content, $title, 15);
 
     if (!$scriptResult['success']) {
         Response::error('script_failed', $scriptResult['error'], 500);

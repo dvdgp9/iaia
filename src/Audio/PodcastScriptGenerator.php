@@ -16,10 +16,10 @@ class PodcastScriptGenerator
     {
         $this->llmClient = $llmClient ?? new OpenRouterClient(
             null,
-            'google/gemini-3-flash-preview',
+            'google/gemini-2.5-flash-preview',
             null,
-            0.7,
-            8192
+            0.8,  // Mayor creatividad
+            16384 // Más tokens para guiones largos
         );
     }
 
@@ -79,62 +79,106 @@ class PodcastScriptGenerator
      */
     private function buildPrompt(string $content, string $title, int $targetMinutes): string
     {
-        $titleSection = $title ? "TÍTULO: {$title}\n\n" : '';
+        $titleSection = $title ? "TÍTULO DEL ARTÍCULO: {$title}\n\n" : '';
+        $targetWords = $this->calculateTargetWords($targetMinutes);
         
         return <<<PROMPT
-Eres un guionista experto en podcasts de tecnología y divulgación con un estilo narrativo único, similar a "Deep Dive" o charlas informales entre expertos. Tu tarea es transformar el siguiente artículo en un guion de podcast extremadamente natural, dinámico y conversacional entre {$this->speaker1} (mujer) y {$this->speaker2} (hombre).
+Eres un guionista experto en podcasts divulgativos de altísima calidad, estilo NotebookLM o "Deep Dive". Tu trabajo es transformar artículos técnicos en conversaciones naturales, profundas y entretenidas.
 
-{$titleSection}CONTENIDO DEL ARTÍCULO:
+{$titleSection}CONTENIDO A TRANSFORMAR:
 ---
 {$content}
 ---
 
-INSTRUCCIONES DE ESTILO Y TONO (CRÍTICO):
+═══════════════════════════════════════════════════════════════
+OBJETIVO: Generar un guion de podcast de {$targetMinutes} minutos (~{$targetWords} palabras)
+entre {$this->speaker1} (mujer, presentadora principal) y {$this->speaker2} (hombre, co-presentador experto).
+═══════════════════════════════════════════════════════════════
 
-1. **TONO CONVERSACIONAL REAL, NO LEÍDO**:
-   - Olvida que es un texto escrito. Debe sonar a dos colegas expertos charlando en una cafetería.
-   - Usa expresiones coloquiales y naturales: "Ojo", "El pan de cada día", "La madre del cordero", "Te explota la cabeza", "Es un marrón".
-   - Usa muletillas naturales con moderación: "A ver...", "Pues...", "Claro, es que...", "¿No?".
-   - Evita el lenguaje enciclopédico o robótico. No digas "El artículo afirma que...", di "Lo que me ha flipado es que...".
+## ESTILO CONVERSACIONAL (MUY IMPORTANTE)
 
-2. **DINÁMICA DE INTERACCIÓN**:
-   - **¡NO hagas entrevista!** No es Q&A. Es una charla bidireccional.
-   - Ambos saben del tema, se complementan, se quitan la palabra, se dan la razón.
-   - Usa **intervenciones cortas y rápidas**. Evita monólogos largos.
-   - Haz que se interrumpan o terminen las frases del otro.
-   - Incluye "backchanneling" (reacciones breves mientras el otro habla): "Claro", "Totalmente", "Uff, ya ves", "Exacto".
+El podcast debe sonar como DOS EXPERTOS AMIGOS charlando en un bar, no como presentadores leyendo un guion. Incluye OBLIGATORIAMENTE:
 
-3. **STORYTELLING Y EMOCIÓN**:
-   - Empieza con una anécdota, una situación vivida o un "hook" emocional, no con "Hoy vamos a hablar de...".
-   - Ejemplo de inicio: "El otro día me pasó algo que me hizo acordarme de este tema..." o "A ver, confiesa, ¿cuántas veces te has peleado con...?"
-   - Conecta los conceptos técnicos con dolores reales del día a día (frustración, cansancio, alegría).
-   - Usa metáforas visuales potentes (ej: "buscar una aguja en un pajar", "es como jugar a detectives con una mano atada").
+1. **REACCIONES CORTAS INTERCALADAS** - Esenciales para naturalidad:
+   - "Exacto.", "Sí.", "Vale.", "Claro.", "Totalmente.", "Eso es."
+   - "Uff.", "Vaya.", "Madre mía.", "Fíjate.", "Ah, vale."
+   - "¿En serio?", "¿Uno solo?", "Espera, espera..."
+   - Estas reacciones deben aparecer FRECUENTEMENTE (cada 2-3 intervenciones largas)
 
-4. **ESTRUCTURA**:
-   - **Inicio (Hook)**: Anécdota o planteamiento del problema desde la experiencia personal.
-   - **Nudo (Análisis)**: Desgranan el contenido del artículo como si lo estuvieran descubriendo o debatiendo. Se sorprenden mutuamente.
-   - **Desenlace (Conclusión)**: Reflexión final abierta o "takeaway" práctico, despedida informal.
+2. **ANÉCDOTAS PERSONALES FICTICIAS** - Hacen humano el contenido:
+   - "Yo recuerdo una vez que me pasé horas con este problema..."
+   - "Me pasó algo parecido el otro día..."
+   - "Un compañero mío siempre dice que..."
 
-5. **REGLAS TÉCNICAS**:
-   - Duración: ~{$targetMinutes} minutos (~{$this->calculateTargetWords($targetMinutes)} palabras).
-   - Idioma: ESPAÑOL de España (Castellano).
-   - Solo usa información del artículo, pero adáptala a este estilo. Si falta info, usa generalidades lógicas, no inventes datos.
+3. **METÁFORAS Y ANALOGÍAS VÍVIDAS**:
+   - "Es como tener los ladrillos pero no el pegamento"
+   - "Es la diferencia entre buscar una aguja en un pajar y preguntarle a Google"
+   - "Es como el fontanero: instala las tuberías pero no decide qué agua pasa"
 
-FORMATO DE SALIDA:
+4. **EXPRESIONES COLOQUIALES ESPAÑOLAS**:
+   - "la madre del cordero", "el pan de cada día", "el quid de la cuestión"
+   - "no se anda con chiquitas", "vamos al grano", "atar cabos"
+   - "el marrón de turno", "quedarse flipando", "eso es otro cantar"
 
-Primero escribe un breve resumen del tema (1-2 líneas) entre marcadores:
+5. **PREGUNTAS RETÓRICAS Y PAUSAS**:
+   - "¿Y cuál es el problema? Pues que..."
+   - "Piénsalo un momento: si tienes X, ¿cómo vas a...?"
+   - "La pregunta del millón es..."
+
+6. **INTERRUPCIONES NATURALES**:
+   - Uno puede cortar al otro para añadir algo
+   - "Espera, que esto es importante..."
+   - "Perdona que te corte, pero..."
+
+## ESTRUCTURA
+
+1. **APERTURA (30-45 seg)**: Saludo + gancho provocador sobre el tema
+2. **DESARROLLO (85% del tiempo)**: 
+   - Explorar cada concepto EN PROFUNDIDAD
+   - No solo explicar QUÉ, sino POR QUÉ importa
+   - Dar ejemplos concretos y escenarios reales
+   - Hacer preguntas entre ellos que profundicen
+3. **CIERRE (30-45 seg)**: Reflexión que invite a pensar + despedida cálida
+
+## ROLES
+
+- **{$this->speaker1}**: Introduce temas, hace preguntas inteligentes, resume puntos clave, conecta ideas
+- **{$this->speaker2}**: Aporta profundidad técnica, cuenta anécdotas, usa analogías, responde con detalle
+
+## REGLAS CRÍTICAS
+
+- SOLO información del artículo. NUNCA inventar datos, cifras, fechas o nombres reales.
+- Español de España (vosotros, expresiones peninsulares)
+- Variar la longitud de intervenciones: algunas largas (3-5 frases), otras cortísimas (1 palabra)
+- El guion debe ser MUCHO más largo que un resumen: desarrollar, no resumir
+
+## EJEMPLO DEL ESTILO DESEADO
+
+{$this->speaker1}: Hoy vamos a analizar un tema que es casi una provocación: por qué nuestros sistemas actuales están fallando.
+{$this->speaker2}: Y ojo, no es que fallen con mala intención. Es algo peor: la idea es que son fundamentalmente inadecuados para los problemas de hoy. Yo recuerdo una vez que me pasé horas intentando encontrar un bug, solo para darme cuenta de que el problema venía de un sitio que ni sabía que existía.
+{$this->speaker1}: Esa historia es el pan de cada día para muchísima gente.
+{$this->speaker2}: Exacto.
+{$this->speaker1}: Y el problema de fondo es que estamos usando herramientas del siglo XX para problemas del siglo XXI.
+{$this->speaker2}: Sí, muy simple en teoría.
+{$this->speaker1}: Pero es que hoy un solo clic puede desencadenar una reacción en cadena que toque veinte sistemas distintos. Y nuestras herramientas siguen siendo, en esencia, las mismas de antes.
+{$this->speaker2}: La madre del cordero, vamos. El autor lo describe genial: dice que es como jugar a los detectives con una mano atada a la espalda.
+{$this->speaker1}: Me encanta esa analogía.
+
+## FORMATO DE SALIDA
+
+Primero un resumen breve (1-2 líneas):
 ---RESUMEN---
 [Resumen aquí]
 ---FIN_RESUMEN---
 
-Luego el guion con este formato exacto:
+Luego el guion completo:
 ---GUION---
-{$this->speaker1}: [Texto...]
-{$this->speaker2}: [Texto...]
+{$this->speaker1}: [Texto]
+{$this->speaker2}: [Texto]
 ...
 ---FIN_GUION---
 
-Genera el guion ahora. Hazlo brillante, humano y enganchante.
+GENERA EL GUION COMPLETO AHORA. Recuerda: debe ser largo, profundo, natural y entretenido.
 PROMPT;
     }
 
