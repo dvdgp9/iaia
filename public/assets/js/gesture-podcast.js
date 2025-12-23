@@ -395,7 +395,8 @@
   // === Utility functions ===
   function formatScript(script) {
     if (!script) return '';
-    return script.replace(/\n(Ana:|Carlos:)/g, '\n\n$1');
+    // Añadir separación entre intervenciones de los presentadores (admite nombres actuales y anteriores)
+    return script.replace(/\n(Ana:|Carlos:|Iris:|Bruno:)/g, '\n\n$1');
   }
 
   function mdToHtml(text) {

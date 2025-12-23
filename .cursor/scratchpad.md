@@ -282,6 +282,57 @@ Consolidar todos los proveedores LLM (Gemini, Qwen, etc.) en un único gateway: 
    - ✅ Eliminados archivos legacy: GeminiClient, GeminiProvider, QwenClient, QwenProvider
    - ✅ Limpiado .env: solo OPENROUTER_API_KEY y OPENROUTER_MODEL
 
+---
+
+## Feature: Persistencia de documentos en Chat
+
+### Motivación
+Los documentos subidos al chat (PDFs, imágenes) se envían como base64 en cada request pero no se almacenan. Al recargar la página o volver a una conversación antigua, los archivos desaparecen. Se requiere persistencia con limpieza automática a los 5 días.
+
+### Diseño técnico
+
+**Tabla `chat_files`**:
+```sql
+CREATE TABLE chat_files (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  conversation_id INT NULL,
+  message_id INT NULL,
+  original_name VARCHAR(255) NOT NULL,
+  stored_name VARCHAR(255) NOT NULL,
+  mime_type VARCHAR(100) NOT NULL,
+  size_bytes INT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  expires_at DATETIME NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE SET NULL,
+  INDEX idx_expires (expires_at),
+  INDEX idx_user_conv (user_id, conversation_id)
+);
+```
+
+**Carpeta física**: `/storage/chat-files/` (fuera de public, no accesible directamente)
+
+**Endpoints**:
+- `POST /api/files/upload.php` - Sube archivo, devuelve file_id y URL de servicio
+- `GET /api/files/serve.php?id=X` - Sirve archivo con verificación de permisos
+
+**Limpieza automática**:
+- Lazy cleanup al inicio de upload.php: `DELETE FROM chat_files WHERE expires_at < NOW()`
+- También borrar archivos físicos correspondientes
+
+### Tareas de implementación
+
+1. [ ] Crear migración SQL para tabla `chat_files`
+2. [ ] Crear carpeta `/storage/chat-files/`
+3. [ ] Crear `ChatFilesRepo.php` con CRUD básico
+4. [ ] Crear `POST /api/files/upload.php`
+5. [ ] Crear `GET /api/files/serve.php`
+6. [ ] Modificar `chat.php` para asociar file_id al mensaje
+7. [ ] Modificar frontend para mostrar archivos en mensajes del historial
+8. [ ] Modificar tabla `messages` para guardar file_id
+9. [ ] Testing
+
 # Executor's Feedback or Assistance Requests
 
 - Proveedor LLM: Gemini 1.5 Flash confirmado. API Key recibida (se gestionará vía `.env`, no se registrará en repo ni logs).

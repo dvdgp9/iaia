@@ -547,7 +547,7 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
       return s;
     }
 
-    function append(role, content){
+    function append(role, content, file = null){
       if(messagesEl.children.length === 0) showChatMode();
       
       const wrap = document.createElement('div');
@@ -577,6 +577,23 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
         bubble.innerHTML = mdToHtml(content);
       } else {
         bubble.textContent = content;
+      }
+      
+      // Añadir archivo adjunto si existe
+      if (file && role === 'user') {
+        const fileEl = document.createElement('div');
+        fileEl.className = 'mt-2 flex items-center gap-2 text-sm opacity-90';
+        
+        const icon = file.mime_type === 'application/pdf' 
+          ? '<i class="iconoir-page"></i>' 
+          : '<i class="iconoir-media-image"></i>';
+        
+        if (file.expired) {
+          fileEl.innerHTML = `${icon} <span class="line-through">${escapeHtml(file.name)}</span> <span class="text-xs">(expirado)</span>`;
+        } else {
+          fileEl.innerHTML = `${icon} <a href="${file.url}" target="_blank" class="underline hover:no-underline">${escapeHtml(file.name)}</a>`;
+        }
+        bubble.appendChild(fileEl);
       }
       
       msgContainer.appendChild(avatar);
@@ -1024,7 +1041,7 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
       if(items.length > 0){
         showChatMode();
         for(const m of items){
-          append(m.role, m.content);
+          append(m.role, m.content, m.file || null);
         }
         emptyConversationId = null;
       } else {
@@ -1086,14 +1103,28 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
           message: text || (file ? '¿Qué puedes decirme sobre este archivo?' : '')
         };
 
-        // Si hay archivo, convertir a base64
+        // Si hay archivo, subirlo primero para obtener file_id persistente
         if (file) {
           const base64 = await fileToBase64(file);
-          body.file = {
-            mime_type: file.type,
-            data: base64,
-            name: file.name
-          };
+          const uploadRes = await api('/api/files/upload.php', {
+            method: 'POST',
+            body: {
+              data: base64,
+              mime_type: file.type,
+              name: file.name,
+              conversation_id: currentConversationId || null
+            }
+          });
+          if (uploadRes.file_id) {
+            body.file_id = uploadRes.file_id;
+          } else {
+            // Fallback: enviar inline si falla upload
+            body.file = {
+              mime_type: file.type,
+              data: base64,
+              name: file.name
+            };
+          }
         }
 
         const data = await api('/api/chat.php', { method: 'POST', body });

@@ -9,6 +9,7 @@ require_once __DIR__ . '/../../src/Chat/ChatService.php';
 require_once __DIR__ . '/../../src/Auth/AuthService.php';
 require_once __DIR__ . '/../../src/Repos/ConversationsRepo.php';
 require_once __DIR__ . '/../../src/Repos/MessagesRepo.php';
+require_once __DIR__ . '/../../src/Repos/ChatFilesRepo.php';
 
 use App\Response;
 use App\Session;
@@ -17,6 +18,7 @@ use Chat\ChatService;
 use Chat\LlmProviderFactory;
 use Repos\ConversationsRepo;
 use Repos\MessagesRepo;
+use Repos\ChatFilesRepo;
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     Response::error('method_not_allowed', 'Sólo POST', 405);
@@ -30,19 +32,38 @@ $input = json_decode(file_get_contents('php://input'), true) ?? [];
 $message = trim((string)($input['message'] ?? ''));
 $conversationId = isset($input['conversation_id']) ? (int)$input['conversation_id'] : 0;
 $file = $input['file'] ?? null;
+$fileId = isset($input['file_id']) ? (int)$input['file_id'] : null;
 
 // Opcional: permitir elegir modelo desde el cliente (formato: provider/model)
-// Para pruebas, si no se envía modelo, usamos qwen/qwen-plus por defecto
 $modelName = isset($input['model']) && $input['model'] !== ''
     ? (string)$input['model']
     : 'qwen/qwen-plus';
 
 // Validar que haya mensaje o archivo
-if ($message === '' && !$file) {
+if ($message === '' && !$file && !$fileId) {
     Response::error('validation_error', 'Se requiere un mensaje o archivo', 400);
 }
 
-// Validar archivo si existe
+$filesRepo = new ChatFilesRepo();
+
+// Si hay file_id, cargar archivo desde la base de datos
+if ($fileId && !$file) {
+    $storedFile = $filesRepo->findByIdAndUser($fileId, (int)$user['id']);
+    if ($storedFile) {
+        $storagePath = ChatFilesRepo::getStoragePath();
+        $filePath = $storagePath . '/' . $storedFile['stored_name'];
+        if (file_exists($filePath)) {
+            $fileData = base64_encode(file_get_contents($filePath));
+            $file = [
+                'mime_type' => $storedFile['mime_type'],
+                'data' => $fileData,
+                'name' => $storedFile['original_name']
+            ];
+        }
+    }
+}
+
+// Validar archivo si existe (inline o cargado)
 if ($file) {
     if (!isset($file['mime_type']) || !isset($file['data'])) {
         Response::error('validation_error', 'Datos de archivo inválidos', 400);
@@ -53,9 +74,6 @@ if ($file) {
     if (!in_array($file['mime_type'], $allowedTypes)) {
         Response::error('validation_error', 'Tipo de archivo no soportado', 400);
     }
-    
-    // Para multimodal usar modelos que lo soporten (Gemini por defecto lo soporta vía OpenRouter)
-    // No es necesario forzar proveedor, OpenRouter maneja las capacidades
 }
 
 $convos = new ConversationsRepo();
@@ -65,8 +83,14 @@ if ($conversationId <= 0) {
     $conversationId = $convos->create((int)$user['id'], null);
 }
 
-// Guardar mensaje de usuario
-$userMsgId = $msgs->create($conversationId, (int)$user['id'], 'user', $message, null, null, null);
+// Guardar mensaje de usuario (con file_id si existe)
+$userMsgId = $msgs->create($conversationId, (int)$user['id'], 'user', $message, null, null, null, $fileId);
+
+// Actualizar archivo con conversation_id y message_id si es nuevo
+if ($fileId) {
+    $filesRepo->updateConversationId($fileId, $conversationId);
+    $filesRepo->updateMessageId($fileId, $userMsgId);
+}
 
 // Auto-titular si el título sigue siendo el genérico
 $convos->autoTitle($conversationId, $message);

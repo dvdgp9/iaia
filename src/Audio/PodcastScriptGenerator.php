@@ -9,8 +9,8 @@ use Chat\OpenRouterClient;
 class PodcastScriptGenerator
 {
     private OpenRouterClient $llmClient;
-    private string $speaker1 = 'Ana';
-    private string $speaker2 = 'Carlos';
+    private string $speaker1 = 'Iris';
+    private string $speaker2 = 'Bruno';
 
     public function __construct(?OpenRouterClient $llmClient = null)
     {

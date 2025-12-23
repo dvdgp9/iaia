@@ -3,11 +3,13 @@ require_once __DIR__ . '/../../../src/App/bootstrap.php';
 require_once __DIR__ . '/../../../src/Auth/AuthService.php';
 require_once __DIR__ . '/../../../src/Repos/ConversationsRepo.php';
 require_once __DIR__ . '/../../../src/Repos/MessagesRepo.php';
+require_once __DIR__ . '/../../../src/Repos/ChatFilesRepo.php';
 
 use App\Response;
 use Auth\AuthService;
 use Repos\ConversationsRepo;
 use Repos\MessagesRepo;
+use Repos\ChatFilesRepo;
 
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     Response::error('method_not_allowed', 'Sólo GET', 405);
@@ -25,5 +27,23 @@ if (!$convos->findByIdForUser($conversationId, (int)$user['id'])) {
 }
 
 $msgs = new MessagesRepo();
+$filesRepo = new ChatFilesRepo();
 $items = $msgs->listByConversation($conversationId);
+
+// Enriquecer mensajes con información de archivos
+foreach ($items as &$item) {
+    if (!empty($item['file_id'])) {
+        $file = $filesRepo->findById((int)$item['file_id']);
+        if ($file) {
+            $item['file'] = [
+                'id' => $file['id'],
+                'name' => $file['original_name'],
+                'mime_type' => $file['mime_type'],
+                'url' => '/api/files/serve.php?id=' . $file['id'],
+                'expired' => strtotime($file['expires_at']) < time()
+            ];
+        }
+    }
+}
+
 Response::json(['items' => $items]);
