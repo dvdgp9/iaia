@@ -68,7 +68,7 @@ if ($user) {
     <div class="w-full max-w-md">
       <!-- Logo Ebonia -->
       <div class="text-center mb-8">
-        <img src="/assets/images/logo.png" alt="Ebonia" class="h-12 mx-auto" />
+        <img src="/assets/images/logo.png" alt="Ebonia" class="h-24 mx-auto" />
       </div>
       
       <div class="text-center mb-8">
