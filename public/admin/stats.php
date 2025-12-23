@@ -147,7 +147,14 @@ $chartData = array_map(fn($d) => (int)$d['messages'], $dailyStats);
         <p class="text-slate-600 mt-1">Estadísticas de uso de Ebonia</p>
       </div>
       <div class="flex gap-3">
-        <a href="/admin/users.php" class="px-4 py-2 border border-slate-200 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-all flex items-center gap-2">
+        <!-- Filtro de rango -->
+        <div class="flex bg-white rounded-lg border border-slate-200 p-1 shadow-sm">
+          <a href="?range=7" class="px-3 py-1 text-sm rounded-md transition-all <?= $range === '7' ? 'bg-[#23AAC5] text-white font-medium shadow-sm' : 'text-slate-600 hover:bg-slate-50' ?>">7 días</a>
+          <a href="?range=30" class="px-3 py-1 text-sm rounded-md transition-all <?= $range === '30' ? 'bg-[#23AAC5] text-white font-medium shadow-sm' : 'text-slate-600 hover:bg-slate-50' ?>">30 días</a>
+          <a href="?range=all" class="px-3 py-1 text-sm rounded-md transition-all <?= $range === 'all' ? 'bg-[#23AAC5] text-white font-medium shadow-sm' : 'text-slate-600 hover:bg-slate-50' ?>">Todo</a>
+        </div>
+
+        <a href="/admin/users.php" class="px-4 py-2 border border-slate-200 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-all flex items-center gap-2 bg-white shadow-sm">
           <i class="iconoir-group"></i>
           <span>Gestión de usuarios</span>
         </a>
@@ -155,7 +162,7 @@ $chartData = array_map(fn($d) => (int)$d['messages'], $dailyStats);
     </div>
 
     <!-- Tarjetas resumen -->
-    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8">
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4 mb-8">
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
         <div class="flex items-center gap-3">
           <div class="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
@@ -163,7 +170,7 @@ $chartData = array_map(fn($d) => (int)$d['messages'], $dailyStats);
           </div>
           <div>
             <div class="text-2xl font-bold text-slate-800"><?= number_format($generalStats['total_users']) ?></div>
-            <div class="text-xs text-slate-500">Usuarios</div>
+            <div class="text-xs text-slate-500">Usuarios (Total)</div>
           </div>
         </div>
       </div>
@@ -175,7 +182,7 @@ $chartData = array_map(fn($d) => (int)$d['messages'], $dailyStats);
           </div>
           <div>
             <div class="text-2xl font-bold text-slate-800"><?= number_format($generalStats['active_users']) ?></div>
-            <div class="text-xs text-slate-500">Activos</div>
+            <div class="text-xs text-slate-500">Activos (Total)</div>
           </div>
         </div>
       </div>
@@ -215,6 +222,18 @@ $chartData = array_map(fn($d) => (int)$d['messages'], $dailyStats);
           </div>
         </div>
       </div>
+
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-lg bg-orange-100 flex items-center justify-center">
+            <i class="iconoir-media-image text-orange-600"></i>
+          </div>
+          <div>
+            <div class="text-2xl font-bold text-slate-800"><?= number_format($generalStats['total_images']) ?></div>
+            <div class="text-xs text-slate-500">Imágenes</div>
+          </div>
+        </div>
+      </div>
       
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
         <div class="flex items-center gap-3">
@@ -246,7 +265,7 @@ $chartData = array_map(fn($d) => (int)$d['messages'], $dailyStats);
       <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
         <h2 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
           <i class="iconoir-graph-up text-[#23AAC5]"></i>
-          Actividad (últimos 30 días)
+          Actividad (<?= $range === 'all' ? 'histórico' : ($range === '7' ? 'últimos 7 días' : 'últimos 30 días') ?>)
         </h2>
         <div class="h-64">
           <canvas id="activityChart"></canvas>
