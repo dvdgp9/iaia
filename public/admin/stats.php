@@ -21,16 +21,36 @@ if (!$isSuperadmin) {
 
 $pdo = DB::pdo();
 
+// === FILTRO DE FECHAS ===
+$range = $_GET['range'] ?? '30';
+$intervalSql = match($range) {
+    '7' => 'INTERVAL 7 DAY',
+    '30' => 'INTERVAL 30 DAY',
+    'all' => null,
+    default => 'INTERVAL 30 DAY'
+};
+// Asegurar que range sea válido para la UI
+if (!in_array($range, ['7', '30', 'all'])) $range = '30';
+
+function dateCond($prefix = 'WHERE', $col = 'created_at', $alias = '') {
+    global $intervalSql;
+    if (!$intervalSql) return '';
+    $column = $alias ? "$alias.$col" : $col;
+    return "$prefix $column >= DATE_SUB(NOW(), $intervalSql)";
+}
+
 // === ESTADÍSTICAS GENERALES ===
+// Nota: Usuarios siempre mostramos total histórico
 $generalStats = $pdo->query("
     SELECT 
         (SELECT COUNT(*) FROM users) as total_users,
         (SELECT COUNT(*) FROM users WHERE status = 'active') as active_users,
-        (SELECT COUNT(*) FROM conversations) as total_conversations,
-        (SELECT COUNT(*) FROM messages) as total_messages,
-        (SELECT COUNT(*) FROM messages WHERE role = 'assistant') as assistant_messages,
-        (SELECT COUNT(*) FROM gesture_executions) as total_gestures,
-        (SELECT COUNT(*) FROM voice_executions) as total_voices
+        (SELECT COUNT(*) FROM conversations " . dateCond('WHERE') . ") as total_conversations,
+        (SELECT COUNT(*) FROM messages " . dateCond('WHERE') . ") as total_messages,
+        (SELECT COUNT(*) FROM messages WHERE role = 'assistant' " . dateCond('AND') . ") as assistant_messages,
+        (SELECT COALESCE(SUM(JSON_LENGTH(images)), 0) FROM messages WHERE images IS NOT NULL " . dateCond('AND') . ") as total_images,
+        (SELECT COUNT(*) FROM gesture_executions " . dateCond('WHERE') . ") as total_gestures,
+        (SELECT COUNT(*) FROM voice_executions " . dateCond('WHERE') . ") as total_voices
 ")->fetch();
 
 // === USO POR USUARIO ===
@@ -41,16 +61,12 @@ $userStats = $pdo->query("
         u.last_name,
         u.email,
         u.last_login_at,
-        COUNT(DISTINCT c.id) as conversations,
-        COUNT(DISTINCT m.id) as messages,
-        COALESCE(SUM(CASE WHEN ma.role = 'assistant' THEN COALESCE(JSON_LENGTH(ma.images), 0) ELSE 0 END), 0) AS images_generated,
-        (SELECT COUNT(*) FROM gesture_executions ge WHERE ge.user_id = u.id) as gestures,
-        (SELECT COUNT(*) FROM voice_executions ve WHERE ve.user_id = u.id) as voices
+        (SELECT COUNT(DISTINCT c.id) FROM conversations c WHERE c.user_id = u.id " . dateCond('AND', 'created_at', 'c') . ") as conversations,
+        (SELECT COUNT(DISTINCT m.id) FROM messages m WHERE m.user_id = u.id " . dateCond('AND', 'created_at', 'm') . ") as messages,
+        (SELECT COALESCE(SUM(JSON_LENGTH(m.images)), 0) FROM messages m WHERE m.user_id = u.id AND m.images IS NOT NULL " . dateCond('AND', 'created_at', 'm') . ") as images,
+        (SELECT COUNT(*) FROM gesture_executions ge WHERE ge.user_id = u.id " . dateCond('AND', 'created_at', 'ge') . ") as gestures,
+        (SELECT COUNT(*) FROM voice_executions ve WHERE ve.user_id = u.id " . dateCond('AND', 'created_at', 've') . ") as voices
     FROM users u
-    LEFT JOIN conversations c ON c.user_id = u.id
-    LEFT JOIN messages m ON m.user_id = u.id
-    LEFT JOIN messages ma ON ma.conversation_id = c.id
-    GROUP BY u.id
     ORDER BY messages DESC
 ")->fetchAll();
 
@@ -60,19 +76,21 @@ $modelStats = $pdo->query("
         COALESCE(model, 'Sin especificar') as model_name,
         COUNT(*) as usage_count
     FROM messages 
-    WHERE role = 'assistant' AND model IS NOT NULL
+    WHERE role = 'assistant' AND model IS NOT NULL " . dateCond('AND') . "
     GROUP BY model
     ORDER BY usage_count DESC
     LIMIT 20
 ")->fetchAll();
 
-// === USO POR DÍA (últimos 30 días) ===
+// === USO POR DÍA ===
+// Si el rango es 'all', limitamos a últimos 90 días para que el gráfico no sea ilegible
+$dailyInterval = $range === 'all' ? 'INTERVAL 90 DAY' : $intervalSql;
 $dailyStats = $pdo->query("
     SELECT 
         DATE(created_at) as date,
         COUNT(*) as messages
     FROM messages
-    WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+    WHERE created_at >= DATE_SUB(NOW(), $dailyInterval)
     GROUP BY DATE(created_at)
     ORDER BY date ASC
 ")->fetchAll();
@@ -84,6 +102,7 @@ $gestureStats = $pdo->query("
         COUNT(*) as usage_count,
         COUNT(DISTINCT user_id) as unique_users
     FROM gesture_executions
+    WHERE 1=1 " . dateCond('AND') . "
     GROUP BY gesture_type
     ORDER BY usage_count DESC
 ")->fetchAll();
@@ -95,6 +114,7 @@ $voiceStats = $pdo->query("
         COUNT(*) as usage_count,
         COUNT(DISTINCT user_id) as unique_users
     FROM voice_executions
+    WHERE 1=1 " . dateCond('AND') . "
     GROUP BY voice_id
     ORDER BY usage_count DESC
 ")->fetchAll();
@@ -345,7 +365,6 @@ $chartData = array_map(fn($d) => (int)$d['messages'], $dailyStats);
               <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Email</th>
               <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Conversaciones</th>
               <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Mensajes</th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Imágenes</th>
               <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Gestos</th>
               <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Voces</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Último acceso</th>
@@ -365,7 +384,6 @@ $chartData = array_map(fn($d) => (int)$d['messages'], $dailyStats);
               <td class="px-6 py-4 text-sm text-slate-600"><?= htmlspecialchars($u['email']) ?></td>
               <td class="px-6 py-4 text-sm text-slate-800 text-right font-medium"><?= number_format($u['conversations']) ?></td>
               <td class="px-6 py-4 text-sm text-slate-800 text-right font-medium"><?= number_format($u['messages']) ?></td>
-              <td class="px-6 py-4 text-sm text-slate-800 text-right font-medium"><?= number_format((int)$u['images_generated']) ?></td>
               <td class="px-6 py-4 text-sm text-slate-800 text-right font-medium"><?= number_format($u['gestures']) ?></td>
               <td class="px-6 py-4 text-sm text-slate-800 text-right font-medium"><?= number_format($u['voices']) ?></td>
               <td class="px-6 py-4 text-sm text-slate-600">
