@@ -34,7 +34,7 @@
   const downloadBtn = document.getElementById('download-btn');
   
   const historyList = document.getElementById('history-list');
-  const newPodcastSidebarBtn = document.getElementById('new-podcast-sidebar-btn');
+  const newPodcastBtn = document.getElementById('new-podcast-btn');
 
   let currentTab = 'url';
   let pdfBase64 = null;
@@ -49,11 +49,11 @@
       currentTab = tab;
       
       tabBtns.forEach(b => {
-        b.classList.remove('bg-violet-100', 'text-violet-700', 'active');
+        b.classList.remove('bg-orange-100', 'text-orange-700', 'active');
         b.classList.add('bg-slate-100', 'text-slate-600');
       });
       btn.classList.remove('bg-slate-100', 'text-slate-600');
-      btn.classList.add('bg-violet-100', 'text-violet-700', 'active');
+      btn.classList.add('bg-orange-100', 'text-orange-700', 'active');
       
       tabContents.forEach(content => content.classList.add('hidden'));
       document.getElementById(`tab-${tab}`).classList.remove('hidden');
@@ -193,9 +193,9 @@
     });
   }
 
-  // === New podcast from sidebar ===
-  if (newPodcastSidebarBtn) {
-    newPodcastSidebarBtn.addEventListener('click', resetUI);
+  // === New podcast button ===
+  if (newPodcastBtn) {
+    newPodcastBtn.addEventListener('click', resetUI);
   }
 
   // === UI helpers ===
@@ -274,7 +274,7 @@
       historyList.innerHTML = `
         <div class="p-6 text-center">
           <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3">
-            <i class="iconoir-podcast text-xl text-slate-400"></i>
+            <i class="iconoir-podcast text-xl text-orange-400"></i>
           </div>
           <p class="text-sm text-slate-500">Aún no has creado podcasts</p>
           <p class="text-xs text-slate-400 mt-1">Usa el formulario para empezar</p>
@@ -291,9 +291,9 @@
 
       return `
         <div class="history-item w-full p-3 hover:bg-slate-50 border-b border-slate-100 transition-colors group flex items-start gap-2" data-id="${item.id}">
-          <i class="${sourceIcon} text-violet-500 mt-0.5"></i>
+          <i class="${sourceIcon} text-orange-500 mt-0.5"></i>
           <div class="flex-1 min-w-0 cursor-pointer history-item-main">
-            <p class="text-sm font-medium text-slate-700 truncate group-hover:text-violet-600">${escapeHtml(item.title)}</p>
+            <p class="text-sm font-medium text-slate-700 truncate group-hover:text-orange-600">${escapeHtml(item.title)}</p>
             <div class="flex items-center gap-2 mt-1">
               <span class="text-[10px] text-slate-400">${timeAgo}</span>
             </div>
@@ -368,9 +368,15 @@
     if (!confirm('¿Eliminar este podcast del historial?')) return;
 
     try {
-      const res = await fetch(`/api/gestures/delete.php?id=${id}`, {
-        method: 'DELETE',
-        credentials: 'include'
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+      const res = await fetch('/api/gestures/delete.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken
+        },
+        credentials: 'include',
+        body: JSON.stringify({ id })
       });
 
       if (res.ok) {
