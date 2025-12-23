@@ -21,10 +21,11 @@ class OpenRouterProvider implements LlmProvider
 
     /**
      * @param array<int, array{role:string, content:string, file?:array}> $messages
+     * @param array|null $modalities Modalidades de salida (ej: ['image', 'text'])
      */
-    public function generate(array $messages): string
+    public function generate(array $messages, ?array $modalities = null): string
     {
-        return $this->client->generateWithMessages($messages);
+        return $this->client->generateWithMessages($messages, $modalities);
     }
 
     /**
@@ -33,5 +34,13 @@ class OpenRouterProvider implements LlmProvider
     public function getModel(): string
     {
         return $this->client->getModel();
+    }
+
+    /**
+     * Obtiene las imágenes generadas en la última respuesta
+     */
+    public function getLastImages(): ?array
+    {
+        return $this->client->getLastImages();
     }
 }

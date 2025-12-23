@@ -33,11 +33,17 @@ $message = trim((string)($input['message'] ?? ''));
 $conversationId = isset($input['conversation_id']) ? (int)$input['conversation_id'] : 0;
 $file = $input['file'] ?? null;
 $fileId = isset($input['file_id']) ? (int)$input['file_id'] : null;
+$imageMode = !empty($input['image_mode']); // Modo generación de imágenes (nanobanana)
 
 // Opcional: permitir elegir modelo desde el cliente (formato: provider/model)
 $modelName = isset($input['model']) && $input['model'] !== ''
     ? (string)$input['model']
     : 'qwen/qwen-plus';
+
+// Si es modo imagen, forzar modelo de generación de imágenes
+if ($imageMode) {
+    $modelName = 'google/gemini-3-pro-image-preview';
+}
 
 // Validar que haya mensaje o archivo
 if ($message === '' && !$file && !$fileId) {
@@ -144,10 +150,16 @@ if (count($history) > 20) {
     }
 }
 
-$assistantMsg = $svc->replyWithHistory($history);
+// Determinar modalities para la generación
+$modalities = $imageMode ? ['image', 'text'] : null;
+
+$assistantMsg = $svc->replyWithHistory($history, $modalities);
 
 // Determinar el modelo usado
 $usedModel = $provider->getModel();
+
+// Obtener imágenes generadas si las hay
+$generatedImages = $svc->getLastImages();
 
 // Guardar respuesta de asistente
 $assistantMsgId = $msgs->create($conversationId, null, 'assistant', $assistantMsg['content'], $usedModel ?: null, null, null);
@@ -155,7 +167,7 @@ $assistantMsgId = $msgs->create($conversationId, null, 'assistant', $assistantMs
 // Actualizar updated_at de la conversación
 $convos->touch($conversationId);
 
-Response::json([
+$response = [
     'conversation' => [ 'id' => $conversationId ],
     'message' => [
         'id' => $assistantMsgId,
@@ -164,4 +176,11 @@ Response::json([
         'model' => $usedModel ?: null
     ],
     'context_truncated' => $contextTruncated
-]);
+];
+
+// Incluir imágenes generadas si las hay
+if ($generatedImages && !empty($generatedImages)) {
+    $response['message']['images'] = $generatedImages;
+}
+
+Response::json($response);

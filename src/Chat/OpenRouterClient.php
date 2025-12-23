@@ -24,6 +24,7 @@ class OpenRouterClient {
     private ?string $systemInstruction;
     private ?float $temperature;
     private ?int $maxTokens;
+    private ?array $lastImages = null; // Imágenes generadas en última respuesta
     private string $baseUrl = 'https://openrouter.ai/api/v1/chat/completions';
 
     public function __construct(
@@ -49,8 +50,9 @@ class OpenRouterClient {
 
     /**
      * @param array<int, array{role:string, content:string, file?:array}> $messages
+     * @param array|null $modalities Modalidades de salida (ej: ['image', 'text'] para generación de imágenes)
      */
-    public function generateWithMessages(array $messages): string
+    public function generateWithMessages(array $messages, ?array $modalities = null): string
     {
         if (!$this->apiKey) {
             Response::error('openrouter_api_key_missing', 'Falta OPENROUTER_API_KEY en .env', 500);
@@ -130,6 +132,10 @@ class OpenRouterClient {
                 ]
             ];
         }
+        // Si hay modalities (ej: generación de imágenes), añadirlas
+        if ($modalities !== null && !empty($modalities)) {
+            $payload['modalities'] = $modalities;
+        }
         
         // Añadir parámetros opcionales
         if ($this->temperature !== null) {
@@ -150,7 +156,7 @@ class OpenRouterClient {
                 'X-Title: Ebonia'
             ],
             CURLOPT_POSTFIELDS => json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
-            CURLOPT_TIMEOUT => 60,
+            CURLOPT_TIMEOUT => 120, // Más tiempo para generación de imágenes
         ]);
         $raw = curl_exec($ch);
         $err = curl_error($ch);
@@ -167,8 +173,17 @@ class OpenRouterClient {
             Response::error('openrouter_bad_response', 'Error de OpenRouter: ' . $msg, 502);
         }
 
-        $text = $data['choices'][0]['message']['content'] ?? '';
-        if ($text === '') {
+        $message = $data['choices'][0]['message'] ?? [];
+        $text = $message['content'] ?? '';
+        
+        // Capturar imágenes generadas si existen
+        $this->lastImages = null;
+        if (isset($message['images']) && is_array($message['images'])) {
+            $this->lastImages = $message['images'];
+        }
+        
+        // Para generación de imágenes, el texto puede estar vacío pero tener imágenes
+        if ($text === '' && empty($this->lastImages)) {
             Response::error('openrouter_empty', 'Respuesta vacía de OpenRouter', 502);
         }
         
@@ -193,5 +208,14 @@ class OpenRouterClient {
     public function getConfiguredModel(): string
     {
         return $this->model;
+    }
+
+    /**
+     * Obtiene las imágenes generadas en la última respuesta (si las hay)
+     * @return array|null Array de imágenes con formato [{type: 'image_url', image_url: {url: 'data:...'}}]
+     */
+    public function getLastImages(): ?array
+    {
+        return $this->lastImages;
     }
 }

@@ -364,6 +364,9 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
             <button type="button" id="attach-btn" class="p-3 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/5 rounded-xl transition-all border-2 border-slate-200 hover:border-[#23AAC5]" title="Adjuntar archivo">
               <i class="iconoir-attachment text-xl"></i>
             </button>
+            <button type="button" id="image-mode-btn" class="p-3 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-xl transition-all border-2 border-slate-200 hover:border-amber-400" title="Generar imagen con nanobanana 🍌">
+              <i class="iconoir-media-image text-xl"></i>
+            </button>
             <input id="chat-input" class="flex-1 border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-all" placeholder="Escribe un mensaje..." />
             <button type="submit" class="px-6 py-3 gradient-brand-btn text-white rounded-xl font-medium shadow-md hover:shadow-lg hover:opacity-90 transition-all duration-200 flex items-center gap-2">
               <span>Enviar</span>
@@ -373,6 +376,14 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
         </form>
       </footer>
     </main>
+  </div>
+  
+  <!-- Lightbox para imágenes generadas (nanobanana 🍌) -->
+  <div id="image-lightbox" class="hidden fixed inset-0 bg-black/90 backdrop-blur-sm z-[60] flex items-center justify-center p-4" onclick="closeLightbox()">
+    <button onclick="closeLightbox()" class="absolute top-4 right-4 p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-colors">
+      <i class="iconoir-xmark text-2xl"></i>
+    </button>
+    <img id="lightbox-img" src="" alt="Imagen ampliada" class="max-w-full max-h-full object-contain rounded-lg shadow-2xl" onclick="event.stopPropagation()">
   </div>
   
   <!-- Modal Mover a Carpeta -->
@@ -482,6 +493,7 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
     let currentFolderId = -1; // -1 = todas, 0 = sin carpeta, >0 = carpeta específica
     let allFolders = []; // cache de carpetas
     let conversationToMove = null; // conversación que se está moviendo
+    let imageMode = false; // modo generación de imágenes (nanobanana 🍌)
 
     function showChatMode(){
       emptyState.classList.add('hidden');
@@ -547,7 +559,7 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
       return s;
     }
 
-    function append(role, content, file = null){
+    function append(role, content, file = null, images = null){
       if(messagesEl.children.length === 0) showChatMode();
       
       const wrap = document.createElement('div');
@@ -596,6 +608,43 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
         bubble.appendChild(fileEl);
       }
       
+      // Añadir imágenes generadas si existen (nanobanana 🍌)
+      if (images && images.length > 0 && role === 'assistant') {
+        const imagesContainer = document.createElement('div');
+        imagesContainer.className = 'mt-3 space-y-3';
+        
+        images.forEach((img, idx) => {
+          const imgUrl = img.image_url?.url || img.imageUrl?.url || '';
+          if (!imgUrl) return;
+          
+          const imgWrap = document.createElement('div');
+          imgWrap.className = 'relative group';
+          
+          const imgEl = document.createElement('img');
+          imgEl.src = imgUrl;
+          imgEl.alt = 'Imagen generada ' + (idx + 1);
+          imgEl.className = 'max-w-full rounded-xl shadow-md cursor-pointer hover:shadow-lg transition-shadow';
+          imgEl.style.maxHeight = '400px';
+          imgEl.addEventListener('click', () => openLightbox(imgUrl));
+          
+          const actionsEl = document.createElement('div');
+          actionsEl.className = 'mt-2 flex gap-2';
+          
+          const downloadBtn = document.createElement('a');
+          downloadBtn.href = imgUrl;
+          downloadBtn.download = `nanobanana-${Date.now()}-${idx + 1}.png`;
+          downloadBtn.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 text-sm bg-amber-50 text-amber-700 hover:bg-amber-100 rounded-lg transition-colors';
+          downloadBtn.innerHTML = '<i class="iconoir-download"></i> Descargar';
+          
+          actionsEl.appendChild(downloadBtn);
+          imgWrap.appendChild(imgEl);
+          imgWrap.appendChild(actionsEl);
+          imagesContainer.appendChild(imgWrap);
+        });
+        
+        bubble.appendChild(imagesContainer);
+      }
+      
       msgContainer.appendChild(avatar);
       msgContainer.appendChild(bubble);
       
@@ -610,6 +659,26 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
       messagesEl.appendChild(wrap);
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
+
+    // Lightbox para ver imágenes en grande (nanobanana 🍌)
+    function openLightbox(imgUrl) {
+      const lightbox = document.getElementById('image-lightbox');
+      const lightboxImg = document.getElementById('lightbox-img');
+      lightboxImg.src = imgUrl;
+      lightbox.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      const lightbox = document.getElementById('image-lightbox');
+      lightbox.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    // Cerrar lightbox con Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeLightbox();
+    });
 
     async function api(path, opts={}){
       const res = await fetch(path, {
@@ -1103,6 +1172,11 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
           message: text || (file ? '¿Qué puedes decirme sobre este archivo?' : '')
         };
 
+        // Si está en modo imagen, añadir flag
+        if (imageMode) {
+          body.image_mode = true;
+        }
+
         // Si hay archivo, subirlo primero para obtener file_id persistente
         if (file) {
           const base64 = await fileToBase64(file);
@@ -1151,7 +1225,15 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
         } else {
           warning.classList.add('hidden');
         }
-        append('assistant', data.message.content);
+        // Pasar imágenes generadas si las hay
+        const images = data.message.images || null;
+        append('assistant', data.message.content, null, images);
+        
+        // Si se generó imagen, desactivar modo imagen después
+        if (imageMode && images && images.length > 0) {
+          imageMode = false;
+          updateImageModeUI();
+        }
       } catch(e){
         typingIndicator.classList.add('hidden');
         append('assistant', 'Error: ' + e.message);
@@ -1174,6 +1256,37 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
     // Manejar adjuntar archivo
     attachBtn.addEventListener('click', () => {
       fileInput.click();
+    });
+
+    // Toggle modo generación de imágenes (nanobanana 🍌)
+    const imageModeBtn = document.getElementById('image-mode-btn');
+    const chatInput = document.getElementById('chat-input');
+    const defaultPlaceholder = 'Escribe un mensaje...';
+    const imagePlaceholder = 'Describe la imagen que quieres crear... 🍌';
+
+    function updateImageModeUI() {
+      if (imageMode) {
+        imageModeBtn.className = 'p-3 text-amber-600 bg-amber-50 rounded-xl transition-all border-2 border-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.4)] animate-pulse';
+        chatInput.placeholder = imagePlaceholder;
+        attachBtn.disabled = true;
+        attachBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      } else {
+        imageModeBtn.className = 'p-3 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-xl transition-all border-2 border-slate-200 hover:border-amber-400';
+        chatInput.placeholder = defaultPlaceholder;
+        attachBtn.disabled = false;
+        attachBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
+    }
+
+    imageModeBtn.addEventListener('click', () => {
+      imageMode = !imageMode;
+      updateImageModeUI();
+      // Si se activa modo imagen, limpiar archivo adjunto
+      if (imageMode && currentFile) {
+        currentFile = null;
+        fileInput.value = '';
+        filePreview.classList.add('hidden');
+      }
     });
 
     fileInput.addEventListener('change', (e) => {

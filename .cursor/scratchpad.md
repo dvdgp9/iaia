@@ -333,6 +333,83 @@ CREATE TABLE chat_files (
 8. [ ] Modificar tabla `messages` para guardar file_id
 9. [ ] Testing
 
+---
+
+## Feature: Generación de Imágenes con nanobanana 🍌
+
+### Motivación
+Añadir capacidad de generación de imágenes al chat principal usando el modelo `google/gemini-3-pro-image-preview` de OpenRouter. Branding interno: "nanobanana".
+
+### Documentación OpenRouter
+- Endpoint: mismo `/api/v1/chat/completions`
+- Parámetro clave: `modalities: ['image', 'text']`
+- Respuesta: `choices[0].message.images[]` con imágenes en base64
+
+### Diseño UX
+
+**1. Toggle de modo imagen en el footer**
+- Botón junto al de adjuntar archivo
+- Icono: `iconoir-media-image` normal, con glow amarillo/naranja cuando activo
+- Color activo: gradiente naranja/amarillo (tema banana)
+- Tooltip: "Generar imagen con nanobanana 🍌"
+
+**2. Indicador visual activo**
+- Botón con borde/glow naranja pulsante
+- Placeholder cambia a "Describe la imagen que quieres crear..."
+- Pequeño badge "🍌" junto al input
+
+**3. Comportamiento al enviar**
+- Modelo: `google/gemini-3-pro-image-preview`
+- Payload incluye `modalities: ['image', 'text']`
+- NO compatible con archivos adjuntos (deshabilitar adjuntar en modo imagen)
+
+**4. Renderizado de imágenes**
+- Imagen inline en burbuja del asistente (max-width: 100%, rounded)
+- Click abre lightbox simple para ver en grande
+- Botón de descarga debajo de la imagen
+- Texto del asistente se muestra encima/debajo de la imagen
+
+**5. Persistencia**
+- Guardar imagen base64 en campo `images` del mensaje en BD
+- Al cargar historial, renderizar imágenes guardadas
+
+### Tareas de implementación
+
+1. [ ] **Backend: Modificar OpenRouterClient**
+   - Aceptar parámetro `modalities` opcional
+   - Añadirlo al payload si está presente
+   - Parsear `images` de la respuesta y devolverlas
+
+2. [ ] **Backend: Modificar chat.php**
+   - Aceptar parámetro `image_mode` del frontend
+   - Si `image_mode=true`: forzar modelo y añadir modalities
+   - Devolver `images` en la respuesta
+
+3. [ ] **Frontend: Añadir botón toggle imagen**
+   - Variable `imageMode` en JS
+   - Botón con estados visual activo/inactivo
+   - Al activar: cambiar placeholder, deshabilitar adjuntar
+
+4. [ ] **Frontend: Modificar handleSubmit**
+   - Si `imageMode`: enviar `image_mode: true` al backend
+   - No enviar archivos en modo imagen
+
+5. [ ] **Frontend: Modificar append para imágenes**
+   - Si respuesta tiene `images`: renderizar cada imagen
+   - Añadir botón de descarga
+   - Click para lightbox
+
+6. [ ] **Lightbox simple**
+   - Modal fullscreen con la imagen
+   - Click fuera o X para cerrar
+
+7. [ ] **Persistencia de imágenes**
+   - Añadir campo `images` JSON a tabla messages
+   - Guardar imágenes generadas
+   - Cargar y mostrar en historial
+
+8. [ ] **Testing**
+
 # Executor's Feedback or Assistance Requests
 
 - Proveedor LLM: Gemini 1.5 Flash confirmado. API Key recibida (se gestionará vía `.env`, no se registrará en repo ni logs).
