@@ -182,7 +182,18 @@ $response = [
 
 // Incluir imágenes generadas si las hay
 if ($generatedImages && !empty($generatedImages)) {
-    $response['message']['images'] = $generatedImages;
+    // Deduplicar por URL (algunos modelos devuelven varias variantes o duplicados)
+    $seen = [];
+    $unique = [];
+    foreach ($generatedImages as $img) {
+        $url = $img['image_url']['url'] ?? ($img['imageUrl']['url'] ?? null);
+        if (!$url) continue;
+        if (isset($seen[$url])) continue;
+        $seen[$url] = true;
+        $unique[] = $img;
+    }
+    // Mostrar todas las imágenes únicas (si hay varias distintas)
+    $response['message']['images'] = $unique;
 }
 
 Response::json($response);
