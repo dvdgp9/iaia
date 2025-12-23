@@ -35,6 +35,25 @@ $activeTab = 'gestures';
   <div class="min-h-screen flex h-screen">
     <?php include __DIR__ . '/../includes/left-tabs.php'; ?>
     
+    <!-- Sidebar de historial -->
+    <aside id="history-sidebar" class="w-72 glass-strong border-r border-slate-200/50 flex flex-col shrink-0">
+      <div class="p-4 border-b border-slate-200/50">
+        <div class="flex items-center justify-between">
+          <h2 class="font-semibold text-slate-800 flex items-center gap-2">
+            <i class="iconoir-clock text-orange-500"></i>
+            Historial
+          </h2>
+        </div>
+      </div>
+      
+      <div id="history-list" class="flex-1 overflow-auto">
+        <div class="p-4 text-center text-slate-400 text-sm">
+          <i class="iconoir-refresh animate-spin"></i>
+          Cargando...
+        </div>
+      </div>
+    </aside>
+    
     <!-- Main content area -->
     <main class="flex-1 flex flex-col overflow-hidden">
       <!-- Header del gesto -->
@@ -54,7 +73,7 @@ $activeTab = 'gestures';
         </div>
       </header>
 
-      <!-- Single column layout -->
+      <!-- Single column layout (contenido) -->
       <div class="flex-1 overflow-auto">
         <div class="max-w-2xl mx-auto p-6 space-y-6">
           
@@ -186,22 +205,6 @@ $activeTab = 'gestures';
               <i class="iconoir-plus"></i>
               <span>Crear otro podcast</span>
             </button>
-          </section>
-
-          <!-- History Section -->
-          <section class="glass-strong rounded-2xl border border-slate-200/50 overflow-hidden">
-            <div class="p-4 border-b border-slate-200/50 flex items-center justify-between">
-              <h2 class="font-semibold text-slate-800 flex items-center gap-2">
-                <i class="iconoir-clock text-orange-500"></i>
-                Historial de podcasts
-              </h2>
-            </div>
-            <div id="history-list" class="max-h-64 overflow-auto">
-              <div class="p-4 text-center text-slate-400 text-sm">
-                <i class="iconoir-refresh animate-spin"></i>
-                Cargando...
-              </div>
-            </div>
           </section>
 
         </div>
