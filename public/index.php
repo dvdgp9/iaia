@@ -1784,7 +1784,9 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
     // Gestures Navigation - redirige a páginas individuales de cada gesto
     (function() {
       const gestureRoutes = {
-        'write-article': '/gestos/escribir-articulo.php'
+        'write-article': '/gestos/escribir-articulo.php',
+        'social-media': '/gestos/redes-sociales.php',
+        'podcast-from-article': '/gestos/podcast.php'
       };
       
       const gestureCards = document.querySelectorAll('[data-gesture]');
