@@ -313,31 +313,7 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
                     </div>
                   </button>
 
-                  <button class="gesture-option w-full p-4 bg-white/60 hover:bg-white border border-slate-200/80 hover:border-[#23AAC5]/50 rounded-2xl transition-smooth text-left group hover:shadow-md opacity-60" data-gesture="translate">
-                    <div class="flex items-center gap-3">
-                      <div class="w-10 h-10 rounded-xl bg-slate-200 flex items-center justify-center flex-shrink-0">
-                        <i class="iconoir-translate text-lg text-slate-400"></i>
-                      </div>
-                      <div class="flex-1 min-w-0">
-                        <div class="font-semibold text-slate-500">Traducir texto</div>
-                        <div class="text-xs text-slate-400">Próximamente</div>
-                      </div>
-                      <span class="px-2 py-0.5 text-xs bg-slate-100 text-slate-400 rounded-full">Soon</span>
-                    </div>
-                  </button>
-
-                  <button class="gesture-option w-full p-4 bg-white/60 hover:bg-white border border-slate-200/80 hover:border-[#23AAC5]/50 rounded-2xl transition-smooth text-left group hover:shadow-md opacity-60" data-gesture="summarize">
-                    <div class="flex items-center gap-3">
-                      <div class="w-10 h-10 rounded-xl bg-slate-200 flex items-center justify-center flex-shrink-0">
-                        <i class="iconoir-compress text-lg text-slate-400"></i>
-                      </div>
-                      <div class="flex-1 min-w-0">
-                        <div class="font-semibold text-slate-500">Resumir contenido</div>
-                        <div class="text-xs text-slate-400">Próximamente</div>
-                      </div>
-                      <span class="px-2 py-0.5 text-xs bg-slate-100 text-slate-400 rounded-full">Soon</span>
-                    </div>
-                  </button>
+                  
 
                   <button id="view-all-gestures" class="w-full p-3 mt-1 hover:bg-[#23AAC5]/5 border-2 border-dashed border-slate-200 hover:border-[#23AAC5]/50 rounded-2xl transition-smooth text-center group">
                     <div class="flex items-center justify-center gap-2 text-sm font-medium text-slate-500 group-hover:text-[#23AAC5] transition-smooth">
