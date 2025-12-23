@@ -200,47 +200,55 @@
 
   // === UI helpers ===
   function showProgress() {
-    progressPanel.classList.remove('hidden');
-    errorPanel.classList.add('hidden');
-    generateBtn.disabled = true;
-    generateBtn.innerHTML = '<i class="iconoir-refresh animate-spin"></i> Generando...';
+    if (progressPanel) progressPanel.classList.remove('hidden');
+    if (errorPanel) errorPanel.classList.add('hidden');
+    if (generateBtn) {
+      generateBtn.disabled = true;
+      generateBtn.innerHTML = '<i class="iconoir-refresh animate-spin"></i> Generando...';
+    }
   }
 
   function updateProgress(text, detail) {
-    progressText.textContent = text;
-    progressDetail.textContent = detail;
+    if (progressText) progressText.textContent = text;
+    if (progressDetail) progressDetail.textContent = detail;
   }
 
   function showResult() {
-    progressPanel.classList.add('hidden');
-    errorPanel.classList.add('hidden');
-    resultPlaceholder.classList.add('hidden');
-    podcastResult.classList.remove('hidden');
-    generateBtn.disabled = false;
-    generateBtn.innerHTML = '<i class="iconoir-sparks"></i> <span>Generar Podcast</span>';
+    if (progressPanel) progressPanel.classList.add('hidden');
+    if (errorPanel) errorPanel.classList.add('hidden');
+    if (resultPlaceholder) resultPlaceholder.classList.add('hidden');
+    if (podcastResult) podcastResult.classList.remove('hidden');
+    if (generateBtn) {
+      generateBtn.disabled = false;
+      generateBtn.innerHTML = '<i class="iconoir-sparks"></i> <span>Generar Podcast</span>';
+    }
   }
 
   function showError(message) {
-    progressPanel.classList.add('hidden');
-    errorPanel.classList.remove('hidden');
-    errorMessage.textContent = message;
-    generateBtn.disabled = false;
-    generateBtn.innerHTML = '<i class="iconoir-sparks"></i> <span>Generar Podcast</span>';
+    if (progressPanel) progressPanel.classList.add('hidden');
+    if (errorPanel) errorPanel.classList.remove('hidden');
+    if (errorMessage) errorMessage.textContent = message;
+    if (generateBtn) {
+      generateBtn.disabled = false;
+      generateBtn.innerHTML = '<i class="iconoir-sparks"></i> <span>Generar Podcast</span>';
+    }
   }
 
   function resetUI() {
-    progressPanel.classList.add('hidden');
-    errorPanel.classList.add('hidden');
-    resultPlaceholder.classList.remove('hidden');
-    podcastResult.classList.add('hidden');
-    generateBtn.disabled = false;
-    generateBtn.innerHTML = '<i class="iconoir-sparks"></i> <span>Generar Podcast</span>';
-    
+    if (progressPanel) progressPanel.classList.add('hidden');
+    if (errorPanel) errorPanel.classList.add('hidden');
+    if (resultPlaceholder) resultPlaceholder.classList.remove('hidden');
+    if (podcastResult) podcastResult.classList.add('hidden');
+    if (generateBtn) {
+      generateBtn.disabled = false;
+      generateBtn.innerHTML = '<i class="iconoir-sparks"></i> <span>Generar Podcast</span>';
+    }
+
     articleUrl.value = '';
     articleText.value = '';
     if (articlePdf) articlePdf.value = '';
     pdfBase64 = null;
-    pdfFilename.classList.add('hidden');
+    if (pdfFilename) pdfFilename.classList.add('hidden');
     
     audioPlayer.src = '';
     lastAudioBlob = null;
