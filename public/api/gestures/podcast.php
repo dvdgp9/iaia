@@ -11,6 +11,31 @@
  * 5. Devuelve audio WAV en base64
  */
 
+// Iniciar output buffering para capturar cualquier output no deseado
+ob_start();
+
+// Error handler para convertir warnings/notices en excepciones capturables
+set_error_handler(function($severity, $message, $file, $line) {
+    throw new ErrorException($message, 0, $severity, $file, $line);
+});
+
+// Shutdown function para capturar fatal errors
+register_shutdown_function(function() {
+    $error = error_get_last();
+    if ($error && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
+        ob_clean();
+        http_response_code(500);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode([
+            'error' => [
+                'code' => 'fatal_error',
+                'message' => 'Error fatal: ' . $error['message'] . ' en ' . basename($error['file']) . ':' . $error['line']
+            ]
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+});
+
 require_once __DIR__ . '/../../../src/App/bootstrap.php';
 
 use App\Session;
@@ -20,10 +45,6 @@ use Audio\ContentExtractor;
 use Audio\PodcastScriptGenerator;
 use Audio\GeminiTtsClient;
 use Gestures\GestureExecutionsRepo;
-
-// Este proceso puede tardar 2-4 minutos (generación de guion + audio)
-set_time_limit(300); // 5 minutos
-ini_set('max_execution_time', '300');
 
 Session::start();
 $user = Session::user();
@@ -44,14 +65,7 @@ $sourceType = $body['source_type'] ?? 'url'; // 'url', 'pdf', 'text'
 $sourceUrl = $body['url'] ?? '';
 $sourceText = $body['text'] ?? '';
 $sourcePdf = $body['pdf_base64'] ?? '';
-$action = $body['action'] ?? 'full'; // 'extract', 'script', 'audio_chunk', 'full'
-
-// Inputs para audio por chunks
-$audioChunk = $body['audio_chunk'] ?? '';
-$speaker1In = $body['speaker1'] ?? 'Ana';
-$speaker2In = $body['speaker2'] ?? 'Carlos';
-$voice1In = $body['voice1'] ?? 'Aoede';
-$voice2In = $body['voice2'] ?? 'Orus';
+$action = $body['action'] ?? 'full'; // 'extract', 'script', 'audio', 'full'
 
 // Validaciones
 if ($sourceType === 'url' && empty($sourceUrl)) {
@@ -65,7 +79,7 @@ if ($sourceType === 'pdf' && empty($sourcePdf)) {
 }
 
 // Verificar API Key de Gemini para TTS
-if ($action === 'full' || $action === 'audio_chunk') {
+if ($action !== 'extract' && $action !== 'script') {
     $geminiKey = Env::get('GEMINI_API_KEY');
     if (empty($geminiKey)) {
         Response::error('missing_gemini_key', 'Falta GEMINI_API_KEY en .env para generar audio', 500);
@@ -73,39 +87,6 @@ if ($action === 'full' || $action === 'audio_chunk') {
 }
 
 try {
-    // === MODO: audio por chunks (sin extracción ni guion) ===
-    if ($action === 'audio_chunk') {
-        if (!is_string($audioChunk) || trim($audioChunk) === '') {
-            Response::error('missing_audio_chunk', 'Falta audio_chunk', 400);
-        }
-
-        $ttsClient = new GeminiTtsClient();
-        $audioResult = $ttsClient->generateMultiSpeaker(
-            $audioChunk,
-            $speaker1In,
-            $speaker2In,
-            $voice1In,
-            $voice2In
-        );
-
-        if (!$audioResult['success']) {
-            Response::error('audio_failed', $audioResult['error'], 500);
-        }
-
-        Response::json([
-            'success' => true,
-            'step' => 'audio_chunk',
-            'audio' => [
-                // Gemini devuelve PCM (inlineData) en base64.
-                'pcm_base64' => $audioResult['audio_data'],
-                'mime_type' => 'audio/pcm',
-                'sample_rate' => $audioResult['sample_rate'] ?? 24000,
-                'channels' => $audioResult['channels'] ?? 1,
-                'bit_depth' => $audioResult['bit_depth'] ?? 16,
-            ],
-        ]);
-    }
-
     $extractor = new ContentExtractor();
     $content = null;
     $title = '';

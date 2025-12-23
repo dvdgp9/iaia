@@ -53,7 +53,7 @@ class OpenRouterClient {
     public function generateWithMessages(array $messages): string
     {
         if (!$this->apiKey) {
-            Response::error('openrouter_api_key_missing', 'Falta OPENROUTER_API_KEY en .env', 500);
+            throw new \Exception('Falta OPENROUTER_API_KEY en .env');
         }
 
         // Construir mensajes en formato OpenAI
@@ -139,18 +139,18 @@ class OpenRouterClient {
         curl_close($ch);
 
         if ($raw === false || $err) {
-            Response::error('openrouter_request_failed', 'Fallo al contactar con OpenRouter: ' . $err, 502);
+            throw new \Exception('Fallo al contactar con OpenRouter: ' . $err);
         }
 
         $data = json_decode($raw, true);
         if ($status < 200 || $status >= 300) {
             $msg = $data['error']['message'] ?? $data['message'] ?? ('HTTP '.$status);
-            Response::error('openrouter_bad_response', 'Error de OpenRouter: ' . $msg, 502);
+            throw new \Exception('Error de OpenRouter: ' . $msg);
         }
 
         $text = $data['choices'][0]['message']['content'] ?? '';
         if ($text === '') {
-            Response::error('openrouter_empty', 'Respuesta vacía de OpenRouter', 502);
+            throw new \Exception('Respuesta vacía de OpenRouter');
         }
         
         // Capturar el modelo real usado (importante para openrouter/auto)
