@@ -128,7 +128,12 @@ document.addEventListener('DOMContentLoaded', () => {
         body: JSON.stringify(payload)
       });
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (e) {
+        throw new Error('El servidor devolvió una respuesta vacía o no-JSON');
+      }
 
       if (!response.ok || !data.success) {
         const errorMsg = data.error?.message || data.message || 'Error al generar el podcast';
@@ -137,11 +142,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
       updateProgress('Sintetizando audio...', 'Convirtiendo texto a voz con IA');
 
-      // Process audio
-      const audioData = data.audio.data;
-      const audioBlob = base64ToBlob(audioData, 'audio/wav');
-      const audioUrl = URL.createObjectURL(audioBlob);
-      
+      // Process audio (usar URL para no cargar base64 gigante en memoria)
+      const audioUrl = data.audio.url;
+      if (!audioUrl) {
+        throw new Error('No se recibió URL del audio');
+      }
+
+      // Mantener para descarga (fetch y blob)
+      const blobResp = await fetch(audioUrl, { credentials: 'include' });
+      const audioBlob = await blobResp.blob();
       lastAudioBlob = audioBlob;
       lastTitle = data.title || 'Podcast';
 

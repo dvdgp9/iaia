@@ -11,31 +11,6 @@
  * 5. Devuelve audio WAV en base64
  */
 
-// Iniciar output buffering para capturar cualquier output no deseado
-ob_start();
-
-// Error handler para convertir warnings/notices en excepciones capturables
-set_error_handler(function($severity, $message, $file, $line) {
-    throw new ErrorException($message, 0, $severity, $file, $line);
-});
-
-// Shutdown function para capturar fatal errors
-register_shutdown_function(function() {
-    $error = error_get_last();
-    if ($error && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
-        ob_clean();
-        http_response_code(500);
-        header('Content-Type: application/json; charset=utf-8');
-        echo json_encode([
-            'error' => [
-                'code' => 'fatal_error',
-                'message' => 'Error fatal: ' . $error['message'] . ' en ' . basename($error['file']) . ':' . $error['line']
-            ]
-        ], JSON_UNESCAPED_UNICODE);
-        exit;
-    }
-});
-
 require_once __DIR__ . '/../../../src/App/bootstrap.php';
 
 use App\Session;
@@ -184,10 +159,18 @@ try {
         Response::error('audio_failed', $audioResult['error'], 500);
     }
 
-    // El audio viene como PCM raw, convertir a WAV
+    // El audio viene como PCM raw, convertir a WAV y guardar en /public/tmp para no agotar memoria en JSON
     $pcmData = base64_decode($audioResult['audio_data']);
     $wavData = GeminiTtsClient::pcmToWav($pcmData);
-    $wavBase64 = base64_encode($wavData);
+
+    $publicTmp = dirname(__DIR__, 2) . '/tmp';
+    if (!is_dir($publicTmp)) {
+        @mkdir($publicTmp, 0775, true);
+    }
+    $fileName = 'podcast_' . uniqid() . '.wav';
+    $filePath = $publicTmp . '/' . $fileName;
+    file_put_contents($filePath, $wavData);
+    $wavUrl = '/tmp/' . $fileName;
 
     // === PASO 4: Guardar en historial ===
     $repo = new GestureExecutionsRepo();
@@ -220,7 +203,7 @@ try {
         'speaker1' => $speaker1,
         'speaker2' => $speaker2,
         'audio' => [
-            'data' => $wavBase64,
+            'url' => $wavUrl,
             'mime_type' => 'audio/wav',
             'duration_estimate' => $estimatedDuration
         ],
