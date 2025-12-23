@@ -209,9 +209,17 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await fetch(`/api/gestures/history.php?type=${GESTURE_TYPE}`, {
         credentials: 'include'
       });
-      const data = await res.json();
-      if (!res.ok) {
-        historyList.innerHTML = '<div class="p-4 text-center text-red-500 text-sm">Error al cargar</div>';
+      let data;
+      try {
+        data = await res.json();
+      } catch (e) {
+        const text = await res.text();
+        historyList.innerHTML = `<div class="p-4 text-center text-red-500 text-sm">Error al leer historial</div><pre class="text-[10px] text-slate-400 p-3 overflow-auto">${escapeHtml(text || '')}</pre>`;
+        return;
+      }
+      if (!res.ok || data.error) {
+        const msg = data.error?.message || 'Error al cargar';
+        historyList.innerHTML = `<div class="p-4 text-center text-red-500 text-sm">${escapeHtml(msg)}</div>`;
         return;
       }
       renderHistory(data.items || []);
