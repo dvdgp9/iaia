@@ -71,7 +71,6 @@ class OpenRouterClient {
         $hasPdf = false;
         foreach ($messages as $m) {
             $content = [];
-            $pdfBlock = null;
             
             // Agregar archivo si existe (para mensajes de usuario)
             if (isset($m['file']) && $m['role'] === 'user') {
@@ -85,14 +84,14 @@ class OpenRouterClient {
                         ]
                     ];
                 } elseif ($file['mime_type'] === 'application/pdf') {
-                    // Para PDFs, preparar bloque type:file y añadirlo DESPUÉS del texto
+                    // Para PDFs, usar bloque type:file + file-parser plugin
                     $hasPdf = true;
                     $filename = $file['name'] ?? 'document.pdf';
-                    $pdfBlock = [
+                    $content[] = [
                         'type' => 'file',
                         'file' => [
                             'filename' => $filename,
-                            'fileData' => 'data:application/pdf;base64,' . $file['data']
+                            'file_data' => 'data:application/pdf;base64,' . $file['data']
                         ]
                     ];
                 }
@@ -100,27 +99,16 @@ class OpenRouterClient {
             
             // Agregar texto
             if (!empty($m['content'])) {
-                // Si hay bloques previos (imagen), usar formato array con texto
                 if (!empty($content)) {
+                    // Si hay archivo, usar formato array de contenido
                     $content[] = [
                         'type' => 'text',
                         'text' => (string)$m['content']
                     ];
                 } else {
-                    // Si no hay archivo y no hay PDF, usar string directo
+                    // Si no hay archivo, usar string directo
                     $content = (string)$m['content'];
                 }
-            }
-            // Si hay PDF, asegurar que content es array, y colocar TEXTO primero, luego FILE
-            if ($pdfBlock !== null) {
-                if (!is_array($content)) {
-                    // convertir string a bloque de texto
-                    $content = [
-                        [ 'type' => 'text', 'text' => (string)$m['content'] ]
-                    ];
-                }
-                // Si aún no hay texto (mensaje vacío), no pasa nada: solo archivo
-                $content[] = $pdfBlock;
             }
             
             $messagesPayload[] = [
@@ -176,9 +164,7 @@ class OpenRouterClient {
         $data = json_decode($raw, true);
         if ($status < 200 || $status >= 300) {
             $msg = $data['error']['message'] ?? $data['message'] ?? ('HTTP '.$status);
-            $providerErr = $data['error']['metadata']['provider_error'] ?? null;
-            $detail = $providerErr ? (' | provider_error: ' . (is_string($providerErr) ? $providerErr : json_encode($providerErr))) : '';
-            Response::error('openrouter_bad_response', 'Error de OpenRouter: ' . $msg . $detail, 502);
+            Response::error('openrouter_bad_response', 'Error de OpenRouter: ' . $msg, 502);
         }
 
         $text = $data['choices'][0]['message']['content'] ?? '';
