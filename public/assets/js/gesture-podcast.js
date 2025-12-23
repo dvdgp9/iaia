@@ -27,8 +27,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const podcastScript = document.getElementById('podcast-script');
   const downloadBtn = document.getElementById('download-btn');
   const newPodcastBtn = document.getElementById('new-podcast-btn');
+  const newPodcastSidebarBtn = document.getElementById('new-podcast-sidebar-btn');
   const retryBtn = document.getElementById('retry-btn');
   const errorMessage = document.getElementById('error-message');
+  const historyList = document.getElementById('history-list');
 
   let currentTab = 'url';
   let pdfBase64 = null;
@@ -188,7 +190,126 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // === New podcast ===
   newPodcastBtn.addEventListener('click', resetUI);
+  if (newPodcastSidebarBtn) newPodcastSidebarBtn.addEventListener('click', resetUI);
   retryBtn.addEventListener('click', resetUI);
+
+  // === Historial ===
+  const GESTURE_TYPE = window.GESTURE_TYPE || 'podcast-from-article';
+  const CSRF_TOKEN = window.CSRF_TOKEN || '';
+  loadHistory();
+
+  async function loadHistory() {
+    if (!historyList) return;
+    historyList.innerHTML = `
+      <div class="p-4 text-center text-slate-400 text-sm">
+        <i class="iconoir-refresh animate-spin"></i>
+        Cargando...
+      </div>`;
+    try {
+      const res = await fetch(`/api/gestures/history.php?type=${GESTURE_TYPE}`, {
+        credentials: 'include'
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        historyList.innerHTML = '<div class="p-4 text-center text-red-500 text-sm">Error al cargar</div>';
+        return;
+      }
+      renderHistory(data.items || []);
+    } catch (err) {
+      historyList.innerHTML = '<div class="p-4 text-center text-red-500 text-sm">Error de conexión</div>';
+    }
+  }
+
+  function renderHistory(items) {
+    if (!historyList) return;
+    if (items.length === 0) {
+      historyList.innerHTML = `
+        <div class="p-6 text-center">
+          <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3">
+            <i class="iconoir-podcast text-xl text-slate-400"></i>
+          </div>
+          <p class="text-sm text-slate-500">Aún no hay podcasts generados</p>
+        </div>`;
+      return;
+    }
+
+    historyList.innerHTML = items.map(item => {
+      const timeAgo = formatTimeAgo(new Date(item.created_at));
+      const title = escapeHtml(item.title || 'Podcast');
+      return `
+        <div class="history-item w-full p-3 hover:bg-slate-50 border-b border-slate-100 transition-colors group flex items-start gap-2" data-id="${item.id}">
+          <i class="iconoir-podcast text-rose-500 mt-0.5"></i>
+          <div class="flex-1 min-w-0 cursor-pointer history-item-main">
+            <p class="text-sm font-medium text-slate-700 truncate group-hover:text-rose-600">${title}</p>
+            <span class="text-[10px] text-slate-400">${timeAgo}</span>
+          </div>
+          <button class="history-item-delete opacity-0 group-hover:opacity-100 transition-opacity text-slate-300 hover:text-red-500 p-1 rounded" title="Eliminar">
+            <i class="iconoir-trash"></i>
+          </button>
+        </div>`;
+    }).join('');
+
+    historyList.querySelectorAll('.history-item-main').forEach(el => {
+      const id = el.parentElement.dataset.id;
+      el.addEventListener('click', () => loadExecution(id));
+    });
+    historyList.querySelectorAll('.history-item-delete').forEach(btn => {
+      const id = btn.parentElement.dataset.id;
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        deleteExecution(id);
+      });
+    });
+  }
+
+  async function loadExecution(id) {
+    try {
+      const res = await fetch(`/api/gestures/get.php?id=${id}`, { credentials: 'include' });
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error?.message || 'No se pudo cargar el historial');
+        return;
+      }
+      const exec = data.execution;
+      const input = exec.input_data || {};
+
+      // Mostrar resultado guardado (script y summary)
+      podcastTitle.textContent = exec.title || 'Podcast generado';
+      podcastSummary.textContent = input.summary || '';
+      podcastScript.textContent = formatScript(exec.output_content || '');
+      audioPlayer.src = ''; // No tenemos audio histórico guardado
+      podcastDuration.textContent = '';
+      resultSection.classList.remove('hidden');
+      inputSection.classList.add('hidden');
+      progressSection.classList.add('hidden');
+      errorSection.classList.add('hidden');
+
+    } catch (err) {
+      alert('Error al cargar el historial');
+    }
+  }
+
+  async function deleteExecution(id) {
+    try {
+      const res = await fetch('/api/gestures/delete.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': CSRF_TOKEN
+        },
+        credentials: 'include',
+        body: JSON.stringify({ id: Number(id) })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error?.message || 'No se pudo eliminar');
+        return;
+      }
+      loadHistory();
+    } catch (err) {
+      alert('Error de conexión al eliminar');
+    }
+  }
 
   // === UI helpers ===
   function showProgress() {
@@ -238,6 +359,8 @@ document.addEventListener('DOMContentLoaded', () => {
     audioPlayer.src = '';
     lastAudioBlob = null;
     lastTitle = '';
+
+    loadHistory();
   }
 
   // === Utility functions ===
