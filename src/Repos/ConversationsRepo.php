@@ -68,6 +68,22 @@ class ConversationsRepo {
 
     public function delete(int $userId, int $conversationId): void
     {
+        // Primero eliminar archivos físicos asociados
+        require_once __DIR__ . '/ChatFilesRepo.php';
+        $filesRepo = new ChatFilesRepo();
+        $files = $filesRepo->listByConversation($conversationId);
+        $storagePath = ChatFilesRepo::getStoragePath();
+        
+        foreach ($files as $file) {
+            $path = $storagePath . '/' . $file['stored_name'];
+            if (file_exists($path)) {
+                @unlink($path);
+            }
+            // También eliminamos el registro de la BD explícitamente
+            // para no dejar huérfanos si la FK es SET NULL
+            $filesRepo->delete((int)$file['id']);
+        }
+
         $stmt = $this->pdo->prepare('DELETE FROM conversations WHERE id = ? AND user_id = ?');
         $stmt->execute([$conversationId, $userId]);
     }
