@@ -16,7 +16,7 @@ class PodcastScriptGenerator
     {
         $this->llmClient = $llmClient ?? new OpenRouterClient(
             null,
-            'google/gemini-2.5-flash-preview',
+            'google/gemini-3-flash-preview',
             null,
             0.8,  // Mayor creatividad
             16384 // Más tokens para guiones largos
