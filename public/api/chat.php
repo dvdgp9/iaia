@@ -91,13 +91,11 @@ if ($file) {
 
 $convos = new ConversationsRepo();
 $msgs = new MessagesRepo();
-$svc = new ChatService($provider);
 
 // Limpieza de imágenes antiguas (5 días)
 $msgs->purgeImagesOlderThan(5);
 
 // Validar conversación
-$conversationId = (int)($_POST['conversation_id'] ?? 0);
 if ($conversationId <= 0) {
     Response::error('validation_error', 'conversation_id es obligatorio', 400);
 }
