@@ -12,11 +12,35 @@ $pageTitle = $pageTitle ?? 'Ebonia — IA Corporativa';
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title><?php echo htmlspecialchars($pageTitle); ?></title>
+  
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#23AAC5">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Ebonia">
+  
+  <!-- Icons -->
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="apple-touch-icon" href="/assets/images/isotipo.png">
+  <link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/icons/icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/icon-192x192.png">
+  
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/iconoir-icons/iconoir@main/css/iconoir.css">
   <script>window.CSRF_TOKEN = '<?php echo $csrfToken; ?>';</script>
+  
+  <!-- Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => console.log('SW registered'))
+          .catch(err => console.log('SW registration failed'));
+      });
+    }
+  </script>
   <style>
     :root {
       --brand-primary: #23AAC5;
