@@ -148,7 +148,7 @@ $headerShowLogo = true;
                   <input type="file" id="file-input-empty" class="hidden" accept=".pdf,.png,.jpg,.jpeg,.gif,.webp" />
                   
                   <!-- Textarea en su propia fila en móvil -->
-                  <div class="mb-3 lg:mb-0">
+                  <div class="mb-3 lg:mb-0 lg:hidden">
                     <textarea id="chat-input-empty" rows="1" class="w-full border-2 border-slate-200 rounded-xl lg:rounded-2xl px-3 lg:px-5 py-[10px] text-base input-focus transition-smooth bg-white/80 resize-none overflow-hidden" placeholder="Escribe tu pregunta aquí..." style="min-height: 44px; max-height: 120px;"></textarea>
                   </div>
                   
@@ -1297,44 +1297,51 @@ $headerShowLogo = true;
     }
 
     function updateImageModeUI() {
-      const activeClass = 'p-3 text-amber-600 bg-amber-50 rounded-xl transition-all border-2 border-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.4)] animate-pulse';
-      const inactiveClass = 'p-3 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-xl transition-all border-2 border-slate-200 hover:border-amber-400';
-      const activeClassEmpty = 'p-4 text-amber-600 bg-amber-50 rounded-2xl transition-smooth border-2 border-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.4)] animate-pulse';
-      const inactiveClassEmpty = 'p-4 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-2xl transition-smooth border-2 border-slate-200 hover:border-amber-400';
-      
+      // Clases base según botón original (sin efectos de tamaño)
+      const chatBtnActive = 'p-2 lg:p-[10px] text-amber-600 bg-amber-50 rounded-xl transition-all border-2 border-amber-400 leading-none shrink-0';
+      const chatBtnInactive = 'p-2 lg:p-[10px] text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-xl transition-all border-2 border-slate-200 hover:border-amber-400 leading-none shrink-0';
+      const emptyBtnActiveMobile = 'p-2 text-amber-600 bg-amber-50 rounded-xl transition-smooth border-2 border-amber-400';
+      const emptyBtnInactiveMobile = 'p-2 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-xl transition-smooth border-2 border-slate-200 hover:border-amber-400';
+      const emptyBtnActiveDesktop = 'p-[10px] text-amber-600 bg-amber-50 rounded-2xl transition-smooth border-2 border-amber-400';
+      const emptyBtnInactiveDesktop = 'p-[10px] text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-2xl transition-smooth border-2 border-slate-200 hover:border-amber-400';
+
       if (imageMode) {
-        // Botón del chat normal
-        imageModeBtn.className = activeClass;
+        // Chat normal
+        imageModeBtn.className = chatBtnActive;
         chatInput.placeholder = imagePlaceholder;
         attachBtn.disabled = true;
         attachBtn.classList.add('opacity-50', 'cursor-not-allowed');
-        // Botones del estado vacío (móvil y desktop)
-        imageModeBtnEmpty.className = 'p-2 text-amber-600 bg-amber-50 rounded-xl transition-smooth border-2 border-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.4)] animate-pulse';
+        // Empty state (móvil y desktop)
+        imageModeBtnEmpty.className = emptyBtnActiveMobile;
         chatInputEmpty.placeholder = imagePlaceholder;
         attachBtnEmpty.disabled = true;
         attachBtnEmpty.classList.add('opacity-50', 'cursor-not-allowed');
         if (imageModeBtnEmptyDesktop) {
-          imageModeBtnEmptyDesktop.className = 'p-[10px] text-amber-600 bg-amber-50 rounded-2xl transition-smooth border-2 border-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.4)] animate-pulse';
-          chatInputEmptyDesktop.placeholder = imagePlaceholder;
-          attachBtnEmptyDesktop.disabled = true;
-          attachBtnEmptyDesktop.classList.add('opacity-50', 'cursor-not-allowed');
+          imageModeBtnEmptyDesktop.className = emptyBtnActiveDesktop;
+          if (chatInputEmptyDesktop) chatInputEmptyDesktop.placeholder = imagePlaceholder;
+          if (attachBtnEmptyDesktop) {
+            attachBtnEmptyDesktop.disabled = true;
+            attachBtnEmptyDesktop.classList.add('opacity-50', 'cursor-not-allowed');
+          }
         }
       } else {
-        // Botón del chat normal
-        imageModeBtn.className = inactiveClass;
+        // Chat normal
+        imageModeBtn.className = chatBtnInactive;
         chatInput.placeholder = defaultPlaceholder;
         attachBtn.disabled = false;
         attachBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-        // Botones del estado vacío (móvil y desktop)
-        imageModeBtnEmpty.className = 'p-2 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-xl transition-smooth border-2 border-slate-200 hover:border-amber-400';
+        // Empty state (móvil y desktop)
+        imageModeBtnEmpty.className = emptyBtnInactiveMobile;
         chatInputEmpty.placeholder = defaultPlaceholderEmpty;
         attachBtnEmpty.disabled = false;
         attachBtnEmpty.classList.remove('opacity-50', 'cursor-not-allowed');
         if (imageModeBtnEmptyDesktop) {
-          imageModeBtnEmptyDesktop.className = 'p-[10px] text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-2xl transition-smooth border-2 border-slate-200 hover:border-amber-400';
-          chatInputEmptyDesktop.placeholder = defaultPlaceholderEmpty;
-          attachBtnEmptyDesktop.disabled = false;
-          attachBtnEmptyDesktop.classList.remove('opacity-50', 'cursor-not-allowed');
+          imageModeBtnEmptyDesktop.className = emptyBtnInactiveDesktop;
+          if (chatInputEmptyDesktop) chatInputEmptyDesktop.placeholder = defaultPlaceholderEmpty;
+          if (attachBtnEmptyDesktop) {
+            attachBtnEmptyDesktop.disabled = false;
+            attachBtnEmptyDesktop.classList.remove('opacity-50', 'cursor-not-allowed');
+          }
         }
       }
     }
