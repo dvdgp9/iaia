@@ -10,10 +10,14 @@ if (!$user) {
     exit;
 }
 $csrfToken = $_SESSION['csrf_token'] ?? '';
-$pageTitle = 'Escribir contenido';
 $activeTab = 'gestures';
-$gestureIcon = 'iconoir-page-edit';
-$gestureColor = 'from-cyan-500 to-teal-600';
+
+// Configuración del header unificado
+$headerBackUrl = '/gestos/';
+$headerBackText = 'Todos los gestos';
+$headerTitle = 'Escribir contenido';
+$headerIcon = 'iconoir-page-edit';
+$headerIconColor = 'from-cyan-500 to-teal-600';
 ?><!DOCTYPE html>
 <html lang="es">
 <?php include __DIR__ . '/../includes/head.php'; ?>
@@ -46,7 +50,7 @@ $gestureColor = 'from-cyan-500 to-teal-600';
     
     <!-- Main content area -->
     <main class="flex-1 flex flex-col overflow-hidden">
-      <?php include __DIR__ . '/../includes/header-gestures.php'; ?>
+      <?php include __DIR__ . '/../includes/header-unified.php'; ?>
 
       <!-- Scrollable content -->
       <div class="flex-1 overflow-auto p-6">

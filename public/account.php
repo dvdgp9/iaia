@@ -32,10 +32,14 @@ if (!$user) {
 </head>
 <body class="bg-slate-50 text-slate-900 overflow-hidden">
   <div class="min-h-screen flex h-screen">
-    <?php $activeTab = 'account'; include __DIR__ . '/includes/left-tabs.php'; ?>
+    <?php 
+    $activeTab = 'account';
+    $pageTitle = 'Mi Cuenta';
+    include __DIR__ . '/includes/left-tabs.php'; 
+    ?>
 
     <main class="flex-1 flex flex-col min-w-0">
-      <?php $pageTitle = 'Mi cuenta'; include __DIR__ . '/includes/header.php'; ?>
+      <?php include __DIR__ . '/includes/header-unified.php'; ?>
 
       <div class="flex-1 overflow-auto bg-slate-50">
         <div class="max-w-4xl mx-auto p-6">

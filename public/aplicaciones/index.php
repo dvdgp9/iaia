@@ -7,6 +7,14 @@ use Auth\AuthService;
 $user = AuthService::requireAuth();
 $activeTab = 'apps';
 
+// Configuración del header unificado
+$headerBackUrl = '/';
+$headerBackText = 'Inicio';
+$headerTitle = 'Aplicaciones Ebone';
+$headerSubtitle = 'Suite de herramientas del equipo IT';
+$headerIcon = 'iconoir-view-grid';
+$headerIconColor = 'from-[#23AAC5] to-[#1a8a9f]';
+
 // Catálogo de aplicaciones Ebone (orden alfabético por nombre)
 $apps = [
     [
@@ -117,36 +125,16 @@ $apps = [
 ?>
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aplicaciones · Ebonia</title>
-  <?php include __DIR__ . '/../includes/head.php'; ?>
-</head>
-<body class="bg-mesh text-slate-900 min-h-screen overflow-hidden">
-  <div class="flex h-screen">
-    <!-- Sidebar izquierdo (fixed) -->
+<?php include __DIR__ . '/../includes/head.php'; ?>
+<body class="bg-mesh text-slate-900 overflow-hidden">
+  <div class="min-h-screen flex h-screen">
     <?php include __DIR__ . '/../includes/left-tabs.php'; ?>
 
-    <!-- Contenido principal -->
-    <main class="flex-1 overflow-y-auto">
-      <!-- Header -->
-      <header class="sticky top-0 z-10 bg-white/70 backdrop-blur-md border-b border-slate-200/50 px-8 py-6">
-        <div class="max-w-6xl mx-auto">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#23AAC5] to-[#1a8a9f] flex items-center justify-center shadow-lg shadow-[#23AAC5]/20">
-              <i class="iconoir-view-grid text-xl text-white"></i>
-            </div>
-            <div>
-              <h1 class="text-2xl font-bold text-slate-800">Aplicaciones Ebone</h1>
-              <p class="text-slate-500 text-sm">Suite de herramientas del equipo IT</p>
-            </div>
-          </div>
-        </div>
-      </header>
+    <main class="flex-1 flex flex-col overflow-hidden">
+      <?php include __DIR__ . '/../includes/header-unified.php'; ?>
 
-      <!-- Grid de aplicaciones -->
-      <section class="px-8 py-8">
+      <!-- Content area -->
+      <div class="flex-1 overflow-auto p-8">
         <div class="max-w-6xl mx-auto">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <?php foreach ($apps as $app): ?>
@@ -217,7 +205,7 @@ $apps = [
             </p>
           </div>
         </div>
-      </section>
+      </div>
     </main>
   </div>
 </body>

@@ -10,9 +10,14 @@ if (!$user) {
     exit;
 }
 $csrfToken = $_SESSION['csrf_token'] ?? '';
-$activeTab = 'conversations'; // Tab activa por defecto
-$useTabsJs = true; // Habilitar manejo JS de tabs en index.php
+$activeTab = 'conversations';
+$useTabsJs = true;
 $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
+
+// Configuración del header unificado
+$headerShowConvTitle = true;
+$headerShowSearch = true;
+$headerShowFaq = true;
 ?><!DOCTYPE html>
 <html lang="es">
 <?php include __DIR__ . '/includes/head.php'; ?>
@@ -79,7 +84,7 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
     </aside>
 
     <main class="flex-1 flex flex-col">
-      <?php include __DIR__ . '/includes/header-chat.php'; ?>
+      <?php include __DIR__ . '/includes/header-unified.php'; ?>
       
       <section class="flex-1 overflow-auto bg-mesh relative" id="messages-container">
         <div id="context-warning" class="hidden mx-6 mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">

@@ -1,0 +1,181 @@
+<?php
+/**
+ * Header unificado para todas las páginas
+ * 
+ * Variables opcionales:
+ * - $headerBackUrl: URL de navegación hacia atrás (default: null = sin botón atrás)
+ * - $headerBackText: Texto del botón atrás (default: 'Atrás')
+ * - $headerTitle: Título principal de la página
+ * - $headerSubtitle: Subtítulo opcional
+ * - $headerIcon: Clase del icono (default: null)
+ * - $headerIconColor: Clases de color del gradiente del icono (default: 'from-cyan-500 to-teal-600')
+ * - $headerIconText: Texto del icono en lugar de icono (para voces como "L")
+ * - $headerCustomButtons: HTML personalizado para botones adicionales antes del perfil
+ * - $headerShowConvTitle: Si true, muestra el título de conversación dinámico (para chat)
+ * - $headerShowSearch: Si true, muestra botón de búsqueda (default: false para gestos/voces)
+ * - $headerShowFaq: Si true, muestra botón de FAQ (default: false para gestos/voces)
+ */
+
+$headerBackUrl = $headerBackUrl ?? null;
+$headerBackText = $headerBackText ?? 'Atrás';
+$headerTitle = $headerTitle ?? ($pageTitle ?? '');
+$headerSubtitle = $headerSubtitle ?? null;
+$headerIcon = $headerIcon ?? null;
+$headerIconColor = $headerIconColor ?? 'from-cyan-500 to-teal-600';
+$headerIconText = $headerIconText ?? null;
+$headerCustomButtons = $headerCustomButtons ?? '';
+$headerShowConvTitle = $headerShowConvTitle ?? false;
+$headerShowSearch = $headerShowSearch ?? false;
+$headerShowFaq = $headerShowFaq ?? false;
+
+// Determinar el estilo del header según el contexto
+$headerStyle = 'h-[60px] px-6 border-b border-slate-200';
+if (isset($activeTab) && in_array($activeTab, ['gestures', 'voices', 'apps'])) {
+    $headerStyle .= '/50 glass-strong';
+} else {
+    $headerStyle .= ' bg-white/95 backdrop-blur-sm';
+}
+$headerStyle .= ' flex items-center justify-between shadow-sm shrink-0';
+if (!in_array($activeTab ?? '', ['gestures', 'voices', 'apps'])) {
+    $headerStyle .= ' sticky top-0 z-10';
+}
+?>
+<header class="<?php echo $headerStyle; ?>">
+  <!-- Navegación y título -->
+  <div class="flex items-center gap-3 min-w-0">
+    <?php if ($headerShowConvTitle): ?>
+      <!-- Título conversación dinámico (para chat) -->
+      <div id="conv-title" class="hidden flex items-center gap-2">
+        <i class="iconoir-chat-bubble text-[#23AAC5]"></i>
+        <span class="text-sm font-medium text-slate-700 truncate max-w-md"></span>
+      </div>
+    <?php else: ?>
+      <?php if ($headerBackUrl): ?>
+        <!-- Botón de navegación atrás -->
+        <a href="<?php echo htmlspecialchars($headerBackUrl); ?>" class="flex items-center gap-2 text-slate-600 hover:text-cyan-600 transition-smooth">
+          <i class="iconoir-arrow-left text-lg"></i>
+          <span class="text-sm font-medium"><?php echo htmlspecialchars($headerBackText); ?></span>
+        </a>
+        <div class="h-6 w-px bg-slate-200"></div>
+      <?php endif; ?>
+      
+      <?php if ($headerTitle): ?>
+        <!-- Título de la página con icono -->
+        <div class="flex items-center gap-2">
+          <?php if ($headerIcon || $headerIconText): ?>
+            <div class="w-8 h-8 rounded-lg bg-gradient-to-br <?php echo htmlspecialchars($headerIconColor); ?> flex items-center justify-center text-white shadow-md">
+              <?php if ($headerIconText): ?>
+                <span class="font-bold text-sm"><?php echo htmlspecialchars($headerIconText); ?></span>
+              <?php else: ?>
+                <i class="<?php echo htmlspecialchars($headerIcon); ?> text-sm"></i>
+              <?php endif; ?>
+            </div>
+          <?php endif; ?>
+          <div>
+            <span class="font-semibold text-slate-800"><?php echo htmlspecialchars($headerTitle); ?></span>
+            <?php if ($headerSubtitle): ?>
+              <span class="text-xs text-slate-500 ml-2"><?php echo htmlspecialchars($headerSubtitle); ?></span>
+            <?php endif; ?>
+          </div>
+        </div>
+      <?php endif; ?>
+    <?php endif; ?>
+  </div>
+  
+  <!-- Acciones derecha -->
+  <div class="flex items-center gap-3">
+    <?php if ($headerShowSearch): ?>
+      <!-- Búsqueda -->
+      <button class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-colors" title="Buscar (próximamente)">
+        <i class="iconoir-search text-xl"></i>
+      </button>
+    <?php endif; ?>
+    
+    <?php if ($headerShowFaq): ?>
+      <!-- FAQ / Dudas rápidas -->
+      <button id="faq-btn" class="p-2 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-lg transition-colors" title="Dudas rápidas">
+        <i class="iconoir-help-circle text-xl"></i>
+      </button>
+    <?php endif; ?>
+    
+    <?php if ($headerCustomButtons): ?>
+      <!-- Botones personalizados -->
+      <?php echo $headerCustomButtons; ?>
+    <?php endif; ?>
+    
+    <!-- Avatar + Dropdown -->
+    <div class="relative" id="profile-dropdown-container">
+      <button id="profile-btn" class="flex items-center gap-2 p-1.5 hover:bg-slate-50 rounded-lg transition-colors">
+        <div class="h-8 w-8 rounded-full gradient-brand flex items-center justify-center text-white text-sm font-semibold" id="user-avatar">
+          <?php 
+            if (isset($user)) {
+              echo strtoupper(substr($user['first_name'] ?? 'U', 0, 1) . substr($user['last_name'] ?? '', 0, 1));
+            } else {
+              echo '?';
+            }
+          ?>
+        </div>
+        <i class="iconoir-nav-arrow-down text-slate-400 text-sm"></i>
+      </button>
+      
+      <!-- Dropdown menu -->
+      <div id="profile-dropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-slate-200 py-2 z-50">
+        <div class="px-4 py-3 border-b border-slate-100">
+          <div class="font-semibold text-slate-800 text-sm" id="session-user">
+            <?php 
+              if (isset($user)) {
+                echo htmlspecialchars(($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? ''));
+              } else {
+                echo 'Cargando...';
+              }
+            ?>
+          </div>
+          <div class="text-xs text-slate-500 mt-0.5" id="session-meta">
+            <?php echo isset($user) ? htmlspecialchars($user['email'] ?? '') : ''; ?>
+          </div>
+        </div>
+        <a href="/account.php" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2">
+          <i class="iconoir-user"></i>
+          <span>Mi cuenta</span>
+        </a>
+        
+        <?php if (isset($user) && in_array('admin', $user['roles'] ?? [], true)): ?>
+          <a href="/admin/users.php" id="admin-link" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2 border-t border-slate-100">
+            <i class="iconoir-settings"></i>
+            <span>Gestión de usuarios</span>
+          </a>
+          <a href="/admin/stats.php" id="stats-link" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2">
+            <i class="iconoir-graph-up"></i>
+            <span>Panel de control</span>
+          </a>
+        <?php endif; ?>
+        
+        <button id="logout-btn" onclick="window.location.href='/logout.php'" class="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2 border-t border-slate-100">
+          <i class="iconoir-log-out"></i>
+          <span>Cerrar sesión</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<script>
+// Lógica simple para dropdown de perfil
+document.addEventListener('DOMContentLoaded', () => {
+  const profileBtn = document.getElementById('profile-btn');
+  const profileDropdown = document.getElementById('profile-dropdown');
+  
+  if(profileBtn && profileDropdown) {
+    profileBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      profileDropdown.classList.toggle('hidden');
+    });
+    
+    document.addEventListener('click', (e) => {
+      if (!profileDropdown.contains(e.target) && !profileBtn.contains(e.target)) {
+        profileDropdown.classList.add('hidden');
+      }
+    });
+  }
+});
+</script>

@@ -18,10 +18,14 @@ if (!$csrfToken) {
     }
     $csrfToken = $_SESSION['csrf_token'];
 }
-$pageTitle = 'Podcast desde artículo';
 $activeTab = 'gestures';
-$gestureIcon = 'iconoir-podcast';
-$gestureColor = 'from-red-500 to-orange-500';
+
+// Configuración del header unificado
+$headerBackUrl = '/gestos/';
+$headerBackText = 'Todos los gestos';
+$headerTitle = 'Podcast desde artículo';
+$headerIcon = 'iconoir-podcast';
+$headerIconColor = 'from-red-500 to-orange-500';
 ?><!DOCTYPE html>
 <html lang="es">
 <?php include __DIR__ . '/../includes/head.php'; ?>
@@ -66,7 +70,7 @@ $gestureColor = 'from-red-500 to-orange-500';
     
     <!-- Main content area -->
     <main class="flex-1 flex flex-col overflow-hidden">
-      <?php include __DIR__ . '/../includes/header-gestures.php'; ?>
+      <?php include __DIR__ . '/../includes/header-unified.php'; ?>
 
       <!-- Single column layout (contenido) -->
       <div class="flex-1 overflow-auto">

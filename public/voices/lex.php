@@ -10,9 +10,21 @@ if (!$user) {
     exit;
 }
 $csrfToken = $_SESSION['csrf_token'] ?? '';
-$pageTitle = 'Lex — Asistente Legal — Ebonia';
 $activeTab = 'voices';
 $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
+
+// Configuración del header unificado
+$headerBackUrl = '/';
+$headerBackText = 'Inicio';
+$headerTitle = 'Lex';
+$headerSubtitle = 'Asistente Legal';
+$headerIconText = 'L';
+$headerIconColor = 'from-rose-500 to-pink-600';
+$headerCustomButtons = '<button id="toggle-docs-panel" class="flex items-center gap-2 px-3 py-1.5 text-sm text-slate-600 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-smooth">
+  <i class="iconoir-folder"></i>
+  <span>Documentos</span>
+  <i class="iconoir-nav-arrow-right text-xs" id="docs-arrow"></i>
+</button>';
 ?><!DOCTYPE html>
 <html lang="es">
 <?php include __DIR__ . '/../includes/head.php'; ?>
@@ -45,32 +57,7 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
     
     <!-- Main content area -->
     <main class="flex-1 flex flex-col overflow-hidden">
-      <!-- Header -->
-      <header class="h-[60px] px-6 border-b border-slate-200/50 glass-strong flex items-center justify-between shadow-sm shrink-0">
-        <div class="flex items-center gap-4">
-          <a href="/" class="flex items-center gap-2 text-slate-600 hover:text-rose-500 transition-smooth">
-            <i class="iconoir-arrow-left text-lg"></i>
-            <span class="text-sm font-medium">Inicio</span>
-          </a>
-          <div class="h-6 w-px bg-slate-200"></div>
-          <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center text-white shadow-md">
-              <span class="font-bold text-sm">L</span>
-            </div>
-            <div>
-              <span class="font-semibold text-slate-800">Lex</span>
-              <span class="text-xs text-slate-500 ml-2">Asistente Legal</span>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Panel de documentos toggle -->
-        <button id="toggle-docs-panel" class="flex items-center gap-2 px-3 py-1.5 text-sm text-slate-600 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-smooth">
-          <i class="iconoir-folder"></i>
-          <span>Documentos</span>
-          <i class="iconoir-nav-arrow-right text-xs" id="docs-arrow"></i>
-        </button>
-      </header>
+      <?php include __DIR__ . '/../includes/header-unified.php'; ?>
 
       <!-- Content area with optional docs panel -->
       <div class="flex-1 flex overflow-hidden">

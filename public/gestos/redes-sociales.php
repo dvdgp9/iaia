@@ -10,10 +10,14 @@ if (!$user) {
     exit;
 }
 $csrfToken = $_SESSION['csrf_token'] ?? '';
-$pageTitle = 'Redes Sociales';
 $activeTab = 'gestures';
-$gestureIcon = 'iconoir-send-diagonal';
-$gestureColor = 'from-violet-500 to-fuchsia-600';
+
+// Configuración del header unificado
+$headerBackUrl = '/gestos/';
+$headerBackText = 'Todos los gestos';
+$headerTitle = 'Redes Sociales';
+$headerIcon = 'iconoir-send-diagonal';
+$headerIconColor = 'from-violet-500 to-fuchsia-600';
 ?><!DOCTYPE html>
 <html lang="es">
 <?php include __DIR__ . '/../includes/head.php'; ?>
@@ -45,7 +49,7 @@ $gestureColor = 'from-violet-500 to-fuchsia-600';
     
     <!-- Main content area -->
     <main class="flex-1 flex flex-col overflow-hidden">
-      <?php include __DIR__ . '/../includes/header-gestures.php'; ?>
+      <?php include __DIR__ . '/../includes/header-unified.php'; ?>
 
       <!-- Two-column layout -->
       <div class="flex-1 flex overflow-hidden">

@@ -10,12 +10,15 @@ if (!$user) {
     exit;
 }
 $csrfToken = $_SESSION['csrf_token'] ?? '';
-$pageTitle = 'Gestos';
 $activeTab = 'gestures';
-$backUrl = '/';
-$backText = 'Inicio';
-$gestureIcon = 'iconoir-magic-wand';
-$gestureColor = 'from-cyan-500 to-teal-600';
+
+// Configuración del header unificado
+$headerBackUrl = '/';
+$headerBackText = 'Inicio';
+$headerTitle = 'Gestos';
+$headerSubtitle = 'Flujos automatizados';
+$headerIcon = 'iconoir-magic-wand';
+$headerIconColor = 'from-cyan-500 to-teal-600';
 ?><!DOCTYPE html>
 <html lang="es">
 <?php include __DIR__ . '/../includes/head.php'; ?>
@@ -25,7 +28,7 @@ $gestureColor = 'from-cyan-500 to-teal-600';
     
     <!-- Main content -->
     <main class="flex-1 flex flex-col overflow-hidden">
-      <?php include __DIR__ . '/../includes/header-gestures.php'; ?>
+      <?php include __DIR__ . '/../includes/header-unified.php'; ?>
 
       <!-- Content area -->
       <div class="flex-1 overflow-auto p-6">
