@@ -792,8 +792,10 @@ $headerShowLogo = true;
         const li = document.createElement('li');
         li.className = 'dynamic-folder group';
         
-        const btn = document.createElement('button');
+        const btn = document.createElement('div');
         btn.dataset.folderId = folder.id;
+        btn.setAttribute('role', 'button');
+        btn.tabIndex = 0;
         btn.className = 'folder-item w-full text-left p-2 rounded-lg transition-all duration-200 flex items-center gap-2 hover:bg-slate-50 whitespace-nowrap min-w-0';
         if (currentFolderId === folder.id) {
           btn.classList.add('bg-gradient-to-r', 'from-[#23AAC5]/10', 'to-[#115c6c]/10', 'shadow-sm');
