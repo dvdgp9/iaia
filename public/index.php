@@ -97,7 +97,7 @@ $headerShowLogo = true;
     include __DIR__ . '/includes/mobile-drawer.php'; 
     ?>
 
-    <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
+    <main class="flex-1 flex flex-col min-w-0 overflow-visible">
       <?php include __DIR__ . '/includes/header-unified.php'; ?>
       
       <!-- Área de mensajes con scroll, padding para footer+bottom-nav en móvil -->
@@ -154,8 +154,8 @@ $headerShowLogo = true;
                   
                   <!-- Botones en fila inferior en móvil, integrados en desktop -->
                   <div class="flex gap-2 lg:gap-3 items-center lg:hidden">
-                    <button type="button" id="attach-btn-empty" class="p-2 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-xl transition-smooth border-2 border-slate-200 hover:border-[#23AAC5] leading-none shrink-0" title="Adjuntar archivo (PDF o imagen)">
-                      <i class="iconoir-attachment text-lg"></i>
+                    <button type="button" id="attach-btn-empty" class="h-5 w-5 p-0 flex items-center justify-center text-slate-400 hover:text-[#23AAC5] rounded-md transition-smooth leading-none shrink-0" title="Adjuntar archivo (PDF o imagen)">
+                      <i class="iconoir-attachment text-[18px]"></i>
                     </button>
                     <button type="button" id="image-mode-btn-empty" class="h-5 w-5 p-0 flex items-center justify-center text-slate-400 hover:text-amber-500 rounded-md transition-smooth leading-none shrink-0" title="Generar imagen con nanobanana 🍌">
                       <i class="iconoir-media-image text-[20px]"></i>
@@ -169,7 +169,7 @@ $headerShowLogo = true;
                   
                   <!-- Layout desktop en una sola línea -->
                   <div class="hidden lg:flex gap-3 items-center">
-                    <button type="button" id="attach-btn-empty-desktop" class="p-[10px] text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-2xl transition-smooth border-2 border-slate-200 hover:border-[#23AAC5] leading-none shrink-0" title="Adjuntar archivo (PDF o imagen)">
+                    <button type="button" id="attach-btn-empty-desktop" class="p-[10px] text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-2xl transition-smooth border border-transparent leading-none shrink-0" title="Adjuntar archivo (PDF o imagen)">
                       <i class="iconoir-attachment text-lg"></i>
                     </button>
                     <button type="button" id="image-mode-btn-empty-desktop" class="h-5 w-5 p-0 flex items-center justify-center text-slate-400 hover:text-amber-500 rounded-md transition-smooth leading-none shrink-0" title="Generar imagen con nanobanana 🍌">
@@ -1588,7 +1588,11 @@ $headerShowLogo = true;
         } else if (tab === 'apps') {
           window.location.href = '/aplicaciones/';
         }
-        // 'conversations' es la vista actual, no necesita acción
+        // Volver al estado vacío cuando se pulsa 'conversations' en esta vista
+        if (tab === 'conversations') {
+          showEmptyMode();
+          return;
+        }
       });
     });
 
