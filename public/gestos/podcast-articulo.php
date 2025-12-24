@@ -231,12 +231,21 @@ $headerDrawerId = 'podcast-history-drawer';
       const desktopHistory = document.getElementById('history-list');
       const mobileDrawerContent = document.getElementById('podcast-history-drawer-content');
       
-      if (desktopHistory && mobileDrawerContent) {
-        mobileDrawerContent.innerHTML = desktopHistory.innerHTML;
-        
-        const observer = new MutationObserver(() => {
+      function syncDrawerContent() {
+        if (desktopHistory && mobileDrawerContent) {
           mobileDrawerContent.innerHTML = desktopHistory.innerHTML;
-        });
+          // Forzar visibilidad de acciones en móvil (no hay hover)
+          mobileDrawerContent.querySelectorAll('.opacity-0, .lg\\:opacity-0').forEach(el => {
+            el.classList.remove('opacity-0', 'lg:opacity-0');
+            el.classList.add('opacity-100');
+          });
+        }
+      }
+      
+      if (desktopHistory && mobileDrawerContent) {
+        syncDrawerContent();
+        
+        const observer = new MutationObserver(syncDrawerContent);
         observer.observe(desktopHistory, { childList: true, subtree: true });
         
         // Event delegation para clics en el drawer móvil

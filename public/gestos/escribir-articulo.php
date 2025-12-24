@@ -147,7 +147,7 @@ $headerDrawerId = 'gesture-history-drawer';
           <label class="block text-sm font-semibold text-slate-700 mb-2">Tema del artículo</label>
           <input type="text" id="info-topic" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all bg-white/80" placeholder="Ej: Nueva temporada de actividades acuáticas en los centros deportivos" />
         </div>
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-semibold text-slate-700 mb-2">Categoría</label>
             <select id="info-category" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-cyan-500 transition-all bg-white/80">
@@ -241,7 +241,7 @@ $headerDrawerId = 'gesture-history-drawer';
         </div>
         
         <!-- Datos básicos con placeholders informativos -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-semibold text-slate-700 mb-2">¿Qué ocurre? <span class="text-red-500">*</span></label>
             <input type="text" id="press-what" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all bg-white/80" placeholder="El hecho o noticia principal" />
@@ -259,7 +259,7 @@ $headerDrawerId = 'gesture-history-drawer';
             <input type="text" id="press-where" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all bg-white/80" placeholder="Ubicación, lugar, ámbito..." />
           </div>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-semibold text-slate-700 mb-2">¿Por qué?</label>
             <textarea id="press-why" rows="2" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all resize-none bg-white/80" placeholder="Motivo, causa, contexto (solo información segura y contrastada)"></textarea>
@@ -327,19 +327,27 @@ $headerDrawerId = 'gesture-history-drawer';
       const desktopHistory = document.getElementById('history-list');
       const mobileDrawerContent = document.getElementById('gesture-history-drawer-content');
       
-      if (desktopHistory && mobileDrawerContent) {
-        mobileDrawerContent.innerHTML = desktopHistory.innerHTML;
-        
-        const observer = new MutationObserver(() => {
+      function syncDrawerContent() {
+        if (desktopHistory && mobileDrawerContent) {
           mobileDrawerContent.innerHTML = desktopHistory.innerHTML;
-        });
+          // Forzar visibilidad de acciones en móvil (no hay hover)
+          mobileDrawerContent.querySelectorAll('.opacity-0, .lg\\:opacity-0').forEach(el => {
+            el.classList.remove('opacity-0', 'lg:opacity-0');
+            el.classList.add('opacity-100');
+          });
+        }
+      }
+      
+      if (desktopHistory && mobileDrawerContent) {
+        syncDrawerContent();
+        
+        const observer = new MutationObserver(syncDrawerContent);
         observer.observe(desktopHistory, { childList: true, subtree: true });
         
         // Event delegation para clics en el drawer móvil
         mobileDrawerContent.addEventListener('click', (e) => {
           const historyItem = e.target.closest('[data-history-id], [data-id], .history-item, button');
           if (historyItem) {
-            // Buscar el elemento correspondiente en desktop por su posición o atributo
             const allMobileItems = mobileDrawerContent.querySelectorAll('[data-history-id], [data-id], .history-item, button[class*="history"]');
             const allDesktopItems = desktopHistory.querySelectorAll('[data-history-id], [data-id], .history-item, button[class*="history"]');
             const index = Array.from(allMobileItems).indexOf(historyItem);

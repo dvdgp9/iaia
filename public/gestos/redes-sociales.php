@@ -79,7 +79,7 @@ $headerDrawerId = 'social-history-drawer';
             <!-- INTENCIÓN PRINCIPAL -->
             <div>
               <label class="block text-sm font-semibold text-slate-700 mb-2">Intención</label>
-              <div class="grid grid-cols-5 gap-1.5">
+              <div class="grid grid-cols-3 lg:grid-cols-5 gap-1.5">
                 <label class="cursor-pointer">
                   <input type="radio" name="intention" value="informar" class="hidden peer" checked />
                   <div class="p-2 border-2 border-slate-200 rounded-lg peer-checked:border-violet-500 peer-checked:bg-violet-500/10 hover:border-violet-400 transition-all text-center">
@@ -195,7 +195,7 @@ $headerDrawerId = 'social-history-drawer';
             <!-- LONGITUD -->
             <div>
               <label class="block text-sm font-semibold text-slate-700 mb-2">Longitud</label>
-              <div class="grid grid-cols-4 gap-2">
+              <div class="grid grid-cols-2 lg:grid-cols-4 gap-2">
                 <label class="cursor-pointer">
                   <input type="radio" name="length" value="" class="hidden peer" checked />
                   <div class="px-2 py-2 text-xs border-2 border-slate-200 rounded-lg peer-checked:border-violet-500 peer-checked:bg-violet-500/10 hover:border-violet-400 transition-all text-center font-medium text-slate-600">Auto</div>
@@ -406,12 +406,21 @@ $headerDrawerId = 'social-history-drawer';
       const desktopHistory = document.getElementById('history-list');
       const mobileDrawerContent = document.getElementById('social-history-drawer-content');
       
-      if (desktopHistory && mobileDrawerContent) {
-        mobileDrawerContent.innerHTML = desktopHistory.innerHTML;
-        
-        const observer = new MutationObserver(() => {
+      function syncDrawerContent() {
+        if (desktopHistory && mobileDrawerContent) {
           mobileDrawerContent.innerHTML = desktopHistory.innerHTML;
-        });
+          // Forzar visibilidad de acciones en móvil (no hay hover)
+          mobileDrawerContent.querySelectorAll('.opacity-0, .lg\\:opacity-0').forEach(el => {
+            el.classList.remove('opacity-0', 'lg:opacity-0');
+            el.classList.add('opacity-100');
+          });
+        }
+      }
+      
+      if (desktopHistory && mobileDrawerContent) {
+        syncDrawerContent();
+        
+        const observer = new MutationObserver(syncDrawerContent);
         observer.observe(desktopHistory, { childList: true, subtree: true });
         
         // Event delegation para clics en el drawer móvil
