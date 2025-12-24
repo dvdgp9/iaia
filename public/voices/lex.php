@@ -20,11 +20,16 @@ $headerTitle = 'Lex';
 $headerSubtitle = 'Asistente Legal';
 $headerIconText = 'L';
 $headerIconColor = 'from-rose-500 to-pink-600';
-$headerCustomButtons = '<button id="toggle-docs-panel" class="hidden lg:flex items-center gap-2 px-3 py-1.5 text-sm text-slate-600 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-smooth">
-  <i class="iconoir-folder"></i>
-  <span>Documentos</span>
-  <i class="iconoir-nav-arrow-right text-xs" id="docs-arrow"></i>
-</button>';
+$headerCustomButtons = '
+  <button onclick="openMobileDrawer(\'lex-docs-drawer\')" class="lg:hidden flex items-center gap-2 px-3 py-1.5 text-sm text-slate-600 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-smooth">
+    <i class="iconoir-folder"></i>
+    <span>Docs</span>
+  </button>
+  <button id="toggle-docs-panel" class="hidden lg:flex items-center gap-2 px-3 py-1.5 text-sm text-slate-600 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-smooth">
+    <i class="iconoir-folder"></i>
+    <span>Documentos</span>
+    <i class="iconoir-nav-arrow-right text-xs" id="docs-arrow"></i>
+  </button>';
 $headerDrawerId = 'lex-history-drawer';
 ?><!DOCTYPE html>
 <html lang="es">
@@ -67,6 +72,16 @@ $headerDrawerId = 'lex-history-drawer';
     $drawerNewButtonText = 'Nueva consulta';
     include __DIR__ . '/../includes/mobile-drawer.php'; 
     ?>
+
+    <!-- Mobile Drawer para documentos -->
+    <?php 
+    $drawerId = 'lex-docs-drawer';
+    $drawerTitle = 'Documentos';
+    $drawerIcon = 'iconoir-folder';
+    $drawerIconColor = 'text-rose-500';
+    $drawerShowNewButton = false;
+    include __DIR__ . '/../includes/mobile-drawer.php'; 
+    ?>
     
     <!-- Main content area -->
     <main class="flex-1 flex flex-col overflow-hidden min-w-0">
@@ -76,10 +91,10 @@ $headerDrawerId = 'lex-history-drawer';
       <div class="flex-1 flex overflow-hidden pb-16 lg:pb-0">
         
         <!-- Chat area -->
-        <div class="flex-1 flex flex-col bg-mesh min-w-0">
+        <div class="flex-1 flex flex-col bg-mesh min-w-0 overflow-hidden">
           
           <!-- Messages -->
-          <div id="messages-container" class="flex-1 overflow-auto p-4 lg:p-6">
+          <div id="messages-container" class="flex-1 overflow-auto p-4 lg:p-6 pb-[140px] lg:pb-0">
             <!-- Empty state -->
             <div id="empty-state" class="h-full flex items-center justify-center">
               <div class="text-center max-w-lg">
@@ -126,18 +141,18 @@ $headerDrawerId = 'lex-history-drawer';
           </div>
           
           <!-- Input area -->
-          <footer class="p-4 glass-strong border-t border-slate-200/50">
+          <footer class="fixed lg:relative bottom-16 lg:bottom-0 left-0 right-0 p-3 lg:p-6 bg-white border-t border-slate-200 shadow-lg z-40">
             <form id="chat-form" class="max-w-4xl mx-auto">
-              <div class="flex gap-3">
-                <input 
-                  id="chat-input" 
-                  class="flex-1 px-5 py-4 rounded-2xl border-2 border-slate-200 text-base input-focus transition-smooth bg-white/80" 
+              <div class="flex gap-2 lg:gap-3 items-center">
+                <textarea 
+                  id="chat-input" rows="1"
+                  class="flex-1 min-w-0 border-2 border-slate-200 rounded-xl px-3 lg:px-4 py-2.5 input-focus transition-smooth bg-white/80 resize-none overflow-hidden"
                   placeholder="Escribe tu consulta legal..."
-                  autocomplete="off"
-                />
-                <button type="submit" class="px-6 py-4 bg-gradient-to-r from-rose-500 to-pink-600 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-smooth flex items-center gap-2">
-                  <span>Enviar</span>
-                  <i class="iconoir-send-diagonal text-lg"></i>
+                  style="min-height: 40px; max-height: 120px;"
+                ></textarea>
+                <button type="submit" class="h-11 p-3 lg:px-6 lg:py-[10px] bg-gradient-to-r from-rose-500 to-pink-600 text-white rounded-xl font-medium shadow-md hover:shadow-lg hover:opacity-90 transition-all duration-200 flex items-center justify-center gap-2">
+                  <span class="hidden lg:inline">Enviar</span>
+                  <i class="iconoir-send-diagonal text-base"></i>
                 </button>
               </div>
             </form>
@@ -253,6 +268,42 @@ $headerDrawerId = 'lex-history-drawer';
         mobileNewBtn.addEventListener('click', () => {
           closeMobileDrawer('lex-history-drawer');
           desktopNewBtn.click();
+        });
+      }
+
+      // Auto-expand textarea de entrada
+      const input = document.getElementById('chat-input');
+      function autoResize(el){
+        if(!el) return;
+        el.style.height = 'auto';
+        el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+      }
+      if (input) {
+        autoResize(input);
+        input.addEventListener('input', () => autoResize(input));
+      }
+
+      // Sincronizar documentos con drawer móvil
+      const docsPanelList = document.getElementById('docs-list');
+      const docsDrawerContent = document.getElementById('lex-docs-drawer-content');
+      if (docsPanelList && docsDrawerContent) {
+        // Clonar contenido inicial cuando cargue
+        const syncDocs = () => { docsDrawerContent.innerHTML = docsPanelList.innerHTML; };
+        syncDocs();
+        const obs = new MutationObserver(syncDocs);
+        obs.observe(docsPanelList, { childList: true, subtree: true });
+
+        // Delegación de clics para abrir visor de documentos desde el drawer
+        docsDrawerContent.addEventListener('click', (e) => {
+          const btn = e.target.closest('.doc-item');
+          if (!btn) return;
+          const docId = btn.getAttribute('data-doc-id');
+          if (docId) {
+            closeMobileDrawer('lex-docs-drawer');
+            if (typeof openDocViewer === 'function') {
+              openDocViewer(docId);
+            }
+          }
         });
       }
     });
