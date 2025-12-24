@@ -144,19 +144,21 @@ $headerShowLogo = true;
                     </button>
                   </div>
                   
-                  <div class="flex gap-2 lg:gap-3 items-center">
-                    <input type="file" id="file-input-empty" class="hidden" accept=".pdf,.png,.jpg,.jpeg,.gif,.webp" />
-                    <button type="button" id="attach-btn-empty" class="p-2 lg:p-[10px] text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-xl lg:rounded-2xl transition-smooth border-2 border-slate-200 hover:border-[#23AAC5] leading-none shrink-0" title="Adjuntar archivo (PDF o imagen)">
-                      <i class="iconoir-attachment text-lg"></i>
-                    </button>
-                    <button type="button" id="image-mode-btn-empty" class="p-2 lg:p-[10px] text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-xl lg:rounded-2xl transition-smooth border-2 border-slate-200 hover:border-amber-400 leading-none shrink-0" title="Generar imagen con nanobanana 🍌">
-                      <i class="iconoir-media-image text-lg"></i>
-                    </button>
-                    <textarea id="chat-input-empty" rows="1" class="flex-1 min-w-0 border-2 border-slate-200 rounded-xl lg:rounded-2xl px-3 lg:px-5 py-[10px] text-base input-focus transition-smooth bg-white/80 resize-none overflow-hidden" placeholder="Escribe tu pregunta aquí..." style="min-height: 44px; max-height: 120px;"></textarea>
-                    <button type="submit" class="h-11 p-3 lg:px-7 lg:py-[10px] gradient-brand text-white font-semibold rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-smooth flex items-center justify-center gap-2 leading-none shrink-0">
-                      <span class="hidden lg:inline">Enviar</span>
-                      <i class="iconoir-send-diagonal text-base"></i>
-                    </button>
+                  <div class="flex flex-col lg:flex-row gap-2 lg:gap-3 items-stretch lg:items-center">
+                    <textarea id="chat-input-empty" rows="1" class="order-1 lg:order-2 w-full min-w-0 border-2 border-slate-200 rounded-xl lg:rounded-2xl px-3 lg:px-5 py-[10px] text-base input-focus transition-smooth bg-white/80 resize-none overflow-hidden" placeholder="Escribe tu pregunta aquí..." style="min-height: 44px; max-height: 120px;"></textarea>
+                    <div class="order-2 lg:order-3 flex gap-2 lg:gap-3 items-center">
+                      <input type="file" id="file-input-empty" class="hidden" accept=".pdf,.png,.jpg,.jpeg,.gif,.webp" />
+                      <button type="button" id="attach-btn-empty" class="p-2 lg:p-[10px] text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-xl lg:rounded-2xl transition-smooth border-2 border-slate-200 hover:border-[#23AAC5] leading-none shrink-0" title="Adjuntar archivo (PDF o imagen)">
+                        <i class="iconoir-attachment text-lg"></i>
+                      </button>
+                      <button type="button" id="image-mode-btn-empty" class="p-2 lg:p-[10px] text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-xl lg:rounded-2xl transition-smooth border-2 border-slate-200 hover:border-amber-400 leading-none shrink-0" title="Generar imagen con nanobanana 🍌">
+                        <i class="iconoir-media-image text-lg"></i>
+                      </button>
+                      <button type="submit" class="h-11 p-3 lg:px-7 lg:py-[10px] gradient-brand text-white font-semibold rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-smooth flex items-center justify-center gap-2 leading-none shrink-0">
+                        <span class="hidden lg:inline">Enviar</span>
+                        <i class="iconoir-send-diagonal text-base"></i>
+                      </button>
+                    </div>
                   </div>
                 </form>
               </div>
@@ -329,19 +331,21 @@ $headerShowLogo = true;
             </button>
           </div>
           
-          <div class="flex gap-2 lg:gap-3 items-center">
-            <input type="file" id="file-input" class="hidden" accept=".pdf,.png,.jpg,.jpeg,.gif,.webp" />
-            <button type="button" id="attach-btn" class="p-2 lg:p-[10px] text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/5 rounded-xl transition-all border-2 border-slate-200 hover:border-[#23AAC5] leading-none shrink-0" title="Adjuntar archivo">
-              <i class="iconoir-attachment text-lg"></i>
-            </button>
-            <button type="button" id="image-mode-btn" class="p-2 lg:p-[10px] text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-xl transition-all border-2 border-slate-200 hover:border-amber-400 leading-none shrink-0" title="Generar imagen con nanobanana 🍌">
-              <i class="iconoir-media-image text-lg"></i>
-            </button>
-            <textarea id="chat-input" rows="1" class="flex-1 min-w-0 border-2 border-slate-200 rounded-xl px-3 lg:px-4 py-2.5 focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-all resize-none overflow-hidden" placeholder="Escribe un mensaje..." style="min-height: 40px; max-height: 120px;"></textarea>
-            <button type="submit" class="h-11 p-3 lg:px-6 lg:py-[10px] gradient-brand-btn text-white rounded-xl font-medium shadow-md hover:shadow-lg hover:opacity-90 transition-all duration-200 flex items-center justify-center gap-2 leading-none shrink-0">
-              <span class="hidden lg:inline">Enviar</span>
-              <svg class="w-5 h-5 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
-            </button>
+          <div class="flex flex-col lg:flex-row gap-2 lg:gap-3 items-stretch lg:items-center">
+            <textarea id="chat-input" rows="1" class="order-1 lg:order-2 w-full min-w-0 border-2 border-slate-200 rounded-xl px-3 lg:px-4 py-2.5 focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-all resize-none overflow-hidden" placeholder="Escribe un mensaje..." style="min-height: 40px; max-height: 120px;"></textarea>
+            <div class="order-2 lg:order-3 flex items-center gap-2 lg:gap-3">
+              <input type="file" id="file-input" class="hidden" accept=".pdf,.png,.jpg,.jpeg,.gif,.webp" />
+              <button type="button" id="attach-btn" class="p-2 lg:p-[10px] text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/5 rounded-xl transition-all border-2 border-slate-200 hover:border-[#23AAC5] leading-none shrink-0" title="Adjuntar archivo">
+                <i class="iconoir-attachment text-lg"></i>
+              </button>
+              <button type="button" id="image-mode-btn" class="p-2 lg:p-[10px] text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-xl transition-all border-2 border-slate-200 hover:border-amber-400 leading-none shrink-0" title="Generar imagen con nanobanana 🍌">
+                <i class="iconoir-media-image text-lg"></i>
+              </button>
+              <button type="submit" class="h-11 p-3 lg:px-6 lg:py-[10px] gradient-brand-btn text-white rounded-xl font-medium shadow-md hover:shadow-lg hover:opacity-90 transition-all duration-200 flex items-center justify-center gap-2 leading-none shrink-0">
+                <span class="hidden lg:inline">Enviar</span>
+                <svg class="w-5 h-5 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+              </button>
+            </div>
           </div>
         </form>
       </footer>
