@@ -60,9 +60,9 @@ $headerStyle .= ' flex items-center justify-between shadow-sm shrink-0 sticky to
     
     <?php if ($headerShowConvTitle): ?>
       <!-- Título conversación dinámico (para chat) -->
-      <div id="conv-title" class="hidden items-center gap-2 min-w-0">
+      <div id="conv-title" class="hidden flex items-center gap-2 min-w-0">
         <i class="iconoir-chat-bubble text-[#23AAC5] hidden lg:block"></i>
-        <span class="text-sm font-medium text-slate-700 truncate max-w-[150px] lg:max-w-md"></span>
+        <span class="text-sm font-medium leading-tight text-slate-700 truncate max-w-[60vw] lg:max-w-md"></span>
       </div>
     <?php else: ?>
       <?php if ($headerBackUrl): ?>
@@ -87,7 +87,7 @@ $headerStyle .= ' flex items-center justify-between shadow-sm shrink-0 sticky to
             </div>
           <?php endif; ?>
           <div class="min-w-0">
-            <span class="font-semibold text-slate-800 text-sm lg:text-base truncate block"><?php echo htmlspecialchars($headerTitle); ?></span>
+            <span class="font-semibold text-slate-800 text-sm lg:text-base leading-tight truncate block"><?php echo htmlspecialchars($headerTitle); ?></span>
             <?php if ($headerSubtitle): ?>
               <span class="hidden lg:inline text-xs text-slate-500 ml-2"><?php echo htmlspecialchars($headerSubtitle); ?></span>
             <?php endif; ?>
