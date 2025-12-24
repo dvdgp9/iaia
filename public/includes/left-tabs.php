@@ -36,8 +36,8 @@ $tabs = [
     ]
 ];
 ?>
-<!-- Barra de tabs lateral izquierda -->
-<aside class="w-[70px] gradient-brand flex flex-col items-center py-6 gap-2 shrink-0">
+<!-- Barra de tabs lateral izquierda - Solo desktop -->
+<aside class="hidden lg:flex w-[70px] gradient-brand flex-col items-center py-6 gap-2 shrink-0">
   <?php foreach ($tabs as $tabId => $tab): ?>
     <?php 
       $isActive = ($activeTab === $tabId);

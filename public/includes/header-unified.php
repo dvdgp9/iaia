@@ -14,6 +14,8 @@
  * - $headerShowConvTitle: Si true, muestra el título de conversación dinámico (para chat)
  * - $headerShowSearch: Si true, muestra botón de búsqueda (default: false para gestos/voces)
  * - $headerShowFaq: Si true, muestra botón de FAQ (default: false para gestos/voces)
+ * - $headerDrawerId: ID del drawer móvil a abrir con hamburger (default: null = sin hamburger)
+ * - $headerShowLogo: Si true, muestra logo en móvil (default: false)
  */
 
 $headerBackUrl = $headerBackUrl ?? null;
@@ -27,9 +29,11 @@ $headerCustomButtons = $headerCustomButtons ?? '';
 $headerShowConvTitle = $headerShowConvTitle ?? false;
 $headerShowSearch = $headerShowSearch ?? false;
 $headerShowFaq = $headerShowFaq ?? false;
+$headerDrawerId = $headerDrawerId ?? null;
+$headerShowLogo = $headerShowLogo ?? false;
 
 // Determinar el estilo del header según el contexto
-$headerStyle = 'h-[60px] px-6 border-b border-slate-200';
+$headerStyle = 'h-14 lg:h-[60px] px-4 lg:px-6 border-b border-slate-200';
 if (isset($activeTab) && in_array($activeTab, ['gestures', 'voices', 'apps'])) {
     $headerStyle .= '/50 glass-strong';
 } else {
@@ -42,39 +46,52 @@ if (!in_array($activeTab ?? '', ['gestures', 'voices', 'apps'])) {
 ?>
 <header class="<?php echo $headerStyle; ?>">
   <!-- Navegación y título -->
-  <div class="flex items-center gap-3 min-w-0">
+  <div class="flex items-center gap-2 lg:gap-3 min-w-0 flex-1">
+    <?php if ($headerDrawerId): ?>
+      <!-- Hamburger button (solo móvil) -->
+      <button onclick="openMobileDrawer('<?php echo htmlspecialchars($headerDrawerId); ?>')" 
+              class="lg:hidden p-2 -ml-2 text-slate-600 hover:text-[#23AAC5] hover:bg-slate-50 rounded-lg transition-colors tap-highlight-none">
+        <i class="iconoir-menu text-xl"></i>
+      </button>
+    <?php endif; ?>
+    
+    <?php if ($headerShowLogo): ?>
+      <!-- Logo (móvil) -->
+      <img src="/assets/images/logo.png" alt="Ebonia" class="h-7 lg:hidden">
+    <?php endif; ?>
+    
     <?php if ($headerShowConvTitle): ?>
       <!-- Título conversación dinámico (para chat) -->
-      <div id="conv-title" class="hidden flex items-center gap-2">
-        <i class="iconoir-chat-bubble text-[#23AAC5]"></i>
-        <span class="text-sm font-medium text-slate-700 truncate max-w-md"></span>
+      <div id="conv-title" class="hidden items-center gap-2 min-w-0">
+        <i class="iconoir-chat-bubble text-[#23AAC5] hidden lg:block"></i>
+        <span class="text-sm font-medium text-slate-700 truncate max-w-[150px] lg:max-w-md"></span>
       </div>
     <?php else: ?>
       <?php if ($headerBackUrl): ?>
-        <!-- Botón de navegación atrás -->
-        <a href="<?php echo htmlspecialchars($headerBackUrl); ?>" class="flex items-center gap-2 text-slate-600 hover:text-cyan-600 transition-smooth">
+        <!-- Botón de navegación atrás (solo desktop) -->
+        <a href="<?php echo htmlspecialchars($headerBackUrl); ?>" class="hidden lg:flex items-center gap-2 text-slate-600 hover:text-cyan-600 transition-smooth">
           <i class="iconoir-arrow-left text-lg"></i>
           <span class="text-sm font-medium"><?php echo htmlspecialchars($headerBackText); ?></span>
         </a>
-        <div class="h-6 w-px bg-slate-200"></div>
+        <div class="hidden lg:block h-6 w-px bg-slate-200"></div>
       <?php endif; ?>
       
       <?php if ($headerTitle): ?>
         <!-- Título de la página con icono -->
         <div class="flex items-center gap-2">
           <?php if ($headerIcon || $headerIconText): ?>
-            <div class="w-8 h-8 rounded-lg bg-gradient-to-br <?php echo htmlspecialchars($headerIconColor); ?> flex items-center justify-center text-white shadow-md">
+            <div class="w-7 h-7 lg:w-8 lg:h-8 rounded-lg bg-gradient-to-br <?php echo htmlspecialchars($headerIconColor); ?> flex items-center justify-center text-white shadow-md">
               <?php if ($headerIconText): ?>
-                <span class="font-bold text-sm"><?php echo htmlspecialchars($headerIconText); ?></span>
+                <span class="font-bold text-xs lg:text-sm"><?php echo htmlspecialchars($headerIconText); ?></span>
               <?php else: ?>
-                <i class="<?php echo htmlspecialchars($headerIcon); ?> text-sm"></i>
+                <i class="<?php echo htmlspecialchars($headerIcon); ?> text-xs lg:text-sm"></i>
               <?php endif; ?>
             </div>
           <?php endif; ?>
-          <div>
-            <span class="font-semibold text-slate-800"><?php echo htmlspecialchars($headerTitle); ?></span>
+          <div class="min-w-0">
+            <span class="font-semibold text-slate-800 text-sm lg:text-base truncate block"><?php echo htmlspecialchars($headerTitle); ?></span>
             <?php if ($headerSubtitle): ?>
-              <span class="text-xs text-slate-500 ml-2"><?php echo htmlspecialchars($headerSubtitle); ?></span>
+              <span class="hidden lg:inline text-xs text-slate-500 ml-2"><?php echo htmlspecialchars($headerSubtitle); ?></span>
             <?php endif; ?>
           </div>
         </div>
@@ -83,17 +100,17 @@ if (!in_array($activeTab ?? '', ['gestures', 'voices', 'apps'])) {
   </div>
   
   <!-- Acciones derecha -->
-  <div class="flex items-center gap-3">
+  <div class="flex items-center gap-1 lg:gap-3">
     <?php if ($headerShowSearch): ?>
-      <!-- Búsqueda -->
-      <button class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-colors" title="Buscar (próximamente)">
+      <!-- Búsqueda (solo desktop) -->
+      <button class="hidden lg:flex p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-colors" title="Buscar (próximamente)">
         <i class="iconoir-search text-xl"></i>
       </button>
     <?php endif; ?>
     
     <?php if ($headerShowFaq): ?>
-      <!-- FAQ / Dudas rápidas -->
-      <button id="faq-btn" class="p-2 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-lg transition-colors" title="Dudas rápidas">
+      <!-- FAQ / Dudas rápidas (solo desktop) -->
+      <button id="faq-btn" class="hidden lg:flex p-2 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-lg transition-colors" title="Dudas rápidas">
         <i class="iconoir-help-circle text-xl"></i>
       </button>
     <?php endif; ?>
@@ -105,8 +122,8 @@ if (!in_array($activeTab ?? '', ['gestures', 'voices', 'apps'])) {
     
     <!-- Avatar + Dropdown -->
     <div class="relative" id="profile-dropdown-container">
-      <button id="profile-btn" class="flex items-center gap-2 p-1.5 hover:bg-slate-50 rounded-lg transition-colors">
-        <div class="h-8 w-8 rounded-full gradient-brand flex items-center justify-center text-white text-sm font-semibold" id="user-avatar">
+      <button id="profile-btn" class="flex items-center gap-1 lg:gap-2 p-1 lg:p-1.5 hover:bg-slate-50 rounded-lg transition-colors tap-highlight-none">
+        <div class="h-7 w-7 lg:h-8 lg:w-8 rounded-full gradient-brand flex items-center justify-center text-white text-xs lg:text-sm font-semibold" id="user-avatar">
           <?php 
             if (isset($user)) {
               echo strtoupper(substr($user['first_name'] ?? 'U', 0, 1) . substr($user['last_name'] ?? '', 0, 1));
@@ -115,11 +132,11 @@ if (!in_array($activeTab ?? '', ['gestures', 'voices', 'apps'])) {
             }
           ?>
         </div>
-        <i class="iconoir-nav-arrow-down text-slate-400 text-sm"></i>
+        <i class="iconoir-nav-arrow-down text-slate-400 text-xs lg:text-sm hidden lg:block"></i>
       </button>
       
       <!-- Dropdown menu -->
-      <div id="profile-dropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-slate-200 py-2 z-50">
+      <div id="profile-dropdown" class="hidden absolute right-0 mt-2 w-56 lg:w-64 bg-white rounded-xl shadow-xl border border-slate-200 py-2 z-50">
         <div class="px-4 py-3 border-b border-slate-100">
           <div class="font-semibold text-slate-800 text-sm" id="session-user">
             <?php 
@@ -134,7 +151,7 @@ if (!in_array($activeTab ?? '', ['gestures', 'voices', 'apps'])) {
             <?php echo isset($user) ? htmlspecialchars($user['email'] ?? '') : ''; ?>
           </div>
         </div>
-        <a href="/account.php" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2">
+        <a href="/account.php" class="lg:hidden w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2">
           <i class="iconoir-user"></i>
           <span>Mi cuenta</span>
         </a>

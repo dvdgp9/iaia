@@ -18,6 +18,8 @@ $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
 $headerShowConvTitle = true;
 $headerShowSearch = true;
 $headerShowFaq = true;
+$headerDrawerId = 'conversations-drawer';
+$headerShowLogo = true;
 ?><!DOCTYPE html>
 <html lang="es">
 <?php include __DIR__ . '/includes/head.php'; ?>
@@ -25,8 +27,8 @@ $headerShowFaq = true;
   <div class="min-h-screen flex h-screen">
     <?php include __DIR__ . '/includes/left-tabs.php'; ?>
 
-    <!-- Sidebar conversaciones -->
-    <aside id="conversations-sidebar" class="w-80 bg-white border-r border-slate-200 flex flex-col shadow-sm">
+    <!-- Sidebar conversaciones (solo desktop) -->
+    <aside id="conversations-sidebar" class="hidden lg:flex w-80 bg-white border-r border-slate-200 flex-col shadow-sm">
       <div class="p-5 border-b border-slate-200">
         <div class="flex items-center gap-3 mb-6">
           <img src="/assets/images/logo.png" alt="Ebonia" class="h-9">
@@ -83,7 +85,19 @@ $headerShowFaq = true;
       </div>
     </aside>
 
-    <main class="flex-1 flex flex-col">
+    <!-- Mobile Drawer para conversaciones -->
+    <?php 
+    $drawerId = 'conversations-drawer';
+    $drawerTitle = 'Conversaciones';
+    $drawerIcon = 'iconoir-chat-bubble';
+    $drawerIconColor = 'text-[#23AAC5]';
+    $drawerShowNewButton = true;
+    $drawerNewButtonId = 'mobile-new-conv-btn';
+    $drawerNewButtonText = 'Nueva conversación';
+    include __DIR__ . '/includes/mobile-drawer.php'; 
+    ?>
+
+    <main class="flex-1 flex flex-col min-w-0">
       <?php include __DIR__ . '/includes/header-unified.php'; ?>
       
       <section class="flex-1 overflow-auto bg-mesh relative" id="messages-container">
@@ -1750,6 +1764,44 @@ $headerShowFaq = true;
         });
       });
     })();
+  </script>
+  
+  <!-- Bottom Navigation (móvil) -->
+  <?php include __DIR__ . '/includes/bottom-nav.php'; ?>
+  
+  <script>
+    // Sincronizar contenido del drawer móvil con sidebar desktop
+    document.addEventListener('DOMContentLoaded', () => {
+      const desktopSidebar = document.getElementById('conversations-sidebar');
+      const mobileDrawerContent = document.getElementById('conversations-drawer-content');
+      
+      if (desktopSidebar && mobileDrawerContent) {
+        // Clonar contenido de carpetas y conversaciones al drawer móvil
+        const foldersSection = desktopSidebar.querySelector('.flex-1.overflow-y-auto');
+        if (foldersSection) {
+          mobileDrawerContent.innerHTML = foldersSection.innerHTML;
+        }
+        
+        // Observer para mantener sincronizado
+        const observer = new MutationObserver(() => {
+          if (foldersSection) {
+            mobileDrawerContent.innerHTML = foldersSection.innerHTML;
+          }
+        });
+        
+        observer.observe(desktopSidebar, { childList: true, subtree: true });
+      }
+      
+      // Sincronizar botón nueva conversación móvil
+      const mobileNewBtn = document.getElementById('mobile-new-conv-btn');
+      const desktopNewBtn = document.getElementById('new-conv-btn');
+      if (mobileNewBtn && desktopNewBtn) {
+        mobileNewBtn.addEventListener('click', () => {
+          closeMobileDrawer('conversations-drawer');
+          desktopNewBtn.click();
+        });
+      }
+    });
   </script>
 </body>
 </html>

@@ -41,8 +41,8 @@ if (!$user) {
     <main class="flex-1 flex flex-col min-w-0">
       <?php include __DIR__ . '/includes/header-unified.php'; ?>
 
-      <div class="flex-1 overflow-auto bg-slate-50">
-        <div class="max-w-4xl mx-auto p-6">
+      <div class="flex-1 overflow-auto bg-slate-50 pb-16 lg:pb-0">
+        <div class="max-w-4xl mx-auto p-4 lg:p-6">
           
           <!-- Perfil -->
           <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6 mt-6">
@@ -436,5 +436,8 @@ if (!$user) {
     // Cargar actividad al inicio
     loadActivity();
   </script>
+  
+  <!-- Bottom Navigation (móvil) -->
+  <?php include __DIR__ . '/includes/bottom-nav.php'; ?>
 </body>
 </html>

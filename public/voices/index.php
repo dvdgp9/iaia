@@ -31,22 +31,22 @@ $headerIconColor = 'from-violet-500 to-purple-600';
       <?php include __DIR__ . '/../includes/header-unified.php'; ?>
 
       <!-- Content area -->
-      <div class="flex-1 overflow-auto p-6">
+      <div class="flex-1 overflow-auto p-4 lg:p-6 pb-20 lg:pb-6">
         <div class="max-w-6xl mx-auto">
           
           <!-- Hero section -->
-          <div class="text-center mb-10">
-            <div class="w-20 h-20 rounded-3xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center mx-auto mb-6 shadow-xl animate-float">
-              <i class="iconoir-voice-square text-4xl text-white"></i>
+          <div class="text-center mb-6 lg:mb-10">
+            <div class="w-14 h-14 lg:w-20 lg:h-20 rounded-2xl lg:rounded-3xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center mx-auto mb-4 lg:mb-6 shadow-xl animate-float">
+              <i class="iconoir-voice-square text-2xl lg:text-4xl text-white"></i>
             </div>
-            <h1 class="text-3xl font-bold text-slate-900 mb-3">Voces especializadas</h1>
-            <p class="text-base text-slate-600 max-w-2xl mx-auto">
+            <h1 class="text-2xl lg:text-3xl font-bold text-slate-900 mb-2 lg:mb-3">Voces especializadas</h1>
+            <p class="text-sm lg:text-base text-slate-600 max-w-2xl mx-auto px-4 lg:px-0">
               Cada voz es un asistente experto en un dominio específico, con conocimiento profundo y acceso a documentación especializada.
             </p>
           </div>
 
           <!-- Voces grid -->
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-8">
             
             <!-- Voz: Lex -->
             <a href="/voices/lex.php" class="glass-strong rounded-3xl p-6 border border-slate-200/50 card-hover block">
@@ -171,5 +171,8 @@ $headerIconColor = 'from-violet-500 to-purple-600';
       </div>
     </main>
   </div>
+  
+  <!-- Bottom Navigation (móvil) -->
+  <?php include __DIR__ . '/../includes/bottom-nav.php'; ?>
 </body>
 </html>

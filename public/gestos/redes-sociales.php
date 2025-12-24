@@ -18,6 +18,7 @@ $headerBackText = 'Todos los gestos';
 $headerTitle = 'Redes Sociales';
 $headerIcon = 'iconoir-send-diagonal';
 $headerIconColor = 'from-violet-500 to-fuchsia-600';
+$headerDrawerId = 'social-history-drawer';
 ?><!DOCTYPE html>
 <html lang="es">
 <?php include __DIR__ . '/../includes/head.php'; ?>
@@ -25,8 +26,8 @@ $headerIconColor = 'from-violet-500 to-fuchsia-600';
   <div class="min-h-screen flex h-screen">
     <?php include __DIR__ . '/../includes/left-tabs.php'; ?>
     
-    <!-- Sidebar de historial -->
-    <aside id="history-sidebar" class="w-72 glass-strong border-r border-slate-200/50 flex flex-col shrink-0">
+    <!-- Sidebar de historial (solo desktop) -->
+    <aside id="history-sidebar" class="hidden lg:flex w-72 glass-strong border-r border-slate-200/50 flex-col shrink-0">
       <div class="p-4 border-b border-slate-200/50">
         <div class="flex items-center justify-between">
           <h2 class="font-semibold text-slate-800 flex items-center gap-2">
@@ -47,15 +48,24 @@ $headerIconColor = 'from-violet-500 to-fuchsia-600';
       </div>
     </aside>
     
+    <!-- Mobile Drawer para historial -->
+    <?php 
+    $drawerId = 'social-history-drawer';
+    $drawerTitle = 'Historial';
+    $drawerIcon = 'iconoir-clock';
+    $drawerIconColor = 'text-violet-500';
+    include __DIR__ . '/../includes/mobile-drawer.php'; 
+    ?>
+    
     <!-- Main content area -->
-    <main class="flex-1 flex flex-col overflow-hidden">
+    <main class="flex-1 flex flex-col overflow-hidden min-w-0">
       <?php include __DIR__ . '/../includes/header-unified.php'; ?>
 
-      <!-- Two-column layout -->
-      <div class="flex-1 flex overflow-hidden">
+      <!-- Two-column layout (stacked en móvil) -->
+      <div class="flex-1 flex flex-col lg:flex-row overflow-hidden pb-16 lg:pb-0">
         
         <!-- LEFT: Configuration panel -->
-        <div class="w-[420px] shrink-0 border-r border-slate-200/50 overflow-auto p-5">
+        <div class="w-full lg:w-[420px] shrink-0 lg:border-r border-slate-200/50 overflow-auto p-4 lg:p-5">
           <form id="social-media-form" class="space-y-5">
             
             <!-- INPUT DE CONTEXTO -->
@@ -386,5 +396,25 @@ $headerIconColor = 'from-violet-500 to-fuchsia-600';
   </div><!-- /main container -->
 
   <script src="/assets/js/gesture-social-media.js"></script>
+  
+  <!-- Bottom Navigation (móvil) -->
+  <?php include __DIR__ . '/../includes/bottom-nav.php'; ?>
+  
+  <script>
+    // Sincronizar historial con drawer móvil
+    document.addEventListener('DOMContentLoaded', () => {
+      const desktopHistory = document.getElementById('history-list');
+      const mobileDrawerContent = document.getElementById('social-history-drawer-content');
+      
+      if (desktopHistory && mobileDrawerContent) {
+        mobileDrawerContent.innerHTML = desktopHistory.innerHTML;
+        
+        const observer = new MutationObserver(() => {
+          mobileDrawerContent.innerHTML = desktopHistory.innerHTML;
+        });
+        observer.observe(desktopHistory, { childList: true, subtree: true });
+      }
+    });
+  </script>
 </body>
 </html>

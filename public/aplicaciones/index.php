@@ -134,9 +134,9 @@ $apps = [
       <?php include __DIR__ . '/../includes/header-unified.php'; ?>
 
       <!-- Content area -->
-      <div class="flex-1 overflow-auto p-8">
+      <div class="flex-1 overflow-auto p-4 lg:p-8 pb-20 lg:pb-8">
         <div class="max-w-6xl mx-auto">
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
             <?php foreach ($apps as $app): ?>
               <div class="group relative bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200/50 overflow-hidden hover:border-slate-300 transition-all duration-300 hover:shadow-xl hover:shadow-slate-900/10 hover:-translate-y-1">
                 <!-- Header con gradiente -->
@@ -208,5 +208,8 @@ $apps = [
       </div>
     </main>
   </div>
+  
+  <!-- Bottom Navigation (móvil) -->
+  <?php include __DIR__ . '/../includes/bottom-nav.php'; ?>
 </body>
 </html>

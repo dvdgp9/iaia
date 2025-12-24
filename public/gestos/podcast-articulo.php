@@ -26,6 +26,7 @@ $headerBackText = 'Todos los gestos';
 $headerTitle = 'Podcast desde artículo';
 $headerIcon = 'iconoir-podcast';
 $headerIconColor = 'from-red-500 to-orange-500';
+$headerDrawerId = 'podcast-history-drawer';
 ?><!DOCTYPE html>
 <html lang="es">
 <?php include __DIR__ . '/../includes/head.php'; ?>
@@ -49,8 +50,8 @@ $headerIconColor = 'from-red-500 to-orange-500';
   <div class="min-h-screen flex h-screen">
     <?php include __DIR__ . '/../includes/left-tabs.php'; ?>
     
-    <!-- Sidebar de historial -->
-    <aside id="history-sidebar" class="w-72 glass-strong border-r border-slate-200/50 flex flex-col shrink-0">
+    <!-- Sidebar de historial (solo desktop) -->
+    <aside id="history-sidebar" class="hidden lg:flex w-72 glass-strong border-r border-slate-200/50 flex-col shrink-0">
       <div class="p-4 border-b border-slate-200/50">
         <div class="flex items-center justify-between">
           <h2 class="font-semibold text-slate-800 flex items-center gap-2">
@@ -68,13 +69,22 @@ $headerIconColor = 'from-red-500 to-orange-500';
       </div>
     </aside>
     
+    <!-- Mobile Drawer para historial -->
+    <?php 
+    $drawerId = 'podcast-history-drawer';
+    $drawerTitle = 'Historial';
+    $drawerIcon = 'iconoir-clock';
+    $drawerIconColor = 'text-orange-500';
+    include __DIR__ . '/../includes/mobile-drawer.php'; 
+    ?>
+    
     <!-- Main content area -->
-    <main class="flex-1 flex flex-col overflow-hidden">
+    <main class="flex-1 flex flex-col overflow-hidden min-w-0">
       <?php include __DIR__ . '/../includes/header-unified.php'; ?>
 
       <!-- Single column layout (contenido) -->
-      <div class="flex-1 overflow-auto">
-        <div class="max-w-2xl mx-auto p-6 space-y-6">
+      <div class="flex-1 overflow-auto pb-16 lg:pb-0">
+        <div class="max-w-2xl mx-auto p-4 lg:p-6 space-y-4 lg:space-y-6">
           
           <!-- Input Section -->
           <section class="glass-strong rounded-2xl p-6 border border-slate-200/50">
@@ -211,5 +221,25 @@ $headerIconColor = 'from-red-500 to-orange-500';
   </div>
 
   <script src="/assets/js/gesture-podcast.js"></script>
+  
+  <!-- Bottom Navigation (móvil) -->
+  <?php include __DIR__ . '/../includes/bottom-nav.php'; ?>
+  
+  <script>
+    // Sincronizar historial con drawer móvil
+    document.addEventListener('DOMContentLoaded', () => {
+      const desktopHistory = document.getElementById('history-list');
+      const mobileDrawerContent = document.getElementById('podcast-history-drawer-content');
+      
+      if (desktopHistory && mobileDrawerContent) {
+        mobileDrawerContent.innerHTML = desktopHistory.innerHTML;
+        
+        const observer = new MutationObserver(() => {
+          mobileDrawerContent.innerHTML = desktopHistory.innerHTML;
+        });
+        observer.observe(desktopHistory, { childList: true, subtree: true });
+      }
+    });
+  </script>
 </body>
 </html>

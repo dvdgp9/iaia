@@ -20,11 +20,12 @@ $headerTitle = 'Lex';
 $headerSubtitle = 'Asistente Legal';
 $headerIconText = 'L';
 $headerIconColor = 'from-rose-500 to-pink-600';
-$headerCustomButtons = '<button id="toggle-docs-panel" class="flex items-center gap-2 px-3 py-1.5 text-sm text-slate-600 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-smooth">
+$headerCustomButtons = '<button id="toggle-docs-panel" class="hidden lg:flex items-center gap-2 px-3 py-1.5 text-sm text-slate-600 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-smooth">
   <i class="iconoir-folder"></i>
   <span>Documentos</span>
   <i class="iconoir-nav-arrow-right text-xs" id="docs-arrow"></i>
 </button>';
+$headerDrawerId = 'lex-history-drawer';
 ?><!DOCTYPE html>
 <html lang="es">
 <?php include __DIR__ . '/../includes/head.php'; ?>
@@ -32,8 +33,8 @@ $headerCustomButtons = '<button id="toggle-docs-panel" class="flex items-center 
   <div class="min-h-screen flex h-screen">
     <?php include __DIR__ . '/../includes/left-tabs.php'; ?>
     
-    <!-- Sidebar de historial -->
-    <aside id="history-sidebar" class="w-72 glass-strong border-r border-slate-200/50 flex flex-col shrink-0">
+    <!-- Sidebar de historial (solo desktop) -->
+    <aside id="history-sidebar" class="hidden lg:flex w-72 glass-strong border-r border-slate-200/50 flex-col shrink-0">
       <div class="p-4 border-b border-slate-200/50">
         <div class="flex items-center justify-between">
           <h2 class="font-semibold text-slate-800 flex items-center gap-2">
@@ -55,18 +56,30 @@ $headerCustomButtons = '<button id="toggle-docs-panel" class="flex items-center 
       </div>
     </aside>
     
+    <!-- Mobile Drawer para historial -->
+    <?php 
+    $drawerId = 'lex-history-drawer';
+    $drawerTitle = 'Historial';
+    $drawerIcon = 'iconoir-clock';
+    $drawerIconColor = 'text-rose-500';
+    $drawerShowNewButton = true;
+    $drawerNewButtonId = 'mobile-new-chat-btn';
+    $drawerNewButtonText = 'Nueva consulta';
+    include __DIR__ . '/../includes/mobile-drawer.php'; 
+    ?>
+    
     <!-- Main content area -->
-    <main class="flex-1 flex flex-col overflow-hidden">
+    <main class="flex-1 flex flex-col overflow-hidden min-w-0">
       <?php include __DIR__ . '/../includes/header-unified.php'; ?>
 
       <!-- Content area with optional docs panel -->
-      <div class="flex-1 flex overflow-hidden">
+      <div class="flex-1 flex overflow-hidden pb-16 lg:pb-0">
         
         <!-- Chat area -->
-        <div class="flex-1 flex flex-col bg-mesh">
+        <div class="flex-1 flex flex-col bg-mesh min-w-0">
           
           <!-- Messages -->
-          <div id="messages-container" class="flex-1 overflow-auto p-6">
+          <div id="messages-container" class="flex-1 overflow-auto p-4 lg:p-6">
             <!-- Empty state -->
             <div id="empty-state" class="h-full flex items-center justify-center">
               <div class="text-center max-w-lg">
@@ -200,5 +213,35 @@ $headerCustomButtons = '<button id="toggle-docs-panel" class="flex items-center 
   </div>
 
   <script src="/assets/js/voice-lex.js"></script>
+  
+  <!-- Bottom Navigation (móvil) -->
+  <?php include __DIR__ . '/../includes/bottom-nav.php'; ?>
+  
+  <script>
+    // Sincronizar historial con drawer móvil
+    document.addEventListener('DOMContentLoaded', () => {
+      const desktopHistory = document.getElementById('history-list');
+      const mobileDrawerContent = document.getElementById('lex-history-drawer-content');
+      
+      if (desktopHistory && mobileDrawerContent) {
+        mobileDrawerContent.innerHTML = desktopHistory.innerHTML;
+        
+        const observer = new MutationObserver(() => {
+          mobileDrawerContent.innerHTML = desktopHistory.innerHTML;
+        });
+        observer.observe(desktopHistory, { childList: true, subtree: true });
+      }
+      
+      // Sincronizar botón nueva consulta móvil
+      const mobileNewBtn = document.getElementById('mobile-new-chat-btn');
+      const desktopNewBtn = document.getElementById('new-chat-btn');
+      if (mobileNewBtn && desktopNewBtn) {
+        mobileNewBtn.addEventListener('click', () => {
+          closeMobileDrawer('lex-history-drawer');
+          desktopNewBtn.click();
+        });
+      }
+    });
+  </script>
 </body>
 </html>

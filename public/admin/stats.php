@@ -156,15 +156,15 @@ $chartData = array_map(fn($d) => (int)$d['messages'], $dailyStats);
     <main class="flex-1 flex flex-col overflow-auto bg-slate-50">
       <?php include __DIR__ . '/../includes/header-unified.php'; ?>
 
-      <div class="flex-1 overflow-auto bg-slate-50">
-        <div class="max-w-7xl mx-auto p-6">
+      <div class="flex-1 overflow-auto bg-slate-50 pb-16 lg:pb-0">
+        <div class="max-w-7xl mx-auto p-4 lg:p-6">
           <!-- Header -->
-          <div class="flex items-center justify-between mb-8 mt-6">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6 lg:mb-8 mt-4 lg:mt-6">
             <div>
-              <h1 class="text-3xl font-bold text-slate-800">Panel de Control</h1>
-              <p class="text-slate-600 mt-1">Estadísticas de uso de Ebonia</p>
+              <h1 class="text-2xl lg:text-3xl font-bold text-slate-800">Panel de Control</h1>
+              <p class="text-slate-600 text-sm lg:text-base mt-1">Estadísticas de uso de Ebonia</p>
             </div>
-            <div class="flex gap-3">
+            <div class="flex gap-2 lg:gap-3">
               <!-- Filtro de rango -->
               <div class="flex bg-white rounded-lg border border-slate-200 p-1 shadow-sm">
                 <a href="?range=7" class="px-3 py-1 text-sm rounded-md transition-all <?= $range === '7' ? 'bg-[#23AAC5] text-white font-medium shadow-sm' : 'text-slate-600 hover:bg-slate-50' ?>">7 días</a>
@@ -477,5 +477,8 @@ $chartData = array_map(fn($d) => (int)$d['messages'], $dailyStats);
       }
     });
   </script>
+  
+  <!-- Bottom Navigation (móvil) -->
+  <?php include __DIR__ . '/../includes/bottom-nav.php'; ?>
 </body>
 </html>

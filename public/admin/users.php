@@ -47,15 +47,15 @@ if (!$isSuperadmin) {
     <main class="flex-1 flex flex-col min-w-0">
       <?php include __DIR__ . '/../includes/header-unified.php'; ?>
 
-      <div class="flex-1 overflow-auto bg-slate-50">
-        <div class="max-w-7xl mx-auto p-6">
+      <div class="flex-1 overflow-auto bg-slate-50 pb-16 lg:pb-0">
+        <div class="max-w-7xl mx-auto p-4 lg:p-6">
           <!-- Header -->
-          <div class="flex items-center justify-between mb-8 mt-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 lg:mb-8 mt-4 lg:mt-6">
             <div>
-              <h1 class="text-3xl font-bold text-slate-800">Gestión de usuarios</h1>
-              <p class="text-slate-600 mt-1">Crear, editar y gestionar cuentas de usuario</p>
+              <h1 class="text-2xl lg:text-3xl font-bold text-slate-800">Gestión de usuarios</h1>
+              <p class="text-slate-600 text-sm lg:text-base mt-1">Crear, editar y gestionar cuentas de usuario</p>
             </div>
-            <button id="create-user-btn" class="px-4 py-2 bg-gradient-to-r from-[#23AAC5] to-[#115c6c] text-white rounded-lg font-medium hover:opacity-90 hover:shadow-lg transition-all flex items-center gap-2 shadow-md">
+            <button id="create-user-btn" class="w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-[#23AAC5] to-[#115c6c] text-white rounded-lg font-medium hover:opacity-90 hover:shadow-lg transition-all flex items-center justify-center gap-2 shadow-md">
               <i class="iconoir-plus-circle"></i>
               <span>Nuevo usuario</span>
             </button>
@@ -515,5 +515,8 @@ if (!$isSuperadmin) {
     loadUsers();
     loadDepartments();
   </script>
+  
+  <!-- Bottom Navigation (móvil) -->
+  <?php include __DIR__ . '/../includes/bottom-nav.php'; ?>
 </body>
 </html>
