@@ -334,6 +334,21 @@ $headerDrawerId = 'gesture-history-drawer';
           mobileDrawerContent.innerHTML = desktopHistory.innerHTML;
         });
         observer.observe(desktopHistory, { childList: true, subtree: true });
+        
+        // Event delegation para clics en el drawer móvil
+        mobileDrawerContent.addEventListener('click', (e) => {
+          const historyItem = e.target.closest('[data-history-id], [data-id], .history-item, button');
+          if (historyItem) {
+            // Buscar el elemento correspondiente en desktop por su posición o atributo
+            const allMobileItems = mobileDrawerContent.querySelectorAll('[data-history-id], [data-id], .history-item, button[class*="history"]');
+            const allDesktopItems = desktopHistory.querySelectorAll('[data-history-id], [data-id], .history-item, button[class*="history"]');
+            const index = Array.from(allMobileItems).indexOf(historyItem);
+            if (index >= 0 && allDesktopItems[index]) {
+              closeMobileDrawer('gesture-history-drawer');
+              allDesktopItems[index].click();
+            }
+          }
+        });
       }
     });
   </script>

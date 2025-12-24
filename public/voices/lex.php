@@ -230,6 +230,20 @@ $headerDrawerId = 'lex-history-drawer';
           mobileDrawerContent.innerHTML = desktopHistory.innerHTML;
         });
         observer.observe(desktopHistory, { childList: true, subtree: true });
+        
+        // Event delegation para clics en el drawer móvil
+        mobileDrawerContent.addEventListener('click', (e) => {
+          const historyItem = e.target.closest('[data-history-id], [data-id], [data-conv-id], .history-item, button');
+          if (historyItem) {
+            const allMobileItems = mobileDrawerContent.querySelectorAll('[data-history-id], [data-id], [data-conv-id], .history-item, button[class*="history"]');
+            const allDesktopItems = desktopHistory.querySelectorAll('[data-history-id], [data-id], [data-conv-id], .history-item, button[class*="history"]');
+            const index = Array.from(allMobileItems).indexOf(historyItem);
+            if (index >= 0 && allDesktopItems[index]) {
+              closeMobileDrawer('lex-history-drawer');
+              allDesktopItems[index].click();
+            }
+          }
+        });
       }
       
       // Sincronizar botón nueva consulta móvil

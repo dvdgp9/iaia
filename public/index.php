@@ -143,17 +143,17 @@ $headerShowLogo = true;
                     </button>
                   </div>
                   
-                  <div class="flex gap-3 items-center">
+                  <div class="flex gap-2 lg:gap-3 items-center">
                     <input type="file" id="file-input-empty" class="hidden" accept=".pdf,.png,.jpg,.jpeg,.gif,.webp" />
-                    <button type="button" id="attach-btn-empty" class="p-[10px] text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-2xl transition-smooth border-2 border-slate-200 hover:border-[#23AAC5] leading-none" title="Adjuntar archivo (PDF o imagen)">
+                    <button type="button" id="attach-btn-empty" class="p-2 lg:p-[10px] text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-xl lg:rounded-2xl transition-smooth border-2 border-slate-200 hover:border-[#23AAC5] leading-none shrink-0" title="Adjuntar archivo (PDF o imagen)">
                       <i class="iconoir-attachment text-lg"></i>
                     </button>
-                    <button type="button" id="image-mode-btn-empty" class="p-[10px] text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-2xl transition-smooth border-2 border-slate-200 hover:border-amber-400 leading-none" title="Generar imagen con nanobanana 🍌">
+                    <button type="button" id="image-mode-btn-empty" class="p-2 lg:p-[10px] text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-xl lg:rounded-2xl transition-smooth border-2 border-slate-200 hover:border-amber-400 leading-none shrink-0" title="Generar imagen con nanobanana 🍌">
                       <i class="iconoir-media-image text-lg"></i>
                     </button>
-                    <textarea id="chat-input-empty" rows="1" class="flex-1 border-2 border-slate-200 rounded-2xl px-5 py-[10px] text-base input-focus transition-smooth bg-white/80 resize-none overflow-hidden" placeholder="Escribe tu pregunta aquí..." style="min-height: 44px; max-height: 120px;"></textarea>
-                    <button type="submit" class="h-11 px-7 py-[10px] gradient-brand text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-smooth flex items-center gap-2 leading-none">
-                      <span>Enviar</span>
+                    <textarea id="chat-input-empty" rows="1" class="flex-1 min-w-0 border-2 border-slate-200 rounded-xl lg:rounded-2xl px-3 lg:px-5 py-[10px] text-base input-focus transition-smooth bg-white/80 resize-none overflow-hidden" placeholder="Escribe tu pregunta aquí..." style="min-height: 44px; max-height: 120px;"></textarea>
+                    <button type="submit" class="h-11 p-3 lg:px-7 lg:py-[10px] gradient-brand text-white font-semibold rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-smooth flex items-center justify-center gap-2 leading-none shrink-0">
+                      <span class="hidden lg:inline">Enviar</span>
                       <i class="iconoir-send-diagonal text-base"></i>
                     </button>
                   </div>
@@ -329,14 +329,14 @@ $headerShowLogo = true;
           
           <div class="flex gap-2 lg:gap-3 items-center">
             <input type="file" id="file-input" class="hidden" accept=".pdf,.png,.jpg,.jpeg,.gif,.webp" />
-            <button type="button" id="attach-btn" class="hidden lg:flex p-[10px] text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/5 rounded-xl transition-all border-2 border-slate-200 hover:border-[#23AAC5] leading-none" title="Adjuntar archivo">
+            <button type="button" id="attach-btn" class="p-2 lg:p-[10px] text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/5 rounded-xl transition-all border-2 border-slate-200 hover:border-[#23AAC5] leading-none shrink-0" title="Adjuntar archivo">
               <i class="iconoir-attachment text-lg"></i>
             </button>
-            <button type="button" id="image-mode-btn" class="p-2 lg:p-[10px] text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-lg lg:rounded-xl transition-all border-2 border-slate-200 hover:border-amber-400 leading-none shrink-0" title="Generar imagen">
+            <button type="button" id="image-mode-btn" class="p-2 lg:p-[10px] text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-xl transition-all border-2 border-slate-200 hover:border-amber-400 leading-none shrink-0" title="Generar imagen con nanobanana 🍌">
               <i class="iconoir-media-image text-lg"></i>
             </button>
-            <textarea id="chat-input" rows="1" class="flex-1 min-w-0 border-2 border-slate-200 rounded-xl px-3 lg:px-4 py-[10px] focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-all resize-none overflow-hidden text-sm lg:text-base" placeholder="Escribe un mensaje..." style="min-height: 44px; max-height: 120px;"></textarea>
-            <button type="submit" class="h-11 px-4 lg:px-6 py-[10px] gradient-brand-btn text-white rounded-xl font-medium shadow-md hover:shadow-lg hover:opacity-90 transition-all duration-200 flex items-center gap-2 leading-none shrink-0">
+            <textarea id="chat-input" rows="1" class="flex-1 min-w-0 border-2 border-slate-200 rounded-xl px-3 lg:px-4 py-[10px] focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-all resize-none overflow-hidden" placeholder="Escribe un mensaje..." style="min-height: 44px; max-height: 120px;"></textarea>
+            <button type="submit" class="h-11 p-3 lg:px-6 lg:py-[10px] gradient-brand-btn text-white rounded-xl font-medium shadow-md hover:shadow-lg hover:opacity-90 transition-all duration-200 flex items-center justify-center gap-2 leading-none shrink-0">
               <span class="hidden lg:inline">Enviar</span>
               <svg class="w-5 h-5 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
             </button>
@@ -1791,36 +1791,37 @@ $headerShowLogo = true;
         
         observer.observe(desktopSidebar, { childList: true, subtree: true });
         
-        // Delegación de eventos para carpetas (folder-item)
+        // Event delegation para clics en el drawer móvil
         mobileDrawerContent.addEventListener('click', (e) => {
-          const folderBtn = e.target.closest('.folder-item');
-          if (folderBtn) {
-            // Encontrar el botón equivalente en el desktop sidebar y simular clic
-            const folderId = folderBtn.dataset.folderId;
-            const desktopFolderBtn = desktopSidebar.querySelector(`.folder-item[data-folder-id="${folderId}"]`);
-            if (desktopFolderBtn) {
-              desktopFolderBtn.click();
+          // Buscar si se hizo clic en una conversación
+          const convItem = e.target.closest('[data-conv-id]');
+          if (convItem) {
+            const convId = convItem.getAttribute('data-conv-id');
+            // Buscar y clickear la conversación correspondiente en desktop
+            const desktopConv = desktopSidebar.querySelector(`[data-conv-id="${convId}"]`);
+            if (desktopConv) {
+              closeMobileDrawer('conversations-drawer');
+              desktopConv.click();
             }
+            return;
           }
-        });
-        
-        // Delegación de eventos para conversaciones
-        mobileDrawerContent.addEventListener('click', (e) => {
-          // Buscar el botón de conversación (el botón principal, no los de acciones)
-          const convButton = e.target.closest('li.group button.text-left.flex-1');
-          if (convButton && !e.target.closest('.opacity-0')) { // Ignorar botones de acciones
-            // Simular clic en el botón equivalente del desktop
-            const convLi = convButton.closest('li');
-            const convIndex = Array.from(convLi.parentElement.children).indexOf(convLi);
-            const desktopConvList = desktopSidebar.querySelector('#conv-list');
-            if (desktopConvList && desktopConvList.children[convIndex]) {
-              const desktopBtn = desktopConvList.children[convIndex].querySelector('button.text-left.flex-1');
-              if (desktopBtn) {
-                desktopBtn.click();
-                // Cerrar drawer después de seleccionar conversación
-                closeMobileDrawer('conversations-drawer');
-              }
+          
+          // Buscar si se hizo clic en una carpeta
+          const folderItem = e.target.closest('[data-folder-id]');
+          if (folderItem) {
+            const folderId = folderItem.getAttribute('data-folder-id');
+            // Buscar y clickear la carpeta correspondiente en desktop
+            const desktopFolder = desktopSidebar.querySelector(`[data-folder-id="${folderId}"]`);
+            if (desktopFolder) {
+              desktopFolder.click();
+              // Refrescar contenido del drawer después del clic
+              setTimeout(() => {
+                if (foldersSection) {
+                  mobileDrawerContent.innerHTML = foldersSection.innerHTML;
+                }
+              }, 100);
             }
+            return;
           }
         });
       }
