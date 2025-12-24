@@ -89,7 +89,7 @@ $headerStyle .= ' flex items-center justify-between shadow-sm shrink-0 sticky to
           <div class="min-w-0">
             <span class="font-semibold text-slate-800 text-sm lg:text-base leading-tight truncate block"><?php echo htmlspecialchars($headerTitle); ?></span>
             <?php if ($headerSubtitle): ?>
-              <span class="hidden lg:inline text-xs text-slate-500 ml-2"><?php echo htmlspecialchars($headerSubtitle); ?></span>
+              <span class="hidden lg:block text-xs text-slate-500 -mt-0.5"><?php echo htmlspecialchars($headerSubtitle); ?></span>
             <?php endif; ?>
           </div>
         </div>
