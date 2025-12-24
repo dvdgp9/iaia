@@ -157,8 +157,8 @@ $headerShowLogo = true;
                     <button type="button" id="attach-btn-empty" class="p-2 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-xl transition-smooth border-2 border-slate-200 hover:border-[#23AAC5] leading-none shrink-0" title="Adjuntar archivo (PDF o imagen)">
                       <i class="iconoir-attachment text-lg"></i>
                     </button>
-                    <button type="button" id="image-mode-btn-empty" class="p-2 text-slate-400 hover:text-amber-500 rounded-xl transition-smooth border-2 border-slate-200 leading-none shrink-0" title="Generar imagen con nanobanana 🍌">
-                      <i class="iconoir-media-image text-lg"></i>
+                    <button type="button" id="image-mode-btn-empty" class="h-5 w-5 p-0 flex items-center justify-center text-slate-400 hover:text-amber-500 rounded-md transition-smooth leading-none shrink-0" title="Generar imagen con nanobanana 🍌">
+                      <i class="iconoir-media-image text-[20px]"></i>
                     </button>
                     <div class="flex-1"></div>
                     <button type="submit" class="h-11 px-6 gradient-brand text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-smooth flex items-center justify-center gap-2 leading-none">
@@ -172,8 +172,8 @@ $headerShowLogo = true;
                     <button type="button" id="attach-btn-empty-desktop" class="p-[10px] text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-2xl transition-smooth border-2 border-slate-200 hover:border-[#23AAC5] leading-none shrink-0" title="Adjuntar archivo (PDF o imagen)">
                       <i class="iconoir-attachment text-lg"></i>
                     </button>
-                    <button type="button" id="image-mode-btn-empty-desktop" class="p-[10px] text-slate-400 hover:text-amber-500 rounded-2xl transition-smooth border-2 border-slate-200 leading-none shrink-0" title="Generar imagen con nanobanana 🍌">
-                      <i class="iconoir-media-image text-lg"></i>
+                    <button type="button" id="image-mode-btn-empty-desktop" class="h-5 w-5 p-0 flex items-center justify-center text-slate-400 hover:text-amber-500 rounded-md transition-smooth leading-none shrink-0" title="Generar imagen con nanobanana 🍌">
+                      <i class="iconoir-media-image text-[20px]"></i>
                     </button>
                     <textarea id="chat-input-empty-desktop" rows="1" class="flex-1 min-w-0 border-2 border-slate-200 rounded-2xl px-5 py-[10px] text-base input-focus transition-smooth bg-white/80 resize-none overflow-hidden" placeholder="Escribe tu pregunta aquí..." style="min-height: 44px; max-height: 120px;"></textarea>
                     <button type="submit" class="h-11 px-7 py-[10px] gradient-brand text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-smooth flex items-center justify-center gap-2 leading-none shrink-0">
