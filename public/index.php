@@ -108,7 +108,7 @@ $headerShowLogo = true;
             <div class="text-amber-700 mt-0.5">Para optimizar el rendimiento, solo se envían los mensajes más recientes al asistente. El historial completo permanece guardado.</div>
           </div>
         </div>
-        <div id="empty-state" class="absolute inset-0 overflow-auto p-6 pb-40 lg:pb-0">
+        <div id="empty-state" class="absolute inset-0 overflow-auto p-6">
           <div class="max-w-6xl mx-auto py-8">
             
             <!-- Hero Input Section -->
@@ -309,7 +309,7 @@ $headerShowLogo = true;
           </div>
         </div>
       </section>
-      <footer id="chat-footer" class="hidden p-4 bg-white border-t border-slate-200 shadow-lg fixed bottom-16 left-0 right-0 z-[60] lg:static lg:block">
+      <footer id="chat-footer" class="hidden p-4 lg:p-6 bg-white border-t border-slate-200 shadow-lg fixed lg:static left-0 right-0 z-40" style="bottom: calc(4rem + env(safe-area-inset-bottom, 0px));">
         <form id="chat-form" class="max-w-4xl mx-auto">
           <!-- Preview de archivo adjunto -->
           <div id="file-preview" class="hidden mb-3 p-3 bg-slate-50 border border-slate-200 rounded-lg flex items-center gap-3">
