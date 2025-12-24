@@ -186,6 +186,9 @@
   }
 
   // ===== INIT =====
+  // Exponer visor de documentos para llamadas externas (p. ej., drawer móvil)
+  window.lexOpenDocViewer = openDocViewer;
+
   async function init() {
     try {
       // Get user info

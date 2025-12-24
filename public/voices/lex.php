@@ -300,8 +300,8 @@ $headerDrawerId = 'lex-history-drawer';
           const docId = btn.getAttribute('data-doc-id');
           if (docId) {
             closeMobileDrawer('lex-docs-drawer');
-            if (typeof openDocViewer === 'function') {
-              openDocViewer(docId);
+            if (window.lexOpenDocViewer) {
+              window.lexOpenDocViewer(docId);
             }
           }
         });
