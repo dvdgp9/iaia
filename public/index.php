@@ -967,13 +967,13 @@ $headerShowLogo = true;
         const li = document.createElement('li');
         const isActive = currentConversationId === c.id;
         li.className = 'group rounded-lg transition-all duration-200 ' + (isActive ? 'bg-gradient-to-r from-[#23AAC5]/10 to-[#115c6c]/10 shadow-sm' : 'hover:bg-slate-50');
+        li.setAttribute('data-conv-id', c.id);
+        li.style.minHeight = '48px';
+
         const container = document.createElement('div');
-        container.className = 'flex items-center gap-2 p-2';
-        const btn = document.createElement('button');
-        btn.className = 'text-left flex-1 min-w-0 flex items-center gap-2';
-        btn.setAttribute('data-conv-id', c.id);
-        
-        // Icono de estrella favorito
+        container.className = 'flex items-center gap-3 p-2';
+
+        // Botón estrella fuera del botón principal
         const starBtn = document.createElement('button');
         starBtn.className = 'flex-shrink-0 transition-colors';
         starBtn.innerHTML = c.is_favorite 
@@ -989,7 +989,11 @@ $headerShowLogo = true;
             alert('Error al cambiar favorito: ' + err.message);
           }
         });
-        
+
+        const btn = document.createElement('button');
+        btn.className = 'text-left flex-1 min-w-0 flex items-center gap-2';
+        btn.setAttribute('data-conv-id', c.id);
+
         const textContainer = document.createElement('div');
         textContainer.className = 'flex-1 min-w-0';
         const titleEl = document.createElement('div');
@@ -1000,11 +1004,11 @@ $headerShowLogo = true;
         timeEl.textContent = new Date(c.updated_at).toLocaleDateString('es-ES', {month: 'short', day: 'numeric'});
         textContainer.appendChild(titleEl);
         textContainer.appendChild(timeEl);
-        
-        btn.appendChild(starBtn);
+
         btn.appendChild(textContainer);
         btn.addEventListener('click', async () => {
-          // Limpiar conversación vacía antes de cambiar (excepto si es la que vamos a abrir)
+          // Asegurar cierre de drawer móvil
+          closeMobileDrawer('conversations-drawer');
           await cleanupEmptyConversation(c.id);
           currentConversationId = c.id;
           updateConvTitle(c.title);
@@ -1012,8 +1016,9 @@ $headerShowLogo = true;
           messagesEl.innerHTML = '';
           await loadMessages(c.id);
         });
+
         const actions = document.createElement('div');
-        actions.className = 'hidden lg:flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity';
+        actions.className = 'flex items-center gap-0.5 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity';
         const renameBtn = document.createElement('button');
         renameBtn.className = 'p-1.5 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded transition-colors';
         renameBtn.innerHTML = '<i class="iconoir-edit-pencil"></i>';
@@ -1024,7 +1029,6 @@ $headerShowLogo = true;
           if (!title) return;
           try {
             await api('/api/conversations/rename.php', { method: 'POST', body: { id: c.id, title } });
-            // Actualizar título en header si es la conversación activa
             if (currentConversationId === c.id) {
               updateConvTitle(title);
             }
@@ -1033,6 +1037,7 @@ $headerShowLogo = true;
             alert('Error al renombrar: ' + err.message);
           }
         });
+
         const moveBtn = document.createElement('button');
         moveBtn.className = 'p-1.5 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded transition-colors';
         moveBtn.innerHTML = '<i class="iconoir-folder-settings"></i>';
@@ -1041,34 +1046,43 @@ $headerShowLogo = true;
           e.stopPropagation();
           openMoveModal(c);
         });
-        
+
         const delBtn = document.createElement('button');
         delBtn.className = 'p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors';
         delBtn.innerHTML = '<i class="iconoir-trash"></i>';
         delBtn.title = 'Borrar';
         delBtn.addEventListener('click', async (e) => {
           e.stopPropagation();
-          if (!confirm('¿Borrar conversación?')) return;
+          if(!confirm('¿Eliminar conversación?')) return;
           try {
             await api('/api/conversations/delete.php', { method: 'POST', body: { id: c.id } });
-            if (currentConversationId === c.id) {
+            if(currentConversationId === c.id){
               currentConversationId = null;
               messagesEl.innerHTML = '';
               updateConvTitle(null);
-              showEmptyMode();
+              chatEmptyState?.classList.remove('hidden');
+              messagesEl.classList.add('hidden');
             }
             await loadFolders();
             await loadConversations();
           } catch (err) {
-            alert('Error al borrar: ' + err.message);
+            alert('Error al eliminar: ' + err.message);
           }
         });
+
         actions.appendChild(renameBtn);
         actions.appendChild(moveBtn);
         actions.appendChild(delBtn);
+
+        container.appendChild(starBtn);
         container.appendChild(btn);
         container.appendChild(actions);
         li.appendChild(container);
+        // Hacer clic en toda la fila (excepto botones de acción)
+        li.addEventListener('click', (e) => {
+          if (e.target.closest('button') && !e.target.closest('[data-conv-id]')) return;
+          btn.click();
+        });
         convListEl.appendChild(li);
       }
     }

@@ -63,7 +63,7 @@ $headerDrawerId = 'gesture-history-drawer';
       <?php include __DIR__ . '/../includes/header-unified.php'; ?>
 
       <!-- Scrollable content -->
-      <div class="flex-1 overflow-auto p-4 lg:p-6 pb-20 lg:pb-6 min-h-0">
+      <div class="flex-1 overflow-auto p-4 lg:p-6 pb-20 lg:pb-6">
         <div class="max-w-4xl mx-auto">
           <!-- Header del gesto -->
           <div class="flex items-center gap-4 mb-6">
