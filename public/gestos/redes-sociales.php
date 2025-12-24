@@ -62,10 +62,10 @@ $headerDrawerId = 'social-history-drawer';
       <?php include __DIR__ . '/../includes/header-unified.php'; ?>
 
       <!-- Two-column layout (stacked en móvil) -->
-      <div class="flex-1 flex flex-col lg:flex-row overflow-hidden pb-16 lg:pb-0">
+      <div class="flex-1 flex flex-col lg:flex-row overflow-auto lg:overflow-hidden pb-20 lg:pb-0">
         
         <!-- LEFT: Configuration panel -->
-        <div class="w-full lg:w-[420px] shrink-0 lg:border-r border-slate-200/50 overflow-auto p-4 lg:p-5">
+        <div class="w-full lg:w-[420px] shrink-0 lg:border-r border-slate-200/50 lg:overflow-auto p-4 lg:p-5">
           <form id="social-media-form" class="space-y-5">
             
             <!-- INPUT DE CONTEXTO -->
@@ -304,7 +304,7 @@ $headerDrawerId = 'social-history-drawer';
         </div>
         
         <!-- RIGHT: Result panel -->
-        <div class="flex-1 overflow-auto p-6 bg-slate-50/30">
+        <div class="flex-1 lg:overflow-auto p-4 lg:p-6 bg-slate-50/30">
           
           <!-- Estado inicial: placeholder -->
           <div id="result-placeholder" class="h-full flex items-center justify-center">
