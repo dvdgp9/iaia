@@ -100,7 +100,7 @@ $headerShowLogo = true;
     <main class="flex-1 flex flex-col min-w-0">
       <?php include __DIR__ . '/includes/header-unified.php'; ?>
       
-      <section class="flex-1 overflow-auto bg-mesh relative" id="messages-container">
+      <section class="flex-1 overflow-auto bg-mesh relative pb-40 lg:pb-0" id="messages-container">
         <div id="context-warning" class="hidden mx-6 mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
           <i class="iconoir-info-circle text-amber-600 text-lg mt-0.5"></i>
           <div class="flex-1 text-sm">
@@ -108,7 +108,7 @@ $headerShowLogo = true;
             <div class="text-amber-700 mt-0.5">Para optimizar el rendimiento, solo se envían los mensajes más recientes al asistente. El historial completo permanece guardado.</div>
           </div>
         </div>
-        <div id="empty-state" class="absolute inset-0 overflow-auto p-6">
+        <div id="empty-state" class="absolute inset-0 overflow-auto p-6 pb-40 lg:pb-0">
           <div class="max-w-6xl mx-auto py-8">
             
             <!-- Hero Input Section -->
@@ -309,7 +309,7 @@ $headerShowLogo = true;
           </div>
         </div>
       </section>
-      <footer id="chat-footer" class="hidden p-6 bg-white border-t border-slate-200 shadow-lg">
+      <footer id="chat-footer" class="hidden p-4 bg-white border-t border-slate-200 shadow-lg fixed bottom-16 left-0 right-0 z-[60] lg:static lg:block">
         <form id="chat-form" class="max-w-4xl mx-auto">
           <!-- Preview de archivo adjunto -->
           <div id="file-preview" class="hidden mb-3 p-3 bg-slate-50 border border-slate-200 rounded-lg flex items-center gap-3">
