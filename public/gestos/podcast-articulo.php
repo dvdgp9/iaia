@@ -83,7 +83,7 @@ $headerDrawerId = 'podcast-history-drawer';
       <?php include __DIR__ . '/../includes/header-unified.php'; ?>
 
       <!-- Single column layout (contenido) -->
-      <div class="flex-1 overflow-auto pb-16 lg:pb-0">
+      <div class="flex-1 overflow-auto pb-16 lg:pb-0 min-h-0">
         <div class="max-w-2xl mx-auto p-4 lg:p-6 space-y-4 lg:space-y-6">
           
           <!-- Input Section -->

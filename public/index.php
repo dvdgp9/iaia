@@ -971,6 +971,7 @@ $headerShowLogo = true;
         container.className = 'flex items-center gap-2 p-2';
         const btn = document.createElement('button');
         btn.className = 'text-left flex-1 min-w-0 flex items-center gap-2';
+        btn.setAttribute('data-conv-id', c.id);
         
         // Icono de estrella favorito
         const starBtn = document.createElement('button');
@@ -1012,7 +1013,7 @@ $headerShowLogo = true;
           await loadMessages(c.id);
         });
         const actions = document.createElement('div');
-        actions.className = 'flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity';
+        actions.className = 'hidden lg:flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity';
         const renameBtn = document.createElement('button');
         renameBtn.className = 'p-1.5 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded transition-colors';
         renameBtn.innerHTML = '<i class="iconoir-edit-pencil"></i>';
