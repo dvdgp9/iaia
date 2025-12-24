@@ -54,7 +54,7 @@ $drawerNewButtonText = $drawerNewButtonText ?? 'Nuevo';
   <?php endif; ?>
   
   <!-- Drawer Content (scrollable) -->
-  <div id="<?php echo $drawerId; ?>-content" class="flex-1 overflow-y-auto">
+  <div id="<?php echo $drawerId; ?>-content" class="flex-1 overflow-y-auto px-3 py-4">
     <?php if (isset($drawerContent)): ?>
       <?php echo $drawerContent; ?>
     <?php else: ?>

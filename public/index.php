@@ -794,7 +794,7 @@ $headerShowLogo = true;
         
         const btn = document.createElement('button');
         btn.dataset.folderId = folder.id;
-        btn.className = 'folder-item w-full text-left p-2 rounded-lg transition-all duration-200 flex items-center gap-2 hover:bg-slate-50';
+        btn.className = 'folder-item w-full text-left p-2 rounded-lg transition-all duration-200 flex items-center gap-2 hover:bg-slate-50 whitespace-nowrap min-w-0';
         if (currentFolderId === folder.id) {
           btn.classList.add('bg-gradient-to-r', 'from-[#23AAC5]/10', 'to-[#115c6c]/10', 'shadow-sm');
         }
@@ -1037,7 +1037,7 @@ $headerShowLogo = true;
         });
 
         const actions = document.createElement('div');
-        actions.className = 'flex items-center gap-0.5 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity';
+        actions.className = 'flex items-center gap-0.5 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity flex-shrink-0 whitespace-nowrap';
         const renameBtn = document.createElement('button');
         renameBtn.className = 'p-1.5 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded transition-colors';
         renameBtn.setAttribute('data-action', 'rename');
