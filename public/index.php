@@ -827,6 +827,7 @@ $headerShowLogo = true;
         
         const renameBtn = document.createElement('button');
         renameBtn.className = 'p-1 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded transition-colors';
+        renameBtn.setAttribute('data-action-folder', 'rename');
         renameBtn.innerHTML = '<i class="iconoir-edit-pencil text-xs"></i>';
         renameBtn.title = 'Renombrar';
         renameBtn.addEventListener('click', async (e) => {
@@ -843,6 +844,7 @@ $headerShowLogo = true;
         
         const delBtn = document.createElement('button');
         delBtn.className = 'p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors';
+        delBtn.setAttribute('data-action-folder', 'delete');
         delBtn.innerHTML = '<i class="iconoir-trash text-xs"></i>';
         delBtn.title = 'Eliminar';
         delBtn.addEventListener('click', async (e) => {
@@ -1871,12 +1873,22 @@ $headerShowLogo = true;
         const foldersSection = desktopSidebar.querySelector('.flex-1.overflow-y-auto');
         if (foldersSection) {
           mobileDrawerContent.innerHTML = foldersSection.innerHTML;
+          // Forzar visibilidad de acciones (no hay hover en móvil)
+          mobileDrawerContent.querySelectorAll('.group .opacity-0').forEach(el => {
+            el.classList.remove('opacity-0');
+            el.classList.add('opacity-100');
+          });
         }
         
         // Observer para mantener sincronizado
         const observer = new MutationObserver(() => {
           if (foldersSection) {
             mobileDrawerContent.innerHTML = foldersSection.innerHTML;
+            // Forzar visibilidad de acciones tras refrescar
+            mobileDrawerContent.querySelectorAll('.group .opacity-0').forEach(el => {
+              el.classList.remove('opacity-0');
+              el.classList.add('opacity-100');
+            });
           }
         });
         
@@ -1884,6 +1896,14 @@ $headerShowLogo = true;
         
         // Event delegation para clics en el drawer móvil
         mobileDrawerContent.addEventListener('click', (e) => {
+          // Botón "Nueva carpeta"
+          const newFolderBtnMobile = e.target.closest('#new-folder-btn');
+          if (newFolderBtnMobile) {
+            const desktopNewFolderBtn = desktopSidebar.querySelector('#new-folder-btn');
+            if (desktopNewFolderBtn) desktopNewFolderBtn.click();
+            return;
+          }
+
           // Buscar si se hizo clic en una conversación
           const convItem = e.target.closest('[data-conv-id]');
           if (convItem) {
@@ -1920,6 +1940,21 @@ $headerShowLogo = true;
           const folderItem = e.target.closest('[data-folder-id]');
           if (folderItem) {
             const folderId = folderItem.getAttribute('data-folder-id');
+            // ¿Se clicó una acción de carpeta?
+            const folderActionBtn = e.target.closest('[data-action-folder]');
+            if (folderActionBtn) {
+              const action = folderActionBtn.getAttribute('data-action-folder');
+              const desktopFolder = desktopSidebar.querySelector(`[data-folder-id="${folderId}"]`);
+              if (desktopFolder) {
+                const desktopAction = desktopFolder.parentElement.querySelector(`[data-action-folder="${action}"]`);
+                if (desktopAction) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  desktopAction.click();
+                }
+              }
+              return;
+            }
             // Buscar y clickear la carpeta correspondiente en desktop
             const desktopFolder = desktopSidebar.querySelector(`[data-folder-id="${folderId}"]`);
             if (desktopFolder) {
@@ -1928,6 +1963,11 @@ $headerShowLogo = true;
               setTimeout(() => {
                 if (foldersSection) {
                   mobileDrawerContent.innerHTML = foldersSection.innerHTML;
+                  // Reaplicar visibilidad de acciones
+                  mobileDrawerContent.querySelectorAll('.group .opacity-0').forEach(el => {
+                    el.classList.remove('opacity-0');
+                    el.classList.add('opacity-100');
+                  });
                 }
               }, 100);
             }
