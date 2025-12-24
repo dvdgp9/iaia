@@ -28,7 +28,7 @@ $drawerNewButtonText = $drawerNewButtonText ?? 'Nuevo';
 
 <!-- Mobile Drawer Panel -->
 <aside id="<?php echo $drawerId; ?>" 
-       class="lg:hidden fixed top-0 left-0 bottom-0 z-50 w-[85vw] max-w-[320px] bg-white shadow-2xl transform -translate-x-full transition-transform duration-300 ease-out flex flex-col">
+       class="lg:hidden fixed top-0 left-0 bottom-0 z-50 w-[90vw] max-w-sm bg-white shadow-2xl transform -translate-x-full transition-transform duration-300 ease-out flex flex-col">
   
   <!-- Drawer Header -->
   <div class="flex items-center justify-between p-4 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-white">

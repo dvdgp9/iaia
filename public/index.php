@@ -327,17 +327,17 @@ $headerShowLogo = true;
             </button>
           </div>
           
-          <div class="flex gap-3 items-center">
+          <div class="flex gap-2 lg:gap-3 items-center">
             <input type="file" id="file-input" class="hidden" accept=".pdf,.png,.jpg,.jpeg,.gif,.webp" />
-            <button type="button" id="attach-btn" class="p-[10px] text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/5 rounded-xl transition-all border-2 border-slate-200 hover:border-[#23AAC5] leading-none" title="Adjuntar archivo">
+            <button type="button" id="attach-btn" class="hidden lg:flex p-[10px] text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/5 rounded-xl transition-all border-2 border-slate-200 hover:border-[#23AAC5] leading-none" title="Adjuntar archivo">
               <i class="iconoir-attachment text-lg"></i>
             </button>
-            <button type="button" id="image-mode-btn" class="p-[10px] text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-xl transition-all border-2 border-slate-200 hover:border-amber-400 leading-none" title="Generar imagen con nanobanana 🍌">
+            <button type="button" id="image-mode-btn" class="p-2 lg:p-[10px] text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-lg lg:rounded-xl transition-all border-2 border-slate-200 hover:border-amber-400 leading-none shrink-0" title="Generar imagen">
               <i class="iconoir-media-image text-lg"></i>
             </button>
-            <textarea id="chat-input" rows="1" class="flex-1 border-2 border-slate-200 rounded-xl px-4 py-[10px] focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-all resize-none overflow-hidden" placeholder="Escribe un mensaje..." style="min-height: 44px; max-height: 120px;"></textarea>
-            <button type="submit" class="h-11 px-6 py-[10px] gradient-brand-btn text-white rounded-xl font-medium shadow-md hover:shadow-lg hover:opacity-90 transition-all duration-200 flex items-center gap-2 leading-none">
-              <span>Enviar</span>
+            <textarea id="chat-input" rows="1" class="flex-1 min-w-0 border-2 border-slate-200 rounded-xl px-3 lg:px-4 py-[10px] focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-all resize-none overflow-hidden text-sm lg:text-base" placeholder="Escribe un mensaje..." style="min-height: 44px; max-height: 120px;"></textarea>
+            <button type="submit" class="h-11 px-4 lg:px-6 py-[10px] gradient-brand-btn text-white rounded-xl font-medium shadow-md hover:shadow-lg hover:opacity-90 transition-all duration-200 flex items-center gap-2 leading-none shrink-0">
+              <span class="hidden lg:inline">Enviar</span>
               <svg class="w-5 h-5 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
             </button>
           </div>
@@ -1790,6 +1790,39 @@ $headerShowLogo = true;
         });
         
         observer.observe(desktopSidebar, { childList: true, subtree: true });
+        
+        // Delegación de eventos para carpetas (folder-item)
+        mobileDrawerContent.addEventListener('click', (e) => {
+          const folderBtn = e.target.closest('.folder-item');
+          if (folderBtn) {
+            // Encontrar el botón equivalente en el desktop sidebar y simular clic
+            const folderId = folderBtn.dataset.folderId;
+            const desktopFolderBtn = desktopSidebar.querySelector(`.folder-item[data-folder-id="${folderId}"]`);
+            if (desktopFolderBtn) {
+              desktopFolderBtn.click();
+            }
+          }
+        });
+        
+        // Delegación de eventos para conversaciones
+        mobileDrawerContent.addEventListener('click', (e) => {
+          // Buscar el botón de conversación (el botón principal, no los de acciones)
+          const convButton = e.target.closest('li.group button.text-left.flex-1');
+          if (convButton && !e.target.closest('.opacity-0')) { // Ignorar botones de acciones
+            // Simular clic en el botón equivalente del desktop
+            const convLi = convButton.closest('li');
+            const convIndex = Array.from(convLi.parentElement.children).indexOf(convLi);
+            const desktopConvList = desktopSidebar.querySelector('#conv-list');
+            if (desktopConvList && desktopConvList.children[convIndex]) {
+              const desktopBtn = desktopConvList.children[convIndex].querySelector('button.text-left.flex-1');
+              if (desktopBtn) {
+                desktopBtn.click();
+                // Cerrar drawer después de seleccionar conversación
+                closeMobileDrawer('conversations-drawer');
+              }
+            }
+          }
+        });
       }
       
       // Sincronizar botón nueva conversación móvil
