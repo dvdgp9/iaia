@@ -728,22 +728,7 @@ $headerShowLogo = true;
       }
     })();
 
-    // Toggle dropdown perfil
-    if (profileBtn && profileDropdown) {
-      profileBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        e.preventDefault();
-        profileDropdown.classList.toggle('hidden');
-      });
-    }
-    
-    // Cerrar dropdown al hacer clic fuera
-    document.addEventListener('click', (e) => {
-      if (!profileDropdown.classList.contains('hidden') && 
-          !e.target.closest('#profile-dropdown-container')) {
-        profileDropdown.classList.add('hidden');
-      }
-    });
+    // El dropdown de perfil se maneja en header-unified.php
     
     sortSelect.addEventListener('change', () => loadConversations());
     
@@ -1305,10 +1290,11 @@ $headerShowLogo = true;
       // Clases base según botón original (sin efectos de tamaño)
       const chatBtnActive = 'p-2 lg:p-[10px] text-amber-600 bg-amber-50 rounded-xl transition-all border-2 border-amber-400 leading-none shrink-0';
       const chatBtnInactive = 'p-2 lg:p-[10px] text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-xl transition-all border-2 border-slate-200 hover:border-amber-400 leading-none shrink-0';
-      const emptyBtnActiveMobile = 'p-2 text-amber-600 bg-amber-50 rounded-xl transition-smooth border-2 border-amber-400';
-      const emptyBtnInactiveMobile = 'p-2 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-xl transition-smooth border-2 border-slate-200 hover:border-amber-400';
-      const emptyBtnActiveDesktop = 'p-[10px] text-amber-600 bg-amber-50 rounded-2xl transition-smooth border-2 border-amber-400';
-      const emptyBtnInactiveDesktop = 'p-[10px] text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-2xl transition-smooth border-2 border-slate-200 hover:border-amber-400';
+      // Clases para botón imagen en empty state (iguales al de adjuntar pero con colores ámbar)
+      const emptyBtnActiveMobile = 'p-2 text-amber-600 rounded-xl transition-smooth border-2 border-amber-400 leading-none shrink-0';
+      const emptyBtnInactiveMobile = 'p-2 text-slate-400 hover:text-amber-500 rounded-xl transition-smooth border-2 border-slate-200 leading-none shrink-0';
+      const emptyBtnActiveDesktop = 'p-[10px] text-amber-600 rounded-2xl transition-smooth border-2 border-amber-400 leading-none shrink-0';
+      const emptyBtnInactiveDesktop = 'p-[10px] text-slate-400 hover:text-amber-500 rounded-2xl transition-smooth border-2 border-slate-200 leading-none shrink-0';
 
       if (imageMode) {
         // Chat normal
@@ -1591,10 +1577,10 @@ $headerShowLogo = true;
         } else if (tab === 'apps') {
           window.location.href = '/aplicaciones/';
         } else if (tab === 'conversations') {
-          // Volver al estado vacío desde conversación
+          // Volver al estado vacío si estamos en una conversación
           if (currentConversationId) {
+            cleanupEmptyConversation();
             currentConversationId = null;
-            updateConvTitle(null);
             showEmptyMode();
             loadConversations();
           }
