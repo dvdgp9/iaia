@@ -425,15 +425,34 @@ $headerDrawerId = 'social-history-drawer';
         
         // Event delegation para clics en el drawer móvil
         mobileDrawerContent.addEventListener('click', (e) => {
-          const historyItem = e.target.closest('[data-history-id], [data-id], .history-item, button');
-          if (historyItem) {
-            const allMobileItems = mobileDrawerContent.querySelectorAll('[data-history-id], [data-id], .history-item, button[class*="history"]');
-            const allDesktopItems = desktopHistory.querySelectorAll('[data-history-id], [data-id], .history-item, button[class*="history"]');
-            const index = Array.from(allMobileItems).indexOf(historyItem);
-            if (index >= 0 && allDesktopItems[index]) {
-              closeMobileDrawer('social-history-drawer');
-              allDesktopItems[index].click();
+          // Clic en el botón de eliminar
+          const deleteBtn = e.target.closest('.history-item-delete');
+          if (deleteBtn) {
+            const historyItem = deleteBtn.closest('.history-item');
+            if (historyItem) {
+              const id = historyItem.dataset.id;
+              const desktopItem = desktopHistory.querySelector(`.history-item[data-id="${id}"] .history-item-delete`);
+              if (desktopItem) {
+                e.stopPropagation();
+                desktopItem.click();
+              }
             }
+            return;
+          }
+          
+          // Clic en el item principal (cargar contenido)
+          const historyItemMain = e.target.closest('.history-item-main');
+          if (historyItemMain) {
+            const historyItem = historyItemMain.closest('.history-item');
+            if (historyItem) {
+              const id = historyItem.dataset.id;
+              const desktopItemMain = desktopHistory.querySelector(`.history-item[data-id="${id}"] .history-item-main`);
+              if (desktopItemMain) {
+                closeMobileDrawer('social-history-drawer');
+                desktopItemMain.click();
+              }
+            }
+            return;
           }
         });
       }
