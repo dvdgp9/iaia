@@ -10,8 +10,12 @@ if (!$user) {
     exit;
 }
 $csrfToken = $_SESSION['csrf_token'] ?? '';
-$pageTitle = 'Gestos — Ebonia';
+$pageTitle = 'Gestos';
 $activeTab = 'gestures';
+$backUrl = '/';
+$backText = 'Inicio';
+$gestureIcon = 'iconoir-magic-wand';
+$gestureColor = 'from-cyan-500 to-teal-600';
 ?><!DOCTYPE html>
 <html lang="es">
 <?php include __DIR__ . '/../includes/head.php'; ?>
@@ -21,25 +25,7 @@ $activeTab = 'gestures';
     
     <!-- Main content -->
     <main class="flex-1 flex flex-col overflow-hidden">
-      <!-- Header -->
-      <header class="h-[60px] px-6 border-b border-slate-200/50 glass-strong flex items-center justify-between shadow-sm shrink-0">
-        <div class="flex items-center gap-4">
-          <a href="/" class="flex items-center gap-2 text-slate-600 hover:text-cyan-600 transition-smooth">
-            <i class="iconoir-arrow-left text-lg"></i>
-            <span class="text-sm font-medium">Inicio</span>
-          </a>
-          <div class="h-6 w-px bg-slate-200"></div>
-          <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500 to-teal-600 flex items-center justify-center text-white shadow-md">
-              <i class="iconoir-magic-wand text-lg"></i>
-            </div>
-            <div>
-              <span class="font-semibold text-slate-800">Gestos</span>
-              <span class="text-xs text-slate-500 ml-2">Flujos automatizados</span>
-            </div>
-          </div>
-        </div>
-      </header>
+      <?php include __DIR__ . '/../includes/header-gestures.php'; ?>
 
       <!-- Content area -->
       <div class="flex-1 overflow-auto p-6">
