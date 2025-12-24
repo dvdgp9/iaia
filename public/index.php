@@ -97,10 +97,11 @@ $headerShowLogo = true;
     include __DIR__ . '/includes/mobile-drawer.php'; 
     ?>
 
-    <main class="flex-1 flex flex-col min-w-0">
+    <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
       <?php include __DIR__ . '/includes/header-unified.php'; ?>
       
-      <section class="flex-1 overflow-auto bg-mesh relative pb-40 lg:pb-0" id="messages-container">
+      <!-- Área de mensajes con scroll, padding para footer+bottom-nav en móvil -->
+      <section class="flex-1 overflow-auto bg-mesh relative pb-[140px] lg:pb-0" id="messages-container">
         <div id="context-warning" class="hidden mx-6 mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
           <i class="iconoir-info-circle text-amber-600 text-lg mt-0.5"></i>
           <div class="flex-1 text-sm">
@@ -108,7 +109,7 @@ $headerShowLogo = true;
             <div class="text-amber-700 mt-0.5">Para optimizar el rendimiento, solo se envían los mensajes más recientes al asistente. El historial completo permanece guardado.</div>
           </div>
         </div>
-        <div id="empty-state" class="absolute inset-0 overflow-auto p-6">
+        <div id="empty-state" class="absolute inset-0 overflow-auto p-6 pb-36 lg:pb-6">
           <div class="max-w-6xl mx-auto py-8">
             
             <!-- Hero Input Section -->
@@ -295,7 +296,7 @@ $headerShowLogo = true;
             </div>
           </div>
         </div>
-        <div id="messages" class="hidden p-8 space-y-2"></div>
+        <div id="messages" class="hidden p-4 lg:p-8 pb-36 lg:pb-8 space-y-2"></div>
         <div id="typing-indicator" class="hidden px-8 pb-4">
           <div class="flex gap-3 items-start max-w-3xl">
             <div class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 text-sm font-semibold flex-shrink-0">E</div>
@@ -309,7 +310,8 @@ $headerShowLogo = true;
           </div>
         </div>
       </section>
-      <footer id="chat-footer" class="hidden p-4 lg:p-6 bg-white border-t border-slate-200 shadow-lg fixed lg:static left-0 right-0 z-40" style="bottom: calc(4rem + env(safe-area-inset-bottom, 0px));">
+      <!-- Footer del chat: fijo en móvil sobre el bottom-nav -->
+      <footer id="chat-footer" class="hidden fixed lg:relative bottom-16 lg:bottom-0 left-0 right-0 p-3 lg:p-6 bg-white border-t border-slate-200 shadow-lg z-40">
         <form id="chat-form" class="max-w-4xl mx-auto">
           <!-- Preview de archivo adjunto -->
           <div id="file-preview" class="hidden mb-3 p-3 bg-slate-50 border border-slate-200 rounded-lg flex items-center gap-3">
@@ -335,7 +337,7 @@ $headerShowLogo = true;
             <button type="button" id="image-mode-btn" class="p-2 lg:p-[10px] text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-xl transition-all border-2 border-slate-200 hover:border-amber-400 leading-none shrink-0" title="Generar imagen con nanobanana 🍌">
               <i class="iconoir-media-image text-lg"></i>
             </button>
-            <textarea id="chat-input" rows="1" class="flex-1 min-w-0 border-2 border-slate-200 rounded-xl px-3 lg:px-4 py-[10px] focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-all resize-none overflow-hidden" placeholder="Escribe un mensaje..." style="min-height: 44px; max-height: 120px;"></textarea>
+            <textarea id="chat-input" rows="1" class="flex-1 min-w-0 border-2 border-slate-200 rounded-xl px-3 lg:px-4 py-2.5 focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-all resize-none overflow-hidden" placeholder="Escribe un mensaje..." style="min-height: 40px; max-height: 120px;"></textarea>
             <button type="submit" class="h-11 p-3 lg:px-6 lg:py-[10px] gradient-brand-btn text-white rounded-xl font-medium shadow-md hover:shadow-lg hover:opacity-90 transition-all duration-200 flex items-center justify-center gap-2 leading-none shrink-0">
               <span class="hidden lg:inline">Enviar</span>
               <svg class="w-5 h-5 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>

@@ -39,10 +39,8 @@ if (isset($activeTab) && in_array($activeTab, ['gestures', 'voices', 'apps'])) {
 } else {
     $headerStyle .= ' bg-white/95 backdrop-blur-sm';
 }
-$headerStyle .= ' flex items-center justify-between shadow-sm shrink-0';
-if (!in_array($activeTab ?? '', ['gestures', 'voices', 'apps'])) {
-    $headerStyle .= ' sticky top-0 z-10';
-}
+// Siempre sticky para mantener el header fijo durante scroll
+$headerStyle .= ' flex items-center justify-between shadow-sm shrink-0 sticky top-0 z-30';
 ?>
 <header class="<?php echo $headerStyle; ?>">
   <!-- Navegación y título -->
