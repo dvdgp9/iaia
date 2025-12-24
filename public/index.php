@@ -976,6 +976,7 @@ $headerShowLogo = true;
         // Botón estrella fuera del botón principal
         const starBtn = document.createElement('button');
         starBtn.className = 'flex-shrink-0 transition-colors';
+        starBtn.setAttribute('data-action', 'favorite');
         starBtn.innerHTML = c.is_favorite 
           ? '<i class="iconoir-star-solid text-amber-500"></i>'
           : '<i class="iconoir-star text-slate-300 group-hover:text-slate-400"></i>';
@@ -1021,6 +1022,7 @@ $headerShowLogo = true;
         actions.className = 'flex items-center gap-0.5 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity';
         const renameBtn = document.createElement('button');
         renameBtn.className = 'p-1.5 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded transition-colors';
+        renameBtn.setAttribute('data-action', 'rename');
         renameBtn.innerHTML = '<i class="iconoir-edit-pencil"></i>';
         renameBtn.title = 'Renombrar';
         renameBtn.addEventListener('click', async (e) => {
@@ -1040,6 +1042,7 @@ $headerShowLogo = true;
 
         const moveBtn = document.createElement('button');
         moveBtn.className = 'p-1.5 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded transition-colors';
+        moveBtn.setAttribute('data-action', 'move');
         moveBtn.innerHTML = '<i class="iconoir-folder-settings"></i>';
         moveBtn.title = 'Mover a carpeta';
         moveBtn.addEventListener('click', async (e) => {
@@ -1049,6 +1052,7 @@ $headerShowLogo = true;
 
         const delBtn = document.createElement('button');
         delBtn.className = 'p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors';
+        delBtn.setAttribute('data-action', 'delete');
         delBtn.innerHTML = '<i class="iconoir-trash"></i>';
         delBtn.title = 'Borrar';
         delBtn.addEventListener('click', async (e) => {
@@ -1812,11 +1816,30 @@ $headerShowLogo = true;
           const convItem = e.target.closest('[data-conv-id]');
           if (convItem) {
             const convId = convItem.getAttribute('data-conv-id');
-            // Buscar y clickear la conversación correspondiente en desktop
+            // ¿Se clicó un botón de acción dentro de la conversación?
+            const actionBtn = e.target.closest('[data-action]');
+            if (actionBtn) {
+              const action = actionBtn.getAttribute('data-action');
+              const desktopRow = desktopSidebar.querySelector(`[data-conv-id="${convId}"]`);
+              if (desktopRow) {
+                const desktopAction = desktopRow.querySelector(`[data-action="${action}"]`);
+                if (desktopAction) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  // No cerrar el drawer para acciones que no cambian de vista, excepto mover que abre modal
+                  if (action === 'move') closeMobileDrawer('conversations-drawer');
+                  desktopAction.click();
+                }
+              }
+              return;
+            }
+            // Click en la conversación (abrir)
             const desktopConv = desktopSidebar.querySelector(`[data-conv-id="${convId}"]`);
             if (desktopConv) {
               closeMobileDrawer('conversations-drawer');
-              desktopConv.click();
+              // Click sobre el botón principal dentro de la fila
+              const mainBtn = desktopConv.querySelector('[data-conv-id]');
+              if (mainBtn) mainBtn.click(); else desktopConv.click();
             }
             return;
           }
