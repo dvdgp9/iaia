@@ -37,10 +37,36 @@ if (!$isCliOrCron) {
         echo json_encode(['success' => false, 'error' => 'No autorizado']);
         exit;
     }
+    
+    // IMPORTANTE: Liberar sesión para no bloquear otras peticiones del usuario
+    // El procesamiento de podcast puede tardar minutos
+    session_write_close();
 }
 
 // Configurar tiempo máximo de ejecución (5 minutos para podcasts largos)
 set_time_limit(300);
+
+// Enviar respuesta inmediata al frontend para no bloquear
+if (!$isCliOrCron && isset($_SERVER['HTTP_HOST'])) {
+    // Desconectar del cliente pero seguir procesando
+    ignore_user_abort(true);
+    
+    header('Content-Type: application/json');
+    header('Connection: close');
+    
+    $response = json_encode(['success' => true, 'processing' => true, 'message' => 'Procesando en background']);
+    header('Content-Length: ' . strlen($response));
+    
+    echo $response;
+    
+    // Flush y cerrar conexión
+    if (function_exists('fastcgi_finish_request')) {
+        fastcgi_finish_request();
+    } else {
+        ob_end_flush();
+        flush();
+    }
+}
 
 $repo = new BackgroundJobsRepo();
 

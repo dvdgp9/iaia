@@ -155,7 +155,7 @@
       pollStartTime = Date.now();
       
       // Mostrar mensaje de que puede navegar
-      updateProgress('Podcast en cola', 'Puedes navegar por Ebonia mientras se genera. Te avisaremos cuando esté listo.');
+      updateProgress('Procesando...', 'Estamos creando tu podcast, danos unos minutos.');
       showNavigationHint();
       
       // Disparar procesamiento (trigger) y empezar polling
@@ -199,7 +199,7 @@
           // Actualizar progreso
           updateProgress(
             job.progress_text || 'Procesando...',
-            job.status === 'pending' ? 'En cola, esperando turno...' : 'Generando tu podcast...'
+            job.status === 'pending' ? 'Estamos creando tu podcast, danos unos minutos.' : 'Estamos creando tu podcast, danos unos minutos.'
           );
           
           // Ajustar intervalo de polling (más lento después de 30s)
@@ -292,7 +292,7 @@
       hint.className = 'mt-3 p-3 bg-orange-50 border border-orange-200 rounded-lg text-sm text-orange-700 flex items-center gap-2';
       hint.innerHTML = `
         <i class="iconoir-info-circle"></i>
-        <span>Puedes navegar por otras secciones. El podcast se generará en segundo plano.</span>
+        <span>Puedes navegar por otras secciones y volver en unos minutos.</span>
       `;
       if (progressPanel) {
         progressPanel.appendChild(hint);
