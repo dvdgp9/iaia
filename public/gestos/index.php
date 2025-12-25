@@ -105,14 +105,14 @@ $headerIconColor = 'from-cyan-500 to-teal-600';
                   <i class="iconoir-podcast text-2xl"></i>
                 </div>
                 <div class="flex-1">
-                  <h3 class="text-lg font-bold text-slate-900 mb-1">Podcast desde artículo</h3>
-                  <p class="text-sm text-slate-500">Audio con 2 voces IA</p>
+                  <h3 class="text-lg font-bold text-slate-900 mb-1">Generar podcast</h3>
+                  <p class="text-sm text-slate-500">Con Iris y Bruno</p>
                 </div>
                 <span class="px-2 py-1 text-xs bg-emerald-100 text-emerald-700 rounded-full font-medium">Nuevo</span>
               </div>
               
               <p class="text-sm text-slate-600 mb-4">
-                Convierte cualquier artículo web o documento en un podcast con dos presentadores. Audio generado con Gemini TTS.
+                Convierte cualquier artículo web o documento en un podcast con dos presentadores.
               </p>
               
               <div class="flex items-center justify-end text-xs text-slate-400 pt-4 border-t border-slate-200/50">
