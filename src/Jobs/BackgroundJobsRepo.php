@@ -2,7 +2,7 @@
 
 namespace Jobs;
 
-use App\Database;
+use App\DB;
 use PDO;
 
 class BackgroundJobsRepo
@@ -11,7 +11,7 @@ class BackgroundJobsRepo
 
     public function __construct()
     {
-        $this->db = Database::connect();
+        $this->db = DB::pdo();
     }
 
     /**
