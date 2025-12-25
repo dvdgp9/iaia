@@ -467,23 +467,28 @@
     checkActiveJobs();
   }
 
-  // === HISTORY ===
-  loadHistory();
-  
-  // === CHECK FOR URL PARAM OR ACTIVE JOBS ===
-  const urlParams = new URLSearchParams(window.location.search);
-  const initialId = urlParams.get('id');
+  // === INITIALIZATION ===
+  document.addEventListener('DOMContentLoaded', () => {
+    // Initial history load
+    loadHistory();
+    
+    // Check for URL param (load specific podcast) or active jobs
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialId = urlParams.get('id');
 
-  console.log('Initial load check:', { initialId });
+    console.log('Gesture Podcast Init. ID:', initialId);
 
-  if (initialId) {
-    // Si hay ID en URL, cargamos esa ejecución y comprobamos jobs en segundo plano (silenciosamente)
-    loadExecution(initialId);
-    checkActiveJobs(false);
-  } else {
-    // Si no hay ID, comprobamos jobs y mostramos progreso si hay alguno
-    checkActiveJobs(true);
-  }
+    if (initialId) {
+      // Load specific execution
+      console.log('Loading execution from URL ID:', initialId);
+      loadExecution(initialId);
+      // Check jobs silently
+      checkActiveJobs(false);
+    } else {
+      // Check jobs and show UI if needed
+      checkActiveJobs(true);
+    }
+  });
   
   async function checkActiveJobs(showUI = true) {
     try {
@@ -588,14 +593,18 @@
   }
 
   async function loadExecution(id) {
+    console.log('Executing loadExecution for ID:', id);
     try {
       const res = await fetch(`/api/gestures/get.php?id=${id}`, {
         credentials: 'include'
       });
       const data = await res.json();
 
+      console.log('loadExecution response:', data);
+
       if (!res.ok || !data.execution) {
-        alert('Error al cargar el podcast');
+        console.error('Error loading execution:', data);
+        showError('Error al cargar el podcast');
         return;
       }
 
@@ -603,12 +612,12 @@
       const outputData = exec.output_data || {};
 
       // Mostrar resultado
-      podcastTitle.textContent = exec.title || 'Podcast';
-      podcastSummary.textContent = outputData.summary || '';
-      podcastScript.innerHTML = mdToHtml(formatScript(outputData.script || ''));
+      if (podcastTitle) podcastTitle.textContent = exec.title || 'Podcast';
+      if (podcastSummary) podcastSummary.textContent = outputData.summary || '';
+      if (podcastScript) podcastScript.innerHTML = mdToHtml(formatScript(outputData.script || ''));
       
       // Audio
-      if (outputData.audio_url) {
+      if (outputData.audio_url && audioPlayer) {
         audioPlayer.src = outputData.audio_url;
         lastAudioUrl = outputData.audio_url;
         lastTitle = exec.title || 'Podcast';
@@ -618,15 +627,18 @@
           const blobResp = await fetch(outputData.audio_url, { credentials: 'include' });
           lastAudioBlob = await blobResp.blob();
         } catch (e) {
+          console.warn('Error fetching audio blob:', e);
           lastAudioBlob = null;
         }
       }
 
-      // Sin etiqueta de duración adicional
-
+      // Mostrar panel de resultados
       showResult();
+      console.log('Result shown for ID:', id);
+
     } catch (err) {
-      alert('Error al cargar el podcast');
+      console.error('Exception in loadExecution:', err);
+      showError('Error al cargar el podcast');
     }
   }
 
