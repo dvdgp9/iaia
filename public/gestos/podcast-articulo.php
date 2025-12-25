@@ -145,18 +145,24 @@ $headerDrawerId = 'podcast-history-drawer';
               
               <!-- Progress -->
               <div id="progress-panel" class="hidden bg-orange-50 rounded-xl p-4 border border-orange-200">
-                <div class="flex items-center gap-3">
-                  <div class="flex gap-0.5">
-                    <div class="w-1 h-6 bg-orange-500 rounded-full wave-bar"></div>
-                    <div class="w-1 h-6 bg-orange-500 rounded-full wave-bar"></div>
-                    <div class="w-1 h-6 bg-orange-500 rounded-full wave-bar"></div>
-                    <div class="w-1 h-6 bg-orange-500 rounded-full wave-bar"></div>
-                    <div class="w-1 h-6 bg-orange-500 rounded-full wave-bar"></div>
+                <div class="flex items-start justify-between gap-3">
+                  <div class="flex items-center gap-3">
+                    <div class="flex gap-0.5">
+                      <div class="w-1 h-6 bg-orange-500 rounded-full wave-bar"></div>
+                      <div class="w-1 h-6 bg-orange-500 rounded-full wave-bar"></div>
+                      <div class="w-1 h-6 bg-orange-500 rounded-full wave-bar"></div>
+                      <div class="w-1 h-6 bg-orange-500 rounded-full wave-bar"></div>
+                      <div class="w-1 h-6 bg-orange-500 rounded-full wave-bar"></div>
+                    </div>
+                    <div>
+                      <p id="progress-text" class="text-sm font-medium text-orange-700">Procesando...</p>
+                      <p id="progress-detail" class="text-xs text-orange-500">Esto puede tardar hasta 5 minutos</p>
+                    </div>
                   </div>
-                  <div>
-                    <p id="progress-text" class="text-sm font-medium text-orange-700">Procesando...</p>
-                    <p id="progress-detail" class="text-xs text-orange-500">Esto puede tardar hasta 5 minutos</p>
-                  </div>
+                  <button type="button" id="cancel-btn" class="px-3 py-1.5 text-xs bg-white hover:bg-red-50 text-slate-600 hover:text-red-600 border border-slate-200 hover:border-red-300 rounded-lg transition-colors flex items-center gap-1.5" title="Cancelar generación">
+                    <i class="iconoir-cancel text-sm"></i>
+                    <span>Cancelar</span>
+                  </button>
                 </div>
               </div>
               

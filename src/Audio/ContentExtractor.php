@@ -91,9 +91,12 @@ class ContentExtractor
                 return ['success' => false, 'error' => 'No se pudo extraer texto del PDF'];
             }
 
+            // Extraer título de las primeras líneas del contenido
+            $title = $this->extractTitleFromText($text);
+
             return [
                 'success' => true,
-                'title' => 'Documento PDF',
+                'title' => $title,
                 'content' => $text,
                 'source' => 'PDF upload',
                 'word_count' => str_word_count($text)
@@ -115,12 +118,7 @@ class ContentExtractor
             return ['success' => false, 'error' => 'El texto está vacío'];
         }
 
-        // Intentar extraer un título de la primera línea
-        $lines = explode("\n", $text);
-        $title = trim($lines[0]);
-        if (strlen($title) > 100) {
-            $title = substr($title, 0, 97) . '...';
-        }
+        $title = $this->extractTitleFromText($text);
 
         return [
             'success' => true,
@@ -129,6 +127,45 @@ class ContentExtractor
             'source' => 'Texto directo',
             'word_count' => str_word_count($text)
         ];
+    }
+
+    /**
+     * Extrae un título inteligente de las primeras líneas del texto
+     */
+    private function extractTitleFromText(string $text): string
+    {
+        $lines = array_values(array_filter(array_map('trim', explode("\n", $text))));
+        
+        if (empty($lines)) {
+            return 'Documento sin título';
+        }
+
+        // Buscar la primera línea significativa (no vacía, más de 10 caracteres)
+        foreach ($lines as $line) {
+            // Ignorar líneas muy cortas o que parezcan metadatos
+            if (strlen($line) < 10) continue;
+            if (preg_match('/^(author|date|by|página|page):/i', $line)) continue;
+            
+            // Si es una línea tipo título (corta, sin punto final, mayúsculas)
+            if (strlen($line) <= 150 && !preg_match('/\.\s*$/', $line)) {
+                return mb_substr($line, 0, 100);
+            }
+            
+            // Si es la primera línea y es razonablemente corta, usarla
+            if (strlen($line) <= 200) {
+                $title = preg_replace('/\.\s*$/', '', $line); // quitar punto final
+                return mb_substr($title, 0, 100);
+            }
+        }
+
+        // Fallback: usar primera línea truncada
+        $firstLine = $lines[0];
+        $title = mb_substr($firstLine, 0, 100);
+        if (strlen($firstLine) > 100) {
+            $title .= '...';
+        }
+        
+        return $title;
     }
 
     /**

@@ -35,6 +35,7 @@
   const podcastSummary = document.getElementById('podcast-summary');
   const podcastScript = document.getElementById('podcast-script');
   const downloadBtn = document.getElementById('download-btn');
+  const cancelBtn = document.getElementById('cancel-btn');
   
   const historyList = document.getElementById('history-list');
   const newPodcastBtn = document.getElementById('new-podcast-btn');
@@ -252,6 +253,37 @@
     hideNavigationHint();
   }
 
+  // Cancelar job en progreso
+  async function cancelJob() {
+    if (!currentJobId) return;
+    
+    if (!confirm('¿Estás seguro de que quieres cancelar la generación del podcast?')) {
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/jobs/cancel.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ job_id: currentJobId })
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        stopPolling();
+        showToast('Generación cancelada', 'info');
+        resetUI();
+      } else {
+        showToast('Error al cancelar: ' + (data.error?.message || 'Error desconocido'), 'error');
+      }
+    } catch (err) {
+      console.error('Error cancelando job:', err);
+      showToast('Error de conexión al cancelar', 'error');
+    }
+  }
+
   // Manejar job completado
   async function handleJobCompleted(outputData) {
     if (!outputData) {
@@ -355,6 +387,11 @@
   // === New podcast button ===
   if (newPodcastBtn) {
     newPodcastBtn.addEventListener('click', resetUI);
+  }
+
+  // === Cancel button ===
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', cancelJob);
   }
 
   // === UI helpers ===
