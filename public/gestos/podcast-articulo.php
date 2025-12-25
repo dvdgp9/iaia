@@ -92,7 +92,7 @@ $headerDrawerId = 'podcast-history-drawer';
               Convierte texto en audio
             </h1>
             <p class="text-slate-500 max-w-lg mx-auto">
-              Transforma cualquier artículo, documento o texto en un podcast dinámico presentado por dos voces de IA. Ideal para consumir contenido mientras haces otras cosas.
+              Transforma cualquier artículo, documento o texto en un podcast dinámico presentado por dos nuestros geniales Iris y Bruno. Ideal para consumir contenido mientras haces otras cosas.
             </p>
           </div>
 
