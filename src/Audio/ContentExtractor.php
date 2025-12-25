@@ -72,11 +72,16 @@ class ContentExtractor
         file_put_contents($tempFile, $pdfData);
 
         try {
-            // Intentar con pdftotext (si está disponible)
+            // 1. Intentar con pdftotext (si está disponible)
             $text = $this->extractWithPdftotext($tempFile);
             
+            // 2. Si falla, usar Gemini API (mejor opción para PDFs modernos)
             if (empty($text)) {
-                // Fallback: extracción básica
+                $text = $this->extractWithGemini($base64Data);
+            }
+            
+            // 3. Último fallback: extracción básica
+            if (empty($text)) {
                 $text = $this->extractPdfBasic($pdfData);
             }
 
@@ -210,6 +215,70 @@ class ContentExtractor
         @unlink($textFile);
 
         return trim($text);
+    }
+
+    /**
+     * Extrae texto de PDF usando Gemini API (multimodal)
+     */
+    private function extractWithGemini(string $base64Data): string
+    {
+        $apiKey = \App\Env::get('GEMINI_API_KEY');
+        if (empty($apiKey)) {
+            return '';
+        }
+
+        try {
+            $url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' . $apiKey;
+            
+            $payload = [
+                'contents' => [
+                    [
+                        'parts' => [
+                            [
+                                'text' => 'Extract all text content from this PDF document. Return only the text, without any introduction, explanation, or formatting. Just the raw text content from the PDF.'
+                            ],
+                            [
+                                'inline_data' => [
+                                    'mime_type' => 'application/pdf',
+                                    'data' => $base64Data
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+                'generationConfig' => [
+                    'temperature' => 0.1,
+                    'maxOutputTokens' => 8192
+                ]
+            ];
+
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Content-Type: application/json'
+            ]);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+            if ($httpCode !== 200 || !$response) {
+                return '';
+            }
+
+            $data = json_decode($response, true);
+            
+            if (isset($data['candidates'][0]['content']['parts'][0]['text'])) {
+                return trim($data['candidates'][0]['content']['parts'][0]['text']);
+            }
+
+            return '';
+        } catch (\Exception $e) {
+            return '';
+        }
     }
 
     /**
