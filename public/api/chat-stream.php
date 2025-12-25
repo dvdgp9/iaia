@@ -172,9 +172,8 @@ sendSSE('start', [
     'context_truncated' => $contextTruncated
 ]);
 
-// Crear cliente OpenRouter con contexto
-$contextDir = dirname(__DIR__, 2) . '/context';
-$contextBuilder = new ContextBuilder($contextDir);
+// Crear cliente OpenRouter con contexto (usa docs/context por defecto)
+$contextBuilder = new ContextBuilder();
 $systemPrompt = $contextBuilder->buildSystemPrompt();
 
 $client = new OpenRouterClient(
