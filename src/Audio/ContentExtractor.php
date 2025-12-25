@@ -219,66 +219,98 @@ class ContentExtractor
 
     /**
      * Extrae texto de PDF usando Gemini API (multimodal)
+     * @throws \Exception si hay error para que el llamador sepa qué falló
      */
     private function extractWithGemini(string $base64Data): string
     {
         $apiKey = \App\Env::get('GEMINI_API_KEY');
         if (empty($apiKey)) {
-            return '';
+            throw new \Exception('Falta GEMINI_API_KEY para extraer PDF');
         }
 
-        try {
-            $url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' . $apiKey;
-            
-            $payload = [
-                'contents' => [
-                    [
-                        'parts' => [
-                            [
-                                'text' => 'Extract all text content from this PDF document. Return only the text, without any introduction, explanation, or formatting. Just the raw text content from the PDF.'
-                            ],
-                            [
-                                'inline_data' => [
-                                    'mime_type' => 'application/pdf',
-                                    'data' => $base64Data
-                                ]
+        // Verificar tamaño del PDF (Gemini tiene límite de ~20MB para inline)
+        $pdfSizeBytes = strlen(base64_decode($base64Data));
+        $pdfSizeMB = $pdfSizeBytes / (1024 * 1024);
+        if ($pdfSizeMB > 15) {
+            throw new \Exception("El PDF es demasiado grande (" . round($pdfSizeMB, 1) . "MB). Máximo 15MB.");
+        }
+
+        // Usar gemini-1.5-pro para PDFs largos (mejor contexto)
+        $url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' . $apiKey;
+        
+        $payload = [
+            'contents' => [
+                [
+                    'parts' => [
+                        [
+                            'inline_data' => [
+                                'mime_type' => 'application/pdf',
+                                'data' => $base64Data
                             ]
+                        ],
+                        [
+                            'text' => 'Extrae TODO el contenido de texto de este documento PDF. Devuelve SOLO el texto extraído, sin introducción, explicación ni formato adicional. Mantén la estructura de párrafos.'
                         ]
                     ]
-                ],
-                'generationConfig' => [
-                    'temperature' => 0.1,
-                    'maxOutputTokens' => 8192
                 ]
-            ];
+            ],
+            'generationConfig' => [
+                'temperature' => 0.1,
+                'maxOutputTokens' => 65536  // Máximo para documentos largos
+            ]
+        ];
 
-            $ch = curl_init($url);
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                'Content-Type: application/json'
-            ]);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json'
+        ]);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 120); // 2 minutos para PDFs largos
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
 
-            $response = curl_exec($ch);
-            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            curl_close($ch);
+        $response = curl_exec($ch);
+        $curlError = curl_error($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
 
-            if ($httpCode !== 200 || !$response) {
-                return '';
-            }
-
-            $data = json_decode($response, true);
-            
-            if (isset($data['candidates'][0]['content']['parts'][0]['text'])) {
-                return trim($data['candidates'][0]['content']['parts'][0]['text']);
-            }
-
-            return '';
-        } catch (\Exception $e) {
-            return '';
+        if ($curlError) {
+            throw new \Exception('Error de conexión extrayendo PDF: ' . $curlError);
         }
+
+        if (!$response) {
+            throw new \Exception('No se recibió respuesta de Gemini al extraer PDF');
+        }
+
+        $data = json_decode($response, true);
+
+        // Verificar errores de la API
+        if (isset($data['error'])) {
+            $errorMsg = $data['error']['message'] ?? 'Error desconocido de Gemini';
+            throw new \Exception('Error de Gemini: ' . $errorMsg);
+        }
+
+        if ($httpCode !== 200) {
+            throw new \Exception("Error HTTP {$httpCode} de Gemini al extraer PDF");
+        }
+
+        // Verificar si el contenido fue bloqueado
+        if (isset($data['candidates'][0]['finishReason']) && 
+            $data['candidates'][0]['finishReason'] === 'SAFETY') {
+            throw new \Exception('El contenido del PDF fue bloqueado por filtros de seguridad');
+        }
+        
+        if (isset($data['candidates'][0]['content']['parts'][0]['text'])) {
+            $text = trim($data['candidates'][0]['content']['parts'][0]['text']);
+            if (empty($text)) {
+                throw new \Exception('Gemini no pudo extraer texto del PDF (respuesta vacía)');
+            }
+            return $text;
+        }
+
+        // Si llegamos aquí, algo raro pasó
+        throw new \Exception('Respuesta inesperada de Gemini al extraer PDF');
     }
 
     /**

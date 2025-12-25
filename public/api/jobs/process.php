@@ -70,8 +70,8 @@ if (!$isCliOrCron && isset($_SERVER['HTTP_HOST'])) {
 
 $repo = new BackgroundJobsRepo();
 
-// Primero, resetear jobs "colgados" (más de 10 minutos en processing)
-$stuckReset = $repo->resetStuckJobs(10);
+// Primero, resetear jobs "colgados" (más de 5 minutos en processing)
+$stuckReset = $repo->resetStuckJobs(5);
 
 // Obtener siguiente job pendiente
 $job = $repo->getNextPending();

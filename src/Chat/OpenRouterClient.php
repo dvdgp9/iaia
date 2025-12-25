@@ -156,7 +156,8 @@ class OpenRouterClient {
                 'X-Title: Ebonia'
             ],
             CURLOPT_POSTFIELDS => json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
-            CURLOPT_TIMEOUT => 120, // Más tiempo para generación de imágenes
+            CURLOPT_TIMEOUT => 180, // 3 minutos máximo
+            CURLOPT_CONNECTTIMEOUT => 10, // 10s para conectar
         ]);
         $raw = curl_exec($ch);
         $err = curl_error($ch);
