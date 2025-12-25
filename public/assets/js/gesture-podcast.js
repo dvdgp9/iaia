@@ -191,13 +191,15 @@
         const res = await fetch(`/api/jobs/status.php?id=${currentJobId}`, {
           credentials: 'include'
         });
-        const data = await res.json();
         
-        if (!data.success || !data.job) {
+        if (!res.ok) {
           throw new Error('Error consultando estado');
         }
         
+        const data = await res.json();
         const job = data.job;
+        
+        console.log('Job status:', job.status, 'Output data:', job.output_data); // Debug
         
         if (job.status === 'processing' || job.status === 'pending') {
           // Actualizar progreso
@@ -221,6 +223,7 @@
           
         } else if (job.status === 'completed') {
           // ¡Éxito!
+          console.log('Job completed! Output data:', job.output_data); // Debug
           stopPolling();
           await handleJobCompleted(job.output_data);
           
@@ -228,6 +231,8 @@
           // Error
           stopPolling();
           showError(job.error_message || 'Error al generar el podcast');
+        } else {
+          console.warn('Estado desconocido del job:', job.status); // Debug
         }
         
       } catch (err) {
