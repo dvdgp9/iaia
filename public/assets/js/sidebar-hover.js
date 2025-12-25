@@ -44,12 +44,17 @@
     const panel = container.querySelector('.hover-panel-content');
     if (!panel) return;
 
-    // Verificar cache
+    // Gestos y apps son estáticos (renderizados en PHP), no necesitan carga
+    if (type === 'gestures' || type === 'apps') {
+      return;
+    }
+
+    // Verificar cache para contenido dinámico
     if (isCacheValid(type)) {
       return; // Ya tenemos datos frescos
     }
 
-    // Mostrar loading
+    // Mostrar loading solo para contenido dinámico
     panel.innerHTML = `
       <div class="hover-panel-loading">
         <i class="iconoir-refresh"></i>
@@ -63,12 +68,6 @@
           break;
         case 'voices':
           await loadVoices(panel);
-          break;
-        case 'gestures':
-          // Los gestos son estáticos, no necesitan carga
-          break;
-        case 'apps':
-          // Las apps son estáticas por ahora
           break;
       }
     } catch (error) {
