@@ -220,12 +220,45 @@ PROMPT;
     private function extractSummary(string $response): string
     {
         if (preg_match('/---RESUMEN---\s*([\s\S]*?)\s*---FIN_RESUMEN---/i', $response, $matches)) {
-            return trim($matches[1]);
+            $sum = $this->normalizeSummary($matches[1]);
+            if ($this->isValidSummary($sum)) return $sum;
         }
-        
-        // Fallback: primera línea no vacía
-        $lines = array_filter(explode("\n", $response), 'trim');
-        return isset($lines[0]) ? substr(trim($lines[0]), 0, 200) : 'Podcast generado';
+
+        if (preg_match('/---RESUMEN---\s*([\s\S]*?)\s*---GUION---/i', $response, $matches)) {
+            $sum = $this->normalizeSummary($matches[1]);
+            if ($this->isValidSummary($sum)) return $sum;
+        }
+
+        if (preg_match('/---RESUMEN---\s*([\s\S]*)$/i', $response, $matches)) {
+            $sum = $this->normalizeSummary($matches[1]);
+            if ($this->isValidSummary($sum)) return $sum;
+        }
+
+        $lines = array_values(array_filter(array_map('trim', explode("\n", $response))));
+        foreach ($lines as $l) {
+            if ($l === '' || stripos($l, '---') !== false) continue;
+            if (preg_match('/^(' . preg_quote($this->speaker1, '/') . '|' . preg_quote($this->speaker2, '/') . '):/i', $l)) continue;
+            $sum = $this->normalizeSummary($l);
+            if ($this->isValidSummary($sum)) return $sum;
+        }
+
+        return 'Podcast generado';
+    }
+
+    private function normalizeSummary(string $text): string
+    {
+        $t = trim($text);
+        $t = preg_replace('/\s+/', ' ', $t);
+        return mb_substr($t, 0, 200);
+    }
+
+    private function isValidSummary(string $text): bool
+    {
+        if ($text === '' ) return false;
+        $lower = mb_strtolower($text);
+        if (strpos($lower, '---resumen---') !== false) return false;
+        if (strpos($lower, '[resumen aquí]') !== false) return false;
+        return true;
     }
 
     /**
