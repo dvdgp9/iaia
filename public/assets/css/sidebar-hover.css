@@ -1,0 +1,379 @@
+/**
+ * Sidebar Hover Menu - Estilos
+ * Menú expandible que aparece al hacer hover en los tabs del sidebar
+ */
+
+/* Container del tab con hover */
+.sidebar-tab-container {
+  position: relative;
+}
+
+/* Panel del hover menu */
+.sidebar-hover-panel {
+  position: absolute;
+  left: 100%;
+  top: 0;
+  min-width: 280px;
+  max-width: 320px;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 16px;
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-8px);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 100;
+  margin-left: 8px;
+  pointer-events: none;
+}
+
+/* Flecha conectora */
+.sidebar-hover-panel::before {
+  content: '';
+  position: absolute;
+  left: -6px;
+  top: 20px;
+  width: 12px;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.98);
+  border-left: 1px solid rgba(148, 163, 184, 0.2);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+  transform: rotate(45deg);
+  border-radius: 0 0 0 4px;
+}
+
+/* Área invisible para mantener hover al mover el cursor */
+.sidebar-hover-panel::after {
+  content: '';
+  position: absolute;
+  left: -20px;
+  top: 0;
+  width: 20px;
+  height: 100%;
+}
+
+/* Mostrar panel en hover */
+.sidebar-tab-container:hover .sidebar-hover-panel,
+.sidebar-hover-panel:hover {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+/* Header del panel */
+.hover-panel-header {
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+.hover-panel-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hover-panel-title i {
+  font-size: 16px;
+}
+
+/* Contenido del panel */
+.hover-panel-content {
+  padding: 8px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+/* Items del listado */
+.hover-panel-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: #475569;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.hover-panel-item:hover {
+  background: linear-gradient(135deg, rgba(251, 146, 60, 0.1) 0%, rgba(239, 68, 68, 0.08) 100%);
+  color: #ea580c;
+}
+
+.hover-panel-item-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(148, 163, 184, 0.1);
+  font-size: 16px;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.hover-panel-item:hover .hover-panel-item-icon {
+  background: linear-gradient(135deg, #f97316 0%, #ef4444 100%);
+  color: white;
+}
+
+.hover-panel-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.hover-panel-item-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: #334155;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hover-panel-item:hover .hover-panel-item-title {
+  color: #ea580c;
+}
+
+.hover-panel-item-meta {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+/* Item con submenú (gestos) */
+.hover-panel-item-expandable {
+  position: relative;
+}
+
+.hover-panel-item-expandable::after {
+  content: '›';
+  font-size: 16px;
+  color: #94a3b8;
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+
+.hover-panel-item-expandable:hover::after {
+  transform: translateX(2px);
+  color: #ea580c;
+}
+
+/* Submenú de gestos (historial) */
+.hover-submenu {
+  position: absolute;
+  left: 100%;
+  top: -8px;
+  min-width: 260px;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 14px;
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-4px);
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 101;
+  margin-left: 4px;
+  pointer-events: none;
+}
+
+.hover-submenu::before {
+  content: '';
+  position: absolute;
+  left: -4px;
+  top: 16px;
+  width: 8px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.98);
+  border-left: 1px solid rgba(148, 163, 184, 0.2);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+  transform: rotate(45deg);
+}
+
+.hover-submenu::after {
+  content: '';
+  position: absolute;
+  left: -12px;
+  top: 0;
+  width: 12px;
+  height: 100%;
+}
+
+.hover-panel-item-expandable:hover .hover-submenu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+/* Header del submenú */
+.hover-submenu-header {
+  padding: 12px 14px 10px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: between;
+  gap: 8px;
+}
+
+.hover-submenu-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  flex: 1;
+}
+
+/* Botón crear nuevo */
+.hover-submenu-new {
+  font-size: 11px;
+  padding: 4px 10px;
+  background: linear-gradient(135deg, #f97316 0%, #ef4444 100%);
+  color: white;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.hover-submenu-new:hover {
+  transform: scale(1.02);
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
+}
+
+/* Items del submenú */
+.hover-submenu-content {
+  padding: 6px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.hover-submenu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: #475569;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.hover-submenu-item:hover {
+  background: rgba(251, 146, 60, 0.1);
+  color: #ea580c;
+}
+
+.hover-submenu-item-title {
+  font-size: 12px;
+  font-weight: 500;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hover-submenu-item-time {
+  font-size: 10px;
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+/* Estado vacío */
+.hover-panel-empty {
+  padding: 24px 16px;
+  text-align: center;
+  color: #94a3b8;
+}
+
+.hover-panel-empty i {
+  font-size: 28px;
+  margin-bottom: 8px;
+  display: block;
+  opacity: 0.5;
+}
+
+.hover-panel-empty-text {
+  font-size: 12px;
+}
+
+/* Footer con acción principal */
+.hover-panel-footer {
+  padding: 8px;
+  border-top: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.hover-panel-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  background: linear-gradient(135deg, rgba(251, 146, 60, 0.1) 0%, rgba(239, 68, 68, 0.08) 100%);
+  color: #ea580c;
+  border-radius: 10px;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.hover-panel-action:hover {
+  background: linear-gradient(135deg, #f97316 0%, #ef4444 100%);
+  color: white;
+}
+
+/* Loading state */
+.hover-panel-loading {
+  padding: 24px;
+  text-align: center;
+}
+
+.hover-panel-loading i {
+  font-size: 20px;
+  color: #f97316;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Scrollbar personalizado */
+.hover-panel-content::-webkit-scrollbar,
+.hover-submenu-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.hover-panel-content::-webkit-scrollbar-track,
+.hover-submenu-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.hover-panel-content::-webkit-scrollbar-thumb,
+.hover-submenu-content::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 2px;
+}
+
+.hover-panel-content::-webkit-scrollbar-thumb:hover,
+.hover-submenu-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.5);
+}

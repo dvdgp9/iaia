@@ -1,6 +1,7 @@
 <?php
 /**
  * Partial: Barra lateral izquierda con tabs de navegación
+ * Incluye menús hover expandibles para acceso rápido
  * 
  * Variables esperadas:
  * - $activeTab (opcional): Tab activa ('conversations', 'voices', 'gestures'), default 'conversations'
@@ -14,69 +15,206 @@ $tabs = [
         'icon' => 'iconoir-chat-bubble',
         'label' => 'Chat',
         'href' => '/',
-        'title' => 'Conversaciones'
+        'title' => 'Conversaciones',
+        'hoverTitle' => 'Conversaciones recientes',
+        'hoverIcon' => 'iconoir-chat-bubble',
+        'newLabel' => 'Nueva conversación',
+        'newHref' => '/'
     ],
     'voices' => [
         'icon' => 'iconoir-voice-square',
         'label' => 'Voces',
         'href' => '/voices/',
-        'title' => 'Voces especializadas'
+        'title' => 'Voces especializadas',
+        'hoverTitle' => 'Voces disponibles',
+        'hoverIcon' => 'iconoir-voice-square',
+        'newLabel' => 'Ver todas',
+        'newHref' => '/voices/'
     ],
     'gestures' => [
         'icon' => 'iconoir-magic-wand',
         'label' => 'Gestos',
         'href' => '/gestos/',
-        'title' => 'Flujos automatizados'
+        'title' => 'Flujos automatizados',
+        'hoverTitle' => 'Gestos disponibles',
+        'hoverIcon' => 'iconoir-magic-wand',
+        'newLabel' => 'Ver todos',
+        'newHref' => '/gestos/'
     ],
     'apps' => [
         'icon' => 'iconoir-view-grid',
         'label' => 'Apps',
         'href' => '/aplicaciones/',
-        'title' => 'Aplicaciones Ebone'
+        'title' => 'Aplicaciones Ebone',
+        'hoverTitle' => 'Aplicaciones',
+        'hoverIcon' => 'iconoir-view-grid',
+        'newLabel' => 'Ver todas',
+        'newHref' => '/aplicaciones/'
+    ]
+];
+
+// Gestos disponibles para el submenú
+$gesturesList = [
+    [
+        'type' => 'podcast-from-article',
+        'name' => 'Podcast desde artículo',
+        'icon' => 'iconoir-podcast',
+        'href' => '/gestos/podcast-articulo.php',
+        'description' => 'Convierte texto en audio'
+    ],
+    [
+        'type' => 'write-article',
+        'name' => 'Escribir artículo',
+        'icon' => 'iconoir-edit-pencil',
+        'href' => '/gestos/escribir-articulo.php',
+        'description' => 'Genera contenido escrito'
+    ],
+    [
+        'type' => 'social-media',
+        'name' => 'Redes sociales',
+        'icon' => 'iconoir-share-android',
+        'href' => '/gestos/redes-sociales.php',
+        'description' => 'Crea posts para redes'
+    ]
+];
+
+// Voces disponibles
+$voicesList = [
+    [
+        'id' => 'lex',
+        'name' => 'Lex',
+        'icon' => 'iconoir-scale',
+        'href' => '/voices/lex.php',
+        'description' => 'Abogado experto'
+    ]
+];
+
+// Apps disponibles (placeholder)
+$appsList = [
+    [
+        'id' => 'coming',
+        'name' => 'Próximamente',
+        'icon' => 'iconoir-clock',
+        'href' => '/aplicaciones/',
+        'description' => 'Nuevas apps en camino'
     ]
 ];
 ?>
+<!-- CSS del hover menu -->
+<link rel="stylesheet" href="/assets/css/sidebar-hover.css">
+
 <!-- Barra de tabs lateral izquierda - Solo desktop -->
 <aside class="hidden lg:flex w-[70px] gradient-brand flex-col items-center py-6 gap-2 shrink-0">
   <?php foreach ($tabs as $tabId => $tab): ?>
     <?php 
       $isActive = ($activeTab === $tabId);
-      $baseClasses = 'tab-item w-full py-4 flex flex-col items-center gap-1.5';
+      $baseClasses = 'tab-item w-full py-4 flex flex-col items-center gap-1.5 relative z-10';
       $stateClasses = $isActive 
         ? 'active text-white' 
         : 'text-white/60 hover:text-white/80';
     ?>
     
-    <?php if ($useTabsJs): ?>
-      <!-- Modo JS: usar botones con data-tab -->
-      <button data-tab="<?php echo $tabId; ?>" 
-              class="<?php echo $baseClasses . ' ' . $stateClasses; ?>" 
-              title="<?php echo htmlspecialchars($tab['title']); ?>">
-        <i class="<?php echo $tab['icon']; ?> text-2xl"></i>
-        <span class="text-[10px] font-medium"><?php echo htmlspecialchars($tab['label']); ?></span>
-      </button>
-    <?php elseif ($tab['href']): ?>
-      <!-- Modo enlace: navegación directa -->
-      <a href="<?php echo $tab['href']; ?>" 
-         class="<?php echo $baseClasses . ' ' . $stateClasses; ?>" 
-         title="<?php echo htmlspecialchars($tab['title']); ?>">
-        <i class="<?php echo $tab['icon']; ?> text-2xl"></i>
-        <span class="text-[10px] font-medium"><?php echo htmlspecialchars($tab['label']); ?></span>
-      </a>
-    <?php else: ?>
-      <!-- Tab deshabilitado -->
-      <button class="<?php echo $baseClasses; ?> text-white/40 cursor-not-allowed" 
-              title="<?php echo htmlspecialchars($tab['title']); ?>" disabled>
-        <i class="<?php echo $tab['icon']; ?> text-2xl"></i>
-        <span class="text-[10px] font-medium"><?php echo htmlspecialchars($tab['label']); ?></span>
-      </button>
-    <?php endif; ?>
+    <div class="sidebar-tab-container w-full" data-tab-type="<?php echo $tabId; ?>">
+      <?php if ($useTabsJs): ?>
+        <button data-tab="<?php echo $tabId; ?>" 
+                class="<?php echo $baseClasses . ' ' . $stateClasses; ?>" 
+                title="<?php echo htmlspecialchars($tab['title']); ?>">
+          <i class="<?php echo $tab['icon']; ?> text-2xl"></i>
+          <span class="text-[10px] font-medium"><?php echo htmlspecialchars($tab['label']); ?></span>
+        </button>
+      <?php elseif ($tab['href']): ?>
+        <a href="<?php echo $tab['href']; ?>" 
+           class="<?php echo $baseClasses . ' ' . $stateClasses; ?>" 
+           title="<?php echo htmlspecialchars($tab['title']); ?>">
+          <i class="<?php echo $tab['icon']; ?> text-2xl"></i>
+          <span class="text-[10px] font-medium"><?php echo htmlspecialchars($tab['label']); ?></span>
+        </a>
+      <?php endif; ?>
+      
+      <!-- Panel Hover -->
+      <div class="sidebar-hover-panel">
+        <div class="hover-panel-header">
+          <div class="hover-panel-title">
+            <i class="<?php echo $tab['hoverIcon']; ?> text-orange-500"></i>
+            <?php echo htmlspecialchars($tab['hoverTitle']); ?>
+          </div>
+        </div>
+        
+        <div class="hover-panel-content">
+          <?php if ($tabId === 'conversations'): ?>
+            <!-- Cargado dinámicamente via JS -->
+            <div class="hover-panel-loading">
+              <i class="iconoir-refresh"></i>
+            </div>
+          <?php elseif ($tabId === 'voices'): ?>
+            <?php foreach ($voicesList as $voice): ?>
+              <a href="<?php echo $voice['href']; ?>" class="hover-panel-item">
+                <div class="hover-panel-item-icon">
+                  <i class="<?php echo $voice['icon']; ?>"></i>
+                </div>
+                <div class="hover-panel-item-info">
+                  <div class="hover-panel-item-title"><?php echo htmlspecialchars($voice['name']); ?></div>
+                  <div class="hover-panel-item-meta"><?php echo htmlspecialchars($voice['description']); ?></div>
+                </div>
+              </a>
+            <?php endforeach; ?>
+          <?php elseif ($tabId === 'gestures'): ?>
+            <?php foreach ($gesturesList as $gesture): ?>
+              <div class="hover-panel-item hover-panel-item-expandable" data-gesture-type="<?php echo $gesture['type']; ?>">
+                <div class="hover-panel-item-icon">
+                  <i class="<?php echo $gesture['icon']; ?>"></i>
+                </div>
+                <div class="hover-panel-item-info">
+                  <div class="hover-panel-item-title"><?php echo htmlspecialchars($gesture['name']); ?></div>
+                  <div class="hover-panel-item-meta"><?php echo htmlspecialchars($gesture['description']); ?></div>
+                </div>
+                
+                <!-- Submenú con historial -->
+                <div class="hover-submenu">
+                  <div class="hover-submenu-header">
+                    <span class="hover-submenu-title">Historial reciente</span>
+                    <a href="<?php echo $gesture['href']; ?>" class="hover-submenu-new">
+                      <i class="iconoir-plus"></i> Crear
+                    </a>
+                  </div>
+                  <div class="hover-submenu-content">
+                    <!-- Cargado dinámicamente via JS -->
+                    <div class="hover-panel-loading">
+                      <i class="iconoir-refresh"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <?php endforeach; ?>
+          <?php elseif ($tabId === 'apps'): ?>
+            <?php foreach ($appsList as $app): ?>
+              <a href="<?php echo $app['href']; ?>" class="hover-panel-item">
+                <div class="hover-panel-item-icon">
+                  <i class="<?php echo $app['icon']; ?>"></i>
+                </div>
+                <div class="hover-panel-item-info">
+                  <div class="hover-panel-item-title"><?php echo htmlspecialchars($app['name']); ?></div>
+                  <div class="hover-panel-item-meta"><?php echo htmlspecialchars($app['description']); ?></div>
+                </div>
+              </a>
+            <?php endforeach; ?>
+          <?php endif; ?>
+        </div>
+        
+        <div class="hover-panel-footer">
+          <a href="<?php echo $tab['newHref']; ?>" class="hover-panel-action">
+            <i class="iconoir-arrow-right"></i>
+            <?php echo htmlspecialchars($tab['newLabel']); ?>
+          </a>
+        </div>
+      </div>
+    </div>
   <?php endforeach; ?>
   
   <!-- Spacer -->
   <div class="flex-1"></div>
   
-  <!-- Tab Mi cuenta -->
+  <!-- Tab Mi cuenta (sin hover menu) -->
   <?php 
     $isAccountActive = ($activeTab === 'account');
     $accountClasses = $isAccountActive ? 'text-white' : 'text-white/60 hover:text-white/80';
@@ -86,3 +224,6 @@ $tabs = [
     <span class="text-[10px] font-medium">Cuenta</span>
   </a>
 </aside>
+
+<!-- JS del hover menu -->
+<script src="/assets/js/sidebar-hover.js"></script>

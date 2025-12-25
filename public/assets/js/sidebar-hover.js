@@ -1,0 +1,252 @@
+/**
+ * Sidebar Hover Menu - JavaScript
+ * Carga dinámica de contenido para los menús hover del sidebar
+ */
+(function() {
+  'use strict';
+
+  // Cache de datos para evitar llamadas repetidas
+  const cache = {
+    conversations: null,
+    gestures: {},
+    voices: null,
+    lastFetch: {}
+  };
+
+  const CACHE_TTL = 30000; // 30 segundos
+
+  // Inicializar cuando el DOM esté listo
+  document.addEventListener('DOMContentLoaded', initSidebarHover);
+
+  function initSidebarHover() {
+    const containers = document.querySelectorAll('.sidebar-tab-container');
+    
+    containers.forEach(container => {
+      const tabType = container.dataset.tabType;
+      if (!tabType) return;
+
+      container.addEventListener('mouseenter', () => {
+        loadPanelContent(container, tabType);
+      });
+    });
+
+    // Inicializar submenús de gestos
+    document.addEventListener('mouseenter', (e) => {
+      const item = e.target.closest('.hover-panel-item-expandable');
+      if (item && item.dataset.gestureType) {
+        loadGestureHistory(item, item.dataset.gestureType);
+      }
+    }, true);
+  }
+
+  async function loadPanelContent(container, type) {
+    const panel = container.querySelector('.hover-panel-content');
+    if (!panel) return;
+
+    // Verificar cache
+    if (isCacheValid(type)) {
+      return; // Ya tenemos datos frescos
+    }
+
+    // Mostrar loading
+    panel.innerHTML = `
+      <div class="hover-panel-loading">
+        <i class="iconoir-refresh"></i>
+      </div>
+    `;
+
+    try {
+      switch (type) {
+        case 'conversations':
+          await loadConversations(panel);
+          break;
+        case 'voices':
+          await loadVoices(panel);
+          break;
+        case 'gestures':
+          // Los gestos son estáticos, no necesitan carga
+          break;
+        case 'apps':
+          // Las apps son estáticas por ahora
+          break;
+      }
+    } catch (error) {
+      console.error('Error loading panel content:', error);
+      panel.innerHTML = `
+        <div class="hover-panel-empty">
+          <i class="iconoir-warning-triangle"></i>
+          <p class="hover-panel-empty-text">Error al cargar</p>
+        </div>
+      `;
+    }
+  }
+
+  async function loadConversations(panel) {
+    const response = await fetch('/api/conversations/list.php', {
+      credentials: 'include'
+    });
+    const data = await response.json();
+
+    if (!response.ok || !data.conversations) {
+      throw new Error('Failed to load conversations');
+    }
+
+    cache.conversations = data.conversations;
+    cache.lastFetch.conversations = Date.now();
+
+    const items = data.conversations.slice(0, 6); // Últimas 6
+
+    if (items.length === 0) {
+      panel.innerHTML = `
+        <div class="hover-panel-empty">
+          <i class="iconoir-chat-bubble"></i>
+          <p class="hover-panel-empty-text">Sin conversaciones aún</p>
+        </div>
+      `;
+      return;
+    }
+
+    panel.innerHTML = items.map(conv => `
+      <a href="/?c=${conv.id}" class="hover-panel-item">
+        <div class="hover-panel-item-icon">
+          <i class="iconoir-chat-bubble"></i>
+        </div>
+        <div class="hover-panel-item-info">
+          <div class="hover-panel-item-title">${escapeHtml(conv.title || 'Conversación sin título')}</div>
+          <div class="hover-panel-item-meta">${formatTimeAgo(conv.updated_at || conv.created_at)}</div>
+        </div>
+      </a>
+    `).join('');
+  }
+
+  async function loadVoices(panel) {
+    // Por ahora las voces son estáticas, pero preparado para API
+    const voices = [
+      { id: 'lex', name: 'Lex', description: 'Abogado experto', icon: 'iconoir-scale', href: '/voices/lex.php' }
+      // Añadir más voces aquí cuando estén disponibles
+    ];
+
+    cache.voices = voices;
+    cache.lastFetch.voices = Date.now();
+
+    if (voices.length === 0) {
+      panel.innerHTML = `
+        <div class="hover-panel-empty">
+          <i class="iconoir-voice-square"></i>
+          <p class="hover-panel-empty-text">No hay voces disponibles</p>
+        </div>
+      `;
+      return;
+    }
+
+    panel.innerHTML = voices.map(voice => `
+      <a href="${voice.href}" class="hover-panel-item">
+        <div class="hover-panel-item-icon">
+          <i class="${voice.icon}"></i>
+        </div>
+        <div class="hover-panel-item-info">
+          <div class="hover-panel-item-title">${escapeHtml(voice.name)}</div>
+          <div class="hover-panel-item-meta">${escapeHtml(voice.description)}</div>
+        </div>
+      </a>
+    `).join('');
+  }
+
+  async function loadGestureHistory(item, gestureType) {
+    const submenu = item.querySelector('.hover-submenu-content');
+    if (!submenu) return;
+
+    // Verificar cache
+    if (cache.gestures[gestureType] && 
+        cache.lastFetch[`gesture_${gestureType}`] && 
+        Date.now() - cache.lastFetch[`gesture_${gestureType}`] < CACHE_TTL) {
+      return;
+    }
+
+    submenu.innerHTML = `
+      <div class="hover-panel-loading">
+        <i class="iconoir-refresh"></i>
+      </div>
+    `;
+
+    try {
+      const response = await fetch(`/api/gestures/history.php?type=${gestureType}&limit=5`, {
+        credentials: 'include'
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error('Failed to load history');
+      }
+
+      cache.gestures[gestureType] = data.items || [];
+      cache.lastFetch[`gesture_${gestureType}`] = Date.now();
+
+      const items = data.items || [];
+
+      if (items.length === 0) {
+        submenu.innerHTML = `
+          <div class="hover-panel-empty" style="padding: 16px;">
+            <i class="iconoir-clock"></i>
+            <p class="hover-panel-empty-text">Sin historial aún</p>
+          </div>
+        `;
+        return;
+      }
+
+      submenu.innerHTML = items.map(item => `
+        <a href="${getGestureUrl(gestureType)}?id=${item.id}" class="hover-submenu-item">
+          <span class="hover-submenu-item-title">${escapeHtml(item.title || 'Sin título')}</span>
+          <span class="hover-submenu-item-time">${formatTimeAgo(item.created_at)}</span>
+        </a>
+      `).join('');
+
+    } catch (error) {
+      console.error('Error loading gesture history:', error);
+      submenu.innerHTML = `
+        <div class="hover-panel-empty" style="padding: 16px;">
+          <i class="iconoir-warning-triangle"></i>
+          <p class="hover-panel-empty-text">Error al cargar</p>
+        </div>
+      `;
+    }
+  }
+
+  function getGestureUrl(type) {
+    const urls = {
+      'podcast-from-article': '/gestos/podcast-articulo.php',
+      'write-article': '/gestos/escribir-articulo.php',
+      'social-media': '/gestos/redes-sociales.php'
+    };
+    return urls[type] || '/gestos/';
+  }
+
+  function isCacheValid(type) {
+    const lastFetch = cache.lastFetch[type];
+    return lastFetch && (Date.now() - lastFetch < CACHE_TTL);
+  }
+
+  function formatTimeAgo(dateStr) {
+    if (!dateStr) return '';
+    
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'Ahora';
+    if (diffMins < 60) return `${diffMins} min`;
+    if (diffHours < 24) return `${diffHours}h`;
+    if (diffDays < 7) return `${diffDays}d`;
+    return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+  }
+
+  function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+})();
