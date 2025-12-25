@@ -83,7 +83,7 @@ $voicesList = [
     [
         'id' => 'lex',
         'name' => 'Lex',
-        'icon' => 'iconoir-bookmark-book',
+        'icon' => 'iconoir-book-stack',
         'href' => '/voices/lex.php',
         'description' => 'Abogado experto'
     ]
