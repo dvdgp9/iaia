@@ -211,16 +211,25 @@ $pageTitle = $pageTitle ?? 'Ebonia — IA Corporativa';
       animation: slideIn 0.3s ease-out;
     }
     
-    /* Streaming cursor animation */
-    @keyframes blink {
-      0%, 50% { opacity: 1; }
-      51%, 100% { opacity: 0; }
+    /* Streaming indicator - three dots */
+    .streaming-indicator {
+      display: inline-flex;
+      gap: 3px;
+      margin-left: 4px;
+      vertical-align: middle;
     }
-    .streaming-cursor {
-      display: inline;
-      color: #23AAC5;
-      animation: blink 0.8s infinite;
-      font-weight: normal;
+    .streaming-indicator span {
+      width: 6px;
+      height: 6px;
+      background: #23AAC5;
+      border-radius: 50%;
+      animation: streamPulse 1.4s ease-in-out infinite;
+    }
+    .streaming-indicator span:nth-child(2) { animation-delay: 0.2s; }
+    .streaming-indicator span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes streamPulse {
+      0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+      40% { opacity: 1; transform: scale(1); }
     }
   </style>
 </head>

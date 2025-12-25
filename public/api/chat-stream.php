@@ -207,9 +207,8 @@ $assistantMsgId = $msgs->create($conversationId, null, 'assistant', $fullContent
 // Actualizar conversación
 $convos->touch($conversationId);
 
-// Enviar evento de finalización
+// Enviar evento de finalización (sin content para evitar duplicación)
 sendSSE('done', [
     'message_id' => $assistantMsgId,
-    'model' => $usedModel,
-    'content' => $fullContent
+    'model' => $usedModel
 ]);

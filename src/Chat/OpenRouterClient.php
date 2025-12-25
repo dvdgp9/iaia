@@ -313,6 +313,9 @@ class OpenRouterClient {
         $fullText = '';
         $buffer = '';
         
+        // Referencia a $this para usar dentro del closure
+        $self = $this;
+        
         $ch = curl_init($this->baseUrl);
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => false,
@@ -327,7 +330,8 @@ class OpenRouterClient {
             CURLOPT_POSTFIELDS => json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
             CURLOPT_TIMEOUT => 180,
             CURLOPT_CONNECTTIMEOUT => 10,
-            CURLOPT_WRITEFUNCTION => function($ch, $data) use (&$fullText, &$buffer, $onChunk) {
+            CURLOPT_BUFFERSIZE => 128, // Buffer pequeño para recibir chunks rápido
+            CURLOPT_WRITEFUNCTION => function($ch, $data) use (&$fullText, &$buffer, $onChunk, $self) {
                 $buffer .= $data;
                 
                 // Procesar líneas completas del buffer
@@ -352,7 +356,7 @@ class OpenRouterClient {
                         
                         // Capturar modelo usado
                         if ($json && isset($json['model'])) {
-                            $this->usedModel = $json['model'];
+                            $self->usedModel = $json['model'];
                         }
                     }
                 }

@@ -1180,7 +1180,7 @@ $headerShowLogo = true;
       const bubble = document.createElement('div');
       bubble.className = 'bg-white border border-slate-200 text-slate-800 px-5 py-3.5 rounded-2xl rounded-tl-sm shadow-sm text-conversation';
       bubble.style.wordBreak = 'break-word';
-      bubble.innerHTML = '<span class="streaming-cursor">▊</span>';
+      bubble.innerHTML = '<span class="streaming-indicator"><span></span><span></span><span></span></span>';
       
       msgContainer.appendChild(avatar);
       msgContainer.appendChild(bubble);
@@ -1290,29 +1290,27 @@ $headerShowLogo = true;
               try {
                 const data = JSON.parse(line.slice(6));
                 
-                if (data.content !== undefined) {
-                  // Chunk de contenido
+                // Chunk de contenido (evento 'chunk')
+                if (data.content !== undefined && data.content !== '') {
                   fullContent += data.content;
-                  bubble.innerHTML = mdToHtml(fullContent) + '<span class="streaming-cursor">▊</span>';
+                  bubble.innerHTML = mdToHtml(fullContent) + '<span class="streaming-indicator"><span></span><span></span><span></span></span>';
                   messagesContainer.scrollTop = messagesContainer.scrollHeight;
                 }
                 
-                if (data.conversation_id && !currentConversationId) {
-                  currentConversationId = data.conversation_id;
+                // Evento 'start' - metadata inicial
+                if (data.conversation_id !== undefined) {
+                  if (!currentConversationId && data.conversation_id) {
+                    currentConversationId = data.conversation_id;
+                  }
+                  if (data.context_truncated) {
+                    document.getElementById('context-warning').classList.remove('hidden');
+                  }
                 }
                 
-                if (data.context_truncated) {
-                  document.getElementById('context-warning').classList.remove('hidden');
-                }
-                
-                if (data.message_id) {
-                  // Evento 'done' - finalizar
-                  bubble.innerHTML = mdToHtml(fullContent);
-                }
-                
+                // Evento 'error'
                 if (data.message) {
-                  // Error
-                  bubble.innerHTML = mdToHtml('Error: ' + data.message);
+                  fullContent = 'Error: ' + data.message;
+                  bubble.innerHTML = mdToHtml(fullContent);
                 }
               } catch (e) {
                 // Ignorar líneas JSON mal formadas
@@ -1321,8 +1319,10 @@ $headerShowLogo = true;
           }
         }
         
-        // Quitar cursor al finalizar
-        bubble.innerHTML = mdToHtml(fullContent);
+        // Quitar indicador al finalizar
+        if (fullContent) {
+          bubble.innerHTML = mdToHtml(fullContent);
+        }
         
         // Actualizar título y conversaciones
         if (currentConversationId) {
