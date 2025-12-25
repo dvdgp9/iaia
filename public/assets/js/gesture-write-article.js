@@ -424,7 +424,8 @@ Escribe SOLO la nota de prensa, sin comentarios ni explicaciones.`;
       articleResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
       
     } catch (err) {
-      alert('Error de conexión');
+      console.error('Error loading execution:', err);
+      alert('Error de conexión o al procesar datos');
     }
   }
 
