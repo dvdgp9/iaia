@@ -23,7 +23,7 @@ if (!$jobId) {
 }
 
 $repo = new BackgroundJobsRepo();
-$job = $repo->getById($jobId);
+$job = $repo->findById((int)$jobId);
 
 if (!$job) {
     Response::error('job_not_found', 'Job no encontrado', 404);
