@@ -201,5 +201,14 @@ $pageTitle = $pageTitle ?? 'Ebonia — IA Corporativa';
       color: #64748b;
       margin: 1rem 0;
     }
+    
+    /* Toast animations */
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    .animate-slide-in {
+      animation: slideIn 0.3s ease-out;
+    }
   </style>
 </head>

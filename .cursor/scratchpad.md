@@ -410,6 +410,176 @@ Añadir capacidad de generación de imágenes al chat principal usando el modelo
 
 8. [ ] **Testing**
 
+---
+
+## Feature: Podcast en Background (generación asíncrona)
+
+### Motivación
+Actualmente el gesto "Podcast desde artículo" bloquea completamente al usuario durante la generación (1-3 minutos). El objetivo es que el usuario pueda:
+1. Iniciar la generación del podcast
+2. Navegar por otras secciones de Ebonia
+3. Recibir notificación cuando el podcast esté listo
+4. Volver a la página del podcast para ver/escuchar el resultado
+
+### Análisis del flujo actual
+
+```
+Frontend (gesture-podcast.js)
+    │
+    ▼ POST /api/gestures/podcast.php (blocking fetch)
+    │
+    ├─ Paso 1: Extraer contenido (2-5s)
+    ├─ Paso 2: Generar guion con LLM (10-30s)
+    ├─ Paso 3: Generar audio TTS (30s-2min)
+    └─ Paso 4: Guardar en BD + devolver resultado
+    │
+    ▼ Usuario ve resultado (bloqueado todo este tiempo)
+```
+
+### Opciones de implementación
+
+#### Opción A: Jobs en BD con polling desde frontend
+**Complejidad**: Media
+**Requiere**: Nueva tabla `jobs`, script de procesamiento
+
+```
+1. Frontend hace POST → backend crea job en BD con status='pending', devuelve job_id
+2. Backend TERMINA inmediatamente (no bloquea)
+3. Un cron/worker procesa jobs pendientes en background
+4. Frontend hace polling cada 5s: GET /api/jobs/status.php?id=X
+5. Cuando status='completed', frontend muestra resultado
+```
+
+**Pros**:
+- Usuario libre de navegar
+- Funciona sin WebSockets
+- Fácil de implementar
+
+**Contras**:
+- Requiere cron o proceso background
+- Polling consume recursos (mitigable con intervalos largos)
+
+#### Opción B: Ejecutar PHP en background (proc_open/exec)
+**Complejidad**: Baja
+**Requiere**: Permisos de ejecución
+
+```
+1. Frontend hace POST → backend lanza proceso PHP secundario con exec()
+2. Backend devuelve job_id inmediatamente
+3. Proceso PHP secundario genera podcast y actualiza BD
+4. Frontend hace polling o recarga página
+```
+
+**Pros**:
+- No requiere cron externo
+- Simple de implementar
+
+**Contras**:
+- Menos control sobre errores
+- Puede no funcionar en todos los hostings
+- Difícil de debuggear
+
+#### Opción C: WebSockets con progreso en tiempo real
+**Complejidad**: Alta
+**Requiere**: Servidor WebSocket (Ratchet, Swoole)
+
+**Pros**:
+- UX más fluida con progreso real
+- Sin polling
+
+**Contras**:
+- Requiere servidor WebSocket adicional
+- Mucho más complejo
+- Overkill para el caso de uso
+
+### Recomendación: Opción A (Jobs en BD + Polling)
+
+Es el balance ideal entre complejidad y funcionalidad:
+- No requiere infraestructura adicional
+- El polling puede ser inteligente (más frecuente al principio, menos después)
+- El usuario puede navegar libremente
+- Fácil añadir notificaciones toast cuando el job termine
+
+### Diseño técnico propuesto
+
+**Nueva tabla `background_jobs`**:
+```sql
+CREATE TABLE background_jobs (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  job_type VARCHAR(50) NOT NULL,
+  status ENUM('pending', 'processing', 'completed', 'failed') DEFAULT 'pending',
+  input_data JSON,
+  output_data JSON,
+  error_message TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  started_at DATETIME,
+  completed_at DATETIME,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  INDEX idx_status (status),
+  INDEX idx_user_status (user_id, status)
+);
+```
+
+**Endpoints**:
+- `POST /api/jobs/create.php` - Crea job, devuelve job_id
+- `GET /api/jobs/status.php?id=X` - Devuelve status y resultado si completed
+- `POST /api/jobs/process.php` - Llamado por cron, procesa 1 job pendiente
+
+**Procesamiento**:
+- Cron cada minuto: `php /path/to/api/jobs/process.php`
+- O alternativamente: llamar desde el frontend después de crear el job (self-triggering)
+
+**UX Frontend**:
+1. Usuario pulsa "Generar Podcast"
+2. Muestra toast "Podcast en cola. Puedes seguir navegando."
+3. Indicador persistente en header/sidebar mostrando jobs activos
+4. Al completar: notificación toast "¡Tu podcast está listo!"
+5. Click en notificación → ir a la página del podcast
+
+### Tareas de implementación
+
+1. [ ] **Crear tabla `background_jobs`**
+   - Migración SQL
+   - Success: Tabla creada
+
+2. [ ] **Crear `BackgroundJobsRepo.php`**
+   - create(), findById(), updateStatus(), getPending()
+   - Success: CRUD funcional
+
+3. [ ] **Crear `POST /api/jobs/create.php`**
+   - Recibe tipo de job + input_data
+   - Crea registro en BD
+   - Devuelve job_id
+   - Success: Job creado correctamente
+
+4. [ ] **Crear `GET /api/jobs/status.php`**
+   - Devuelve status, progress_text, output_data si completed
+   - Success: Polling funcional
+
+5. [ ] **Crear `POST /api/jobs/process.php`**
+   - Busca job pending más antiguo
+   - Lo marca como processing
+   - Ejecuta lógica según job_type
+   - Marca como completed/failed
+   - Success: Jobs se procesan correctamente
+
+6. [ ] **Modificar `gesture-podcast.js`**
+   - Crear job en lugar de llamar directamente
+   - Iniciar polling
+   - Mostrar progreso
+   - Success: Podcast se genera sin bloquear
+
+7. [ ] **Añadir indicador de jobs activos en UI**
+   - Badge en header o sidebar
+   - Notificación toast al completar
+   - Success: Usuario informado del progreso
+
+8. [ ] **Configurar cron (producción)**
+   - `* * * * * php /var/www/ebonia/public/api/jobs/process.php`
+   - O usar trigger desde frontend
+   - Success: Jobs se procesan automáticamente
+
 # Executor's Feedback or Assistance Requests
 
 - Proveedor LLM: Gemini 1.5 Flash confirmado. API Key recibida (se gestionará vía `.env`, no se registrará en repo ni logs).

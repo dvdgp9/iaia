@@ -1,11 +1,15 @@
 /**
  * Gesture: Podcast desde artículo
  * Convierte artículos en podcasts con dos voces usando Gemini TTS
+ * Soporta generación en background con polling
  */
 (function() {
   'use strict';
 
   const GESTURE_TYPE = 'podcast-from-article';
+  const POLL_INTERVAL_INITIAL = 3000; // 3s al inicio
+  const POLL_INTERVAL_LONG = 8000;    // 8s después de 30s
+  const POLL_TIMEOUT = 300000;        // 5 min máximo
 
   // === DOM Elements ===
   const podcastForm = document.getElementById('podcast-form');
@@ -40,6 +44,11 @@
   let lastAudioBlob = null;
   let lastAudioUrl = '';
   let lastTitle = '';
+  
+  // Background job state
+  let currentJobId = null;
+  let pollTimer = null;
+  let pollStartTime = null;
 
   // === Tab switching ===
   tabBtns.forEach(btn => {
@@ -88,10 +97,10 @@
     });
   }
 
-  // === Generate podcast ===
+  // === Generate podcast (background job) ===
   async function generatePodcast() {
     let sourceType = currentTab;
-    let payload = { source_type: sourceType, action: 'full' };
+    let inputData = { source_type: sourceType };
     
     switch (sourceType) {
       case 'url':
@@ -100,7 +109,7 @@
           alert('Por favor, introduce una URL');
           return;
         }
-        payload.url = url;
+        inputData.url = url;
         break;
         
       case 'text':
@@ -109,7 +118,7 @@
           alert('Por favor, introduce el texto del artículo');
           return;
         }
-        payload.text = text;
+        inputData.text = text;
         break;
         
       case 'pdf':
@@ -117,62 +126,208 @@
           alert('Por favor, selecciona un archivo PDF');
           return;
         }
-        payload.pdf_base64 = pdfBase64;
+        inputData.pdf_base64 = pdfBase64;
         break;
     }
 
     showProgress();
-    updateProgress('Extrayendo contenido...', 'Analizando la fuente');
+    updateProgress('Creando tarea...', 'Preparando generación del podcast');
 
     try {
-      updateProgress('Generando guion...', 'Creando diálogo entre Ana y Carlos (1-2 min)');
-      
-      const response = await fetch('/api/gestures/podcast.php', {
+      // Crear job en background
+      const response = await fetch('/api/jobs/create.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify(payload)
+        body: JSON.stringify({
+          job_type: 'podcast',
+          input_data: inputData
+        })
       });
 
-      let data;
-      try {
-        data = await response.json();
-      } catch (e) {
-        throw new Error('El servidor devolvió una respuesta vacía o no-JSON');
-      }
+      const data = await response.json();
 
       if (!response.ok || !data.success) {
-        throw new Error(data.error?.message || data.message || 'Error al generar el podcast');
+        throw new Error(data.error?.message || data.message || 'Error al crear la tarea');
       }
 
-      updateProgress('Sintetizando audio...', 'Convirtiendo texto a voz con IA');
-
-      const audioUrl = data.audio.url;
-      if (!audioUrl) {
-        throw new Error('No se recibió URL del audio');
-      }
-
-      // Fetch blob para descarga
-      const blobResp = await fetch(audioUrl, { credentials: 'include' });
-      lastAudioBlob = await blobResp.blob();
-      lastAudioUrl = audioUrl;
-      lastTitle = data.title || 'Podcast';
-
-      // Update UI
-      audioPlayer.src = audioUrl;
-      podcastTitle.textContent = data.title || 'Podcast generado';
-      podcastSummary.textContent = data.summary || '';
-      podcastScript.innerHTML = mdToHtml(formatScript(data.script));
+      currentJobId = data.job_id;
+      pollStartTime = Date.now();
       
-      // Duración visible en el reproductor; no mostramos etiqueta aparte
-
-      showResult();
-      loadHistory(); // Refresh history
+      // Mostrar mensaje de que puede navegar
+      updateProgress('Podcast en cola', 'Puedes navegar por Ebonia mientras se genera. Te avisaremos cuando esté listo.');
+      showNavigationHint();
+      
+      // Disparar procesamiento (trigger) y empezar polling
+      triggerProcessing();
+      startPolling();
 
     } catch (error) {
       console.error('Error:', error);
       showError(error.message);
     }
+  }
+
+  // Disparar el procesamiento del job (sin esperar respuesta)
+  function triggerProcessing() {
+    fetch('/api/jobs/process.php', {
+      method: 'POST',
+      credentials: 'include'
+    }).catch(() => {}); // Ignorar errores, el cron también procesará
+  }
+
+  // Iniciar polling del estado del job
+  function startPolling() {
+    if (pollTimer) clearInterval(pollTimer);
+    
+    const poll = async () => {
+      if (!currentJobId) return;
+      
+      try {
+        const res = await fetch(`/api/jobs/status.php?id=${currentJobId}`, {
+          credentials: 'include'
+        });
+        const data = await res.json();
+        
+        if (!data.success || !data.job) {
+          throw new Error('Error consultando estado');
+        }
+        
+        const job = data.job;
+        
+        if (job.status === 'processing' || job.status === 'pending') {
+          // Actualizar progreso
+          updateProgress(
+            job.progress_text || 'Procesando...',
+            job.status === 'pending' ? 'En cola, esperando turno...' : 'Generando tu podcast...'
+          );
+          
+          // Ajustar intervalo de polling (más lento después de 30s)
+          const elapsed = Date.now() - pollStartTime;
+          if (elapsed > 30000 && pollTimer) {
+            clearInterval(pollTimer);
+            pollTimer = setInterval(poll, POLL_INTERVAL_LONG);
+          }
+          
+          // Timeout después de 5 minutos
+          if (elapsed > POLL_TIMEOUT) {
+            stopPolling();
+            showError('La generación está tardando demasiado. Revisa el historial en unos minutos.');
+          }
+          
+        } else if (job.status === 'completed') {
+          // ¡Éxito!
+          stopPolling();
+          await handleJobCompleted(job.output_data);
+          
+        } else if (job.status === 'failed') {
+          // Error
+          stopPolling();
+          showError(job.error_message || 'Error al generar el podcast');
+        }
+        
+      } catch (err) {
+        console.error('Error polling:', err);
+        // No parar el polling por errores de red temporales
+      }
+    };
+    
+    // Primera consulta inmediata, luego cada POLL_INTERVAL_INITIAL
+    poll();
+    pollTimer = setInterval(poll, POLL_INTERVAL_INITIAL);
+  }
+
+  function stopPolling() {
+    if (pollTimer) {
+      clearInterval(pollTimer);
+      pollTimer = null;
+    }
+    currentJobId = null;
+    hideNavigationHint();
+  }
+
+  // Manejar job completado
+  async function handleJobCompleted(outputData) {
+    if (!outputData) {
+      showError('No se recibieron datos del podcast');
+      return;
+    }
+    
+    const audioUrl = outputData.audio_url;
+    if (!audioUrl) {
+      showError('No se recibió URL del audio');
+      return;
+    }
+
+    // Fetch blob para descarga
+    try {
+      const blobResp = await fetch(audioUrl, { credentials: 'include' });
+      lastAudioBlob = await blobResp.blob();
+    } catch (e) {
+      lastAudioBlob = null;
+    }
+    
+    lastAudioUrl = audioUrl;
+    lastTitle = outputData.title || 'Podcast';
+
+    // Update UI
+    audioPlayer.src = audioUrl;
+    podcastTitle.textContent = outputData.title || 'Podcast generado';
+    podcastSummary.textContent = outputData.summary || '';
+    podcastScript.innerHTML = mdToHtml(formatScript(outputData.script));
+
+    showResult();
+    loadHistory();
+    
+    // Notificación toast
+    showToast('🎙️ ¡Tu podcast está listo!', 'success');
+  }
+
+  // Mostrar hint de que puede navegar
+  function showNavigationHint() {
+    let hint = document.getElementById('navigation-hint');
+    if (!hint) {
+      hint = document.createElement('div');
+      hint.id = 'navigation-hint';
+      hint.className = 'mt-3 p-3 bg-orange-50 border border-orange-200 rounded-lg text-sm text-orange-700 flex items-center gap-2';
+      hint.innerHTML = `
+        <i class="iconoir-info-circle"></i>
+        <span>Puedes navegar por otras secciones. El podcast se generará en segundo plano.</span>
+      `;
+      if (progressPanel) {
+        progressPanel.appendChild(hint);
+      }
+    }
+    hint.classList.remove('hidden');
+  }
+
+  function hideNavigationHint() {
+    const hint = document.getElementById('navigation-hint');
+    if (hint) hint.classList.add('hidden');
+  }
+
+  // Toast notification
+  function showToast(message, type = 'info') {
+    let container = document.getElementById('toast-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'toast-container';
+      container.className = 'fixed bottom-20 lg:bottom-4 right-4 z-50 flex flex-col gap-2';
+      document.body.appendChild(container);
+    }
+    
+    const toast = document.createElement('div');
+    const bgColor = type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-slate-700';
+    toast.className = `${bgColor} text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 animate-slide-in`;
+    toast.innerHTML = `<span>${escapeHtml(message)}</span>`;
+    
+    container.appendChild(toast);
+    
+    // Auto-remove after 5s
+    setTimeout(() => {
+      toast.classList.add('opacity-0', 'transition-opacity');
+      setTimeout(() => toast.remove(), 300);
+    }, 5000);
   }
 
   // === Download ===
@@ -256,6 +411,36 @@
 
   // === HISTORY ===
   loadHistory();
+  
+  // === CHECK FOR ACTIVE JOBS ON PAGE LOAD ===
+  checkActiveJobs();
+  
+  async function checkActiveJobs() {
+    try {
+      const res = await fetch('/api/jobs/active.php', { credentials: 'include' });
+      const data = await res.json();
+      
+      if (data.success && data.jobs && data.jobs.length > 0) {
+        // Buscar job de podcast activo
+        const podcastJob = data.jobs.find(j => j.job_type === 'podcast');
+        if (podcastJob) {
+          // Reanudar polling para este job
+          currentJobId = podcastJob.id;
+          pollStartTime = Date.now() - 30000; // Asumir que ya lleva tiempo
+          showProgress();
+          updateProgress(
+            podcastJob.progress_text || 'Procesando...',
+            'Recuperando estado del podcast en proceso...'
+          );
+          showNavigationHint();
+          startPolling();
+        }
+      }
+    } catch (err) {
+      // Silencioso si falla
+      console.log('No se pudo verificar jobs activos');
+    }
+  }
 
   async function loadHistory() {
     try {
