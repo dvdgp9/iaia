@@ -30,8 +30,9 @@
       });
     });
 
-    // Inicializar submenús de gestos
+    // Inicializar submenús de gestos (delegación de eventos)
     document.addEventListener('mouseenter', (e) => {
+      if (!e.target || !e.target.closest) return;
       const item = e.target.closest('.hover-panel-item-expandable');
       if (item && item.dataset.gestureType) {
         loadGestureHistory(item, item.dataset.gestureType);
@@ -87,14 +88,14 @@
     });
     const data = await response.json();
 
-    if (!response.ok || !data.conversations) {
+    if (!response.ok || !data.items) {
       throw new Error('Failed to load conversations');
     }
 
-    cache.conversations = data.conversations;
+    cache.conversations = data.items;
     cache.lastFetch.conversations = Date.now();
 
-    const items = data.conversations.slice(0, 6); // Últimas 6
+    const items = data.items.slice(0, 6); // Últimas 6
 
     if (items.length === 0) {
       panel.innerHTML = `
