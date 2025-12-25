@@ -222,7 +222,7 @@ function processPodcastJob(int $jobId, array $inputData, int $userId, Background
     $estimatedDuration = $scriptResult['estimated_duration'];
     
     // === PASO 3: Generar audio ===
-    $repo->updateProgress($jobId, 'Sintetizando audio con IA (esto puede tardar 1-2 minutos)...');
+    $repo->updateProgress($jobId, 'Sintetizando audio con IA (esto puede tardar hasta 5 minutos)...');
     
     $geminiKey = Env::get('GEMINI_API_KEY');
     if (empty($geminiKey)) {

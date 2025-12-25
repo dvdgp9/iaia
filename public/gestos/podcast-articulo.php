@@ -155,7 +155,7 @@ $headerDrawerId = 'podcast-history-drawer';
                   </div>
                   <div>
                     <p id="progress-text" class="text-sm font-medium text-orange-700">Procesando...</p>
-                    <p id="progress-detail" class="text-xs text-orange-500">Esto puede tardar 1-2 minutos</p>
+                    <p id="progress-detail" class="text-xs text-orange-500">Esto puede tardar hasta 5 minutos</p>
                   </div>
                 </div>
               </div>

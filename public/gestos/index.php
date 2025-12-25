@@ -65,11 +65,7 @@ $headerIconColor = 'from-cyan-500 to-teal-600';
                 Genera artículos informativos, posts de blog o notas de prensa. Configura el tono, extensión y estilo que necesites.
               </p>
               
-              <div class="flex items-center justify-between text-xs text-slate-400 pt-4 border-t border-slate-200/50">
-                <div class="flex items-center gap-1">
-                  <i class="iconoir-clock"></i>
-                  <span>~3 min</span>
-                </div>
+              <div class="flex items-center justify-end text-xs text-slate-400 pt-4 border-t border-slate-200/50">
                 <div class="flex items-center gap-2 text-cyan-600 font-medium">
                   <span>Usar gesto</span>
                   <i class="iconoir-arrow-right"></i>
@@ -94,11 +90,7 @@ $headerIconColor = 'from-cyan-500 to-teal-600';
                 Construye publicaciones con decisiones editoriales guiadas. Selecciona intención, canal y estilo. Genera variantes con un clic.
               </p>
               
-              <div class="flex items-center justify-between text-xs text-slate-400 pt-4 border-t border-slate-200/50">
-                <div class="flex items-center gap-1">
-                  <i class="iconoir-clock"></i>
-                  <span>~2 min</span>
-                </div>
+              <div class="flex items-center justify-end text-xs text-slate-400 pt-4 border-t border-slate-200/50">
                 <div class="flex items-center gap-2 text-violet-600 font-medium">
                   <span>Usar gesto</span>
                   <i class="iconoir-arrow-right"></i>
@@ -123,11 +115,7 @@ $headerIconColor = 'from-cyan-500 to-teal-600';
                 Convierte cualquier artículo web o documento en un podcast con dos presentadores. Audio generado con Gemini TTS.
               </p>
               
-              <div class="flex items-center justify-between text-xs text-slate-400 pt-4 border-t border-slate-200/50">
-                <div class="flex items-center gap-1">
-                  <i class="iconoir-clock"></i>
-                  <span>~2 min</span>
-                </div>
+              <div class="flex items-center justify-end text-xs text-slate-400 pt-4 border-t border-slate-200/50">
                 <div class="flex items-center gap-2 text-rose-600 font-medium">
                   <span>Usar gesto</span>
                   <i class="iconoir-arrow-right"></i>
