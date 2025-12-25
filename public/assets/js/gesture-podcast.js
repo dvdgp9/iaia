@@ -467,59 +467,53 @@
     checkActiveJobs();
   }
 
-  // === INITIALIZATION ===
-  document.addEventListener('DOMContentLoaded', () => {
-    // Initial history load
-    loadHistory();
-    
-    // Check for URL param (load specific podcast) or active jobs
-    const urlParams = new URLSearchParams(window.location.search);
-    const initialId = urlParams.get('id');
-
-    console.log('Gesture Podcast Init. ID:', initialId);
-
-    if (initialId) {
-      // Load specific execution
-      console.log('Loading execution from URL ID:', initialId);
-      loadExecution(initialId);
-      // Check jobs silently
-      checkActiveJobs(false);
-    } else {
-      // Check jobs and show UI if needed
-      checkActiveJobs(true);
-    }
-  });
+  // === HISTORY ===
+  loadHistory();
   
-  async function checkActiveJobs(showUI = true) {
+  // === CHECK FOR URL PARAMETER (from sidebar navigation) ===
+  checkUrlParameter();
+  
+  // === CHECK FOR ACTIVE JOBS ON PAGE LOAD ===
+  checkActiveJobs();
+  
+  function checkUrlParameter() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const executionId = urlParams.get('id');
+    
+    if (executionId) {
+      // Cargar el contenido automáticamente
+      loadExecution(executionId);
+      
+      // Limpiar el parámetro de la URL sin recargar (opcional, para mejor UX)
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, newUrl);
+    }
+  }
+  
+  async function checkActiveJobs() {
     try {
       const res = await fetch('/api/jobs/active.php', { credentials: 'include' });
       const data = await res.json();
       
-      console.log('Active jobs check:', { data, showUI });
-
       if (data.success && data.jobs && data.jobs.length > 0) {
         // Buscar job de podcast activo
         const podcastJob = data.jobs.find(j => j.job_type === 'podcast');
         if (podcastJob) {
-          console.log('Found active podcast job:', podcastJob);
           // Reanudar polling para este job
           currentJobId = podcastJob.id;
           pollStartTime = Date.now() - 30000; // Asumir que ya lleva tiempo
-          
-          if (showUI) {
-            showProgress();
-            updateProgress(
-              podcastJob.progress_text || 'Procesando...',
-              'Recuperando estado del podcast en proceso...'
-            );
-            showNavigationHint();
-          }
-          
+          showProgress();
+          updateProgress(
+            podcastJob.progress_text || 'Procesando...',
+            'Recuperando estado del podcast en proceso...'
+          );
+          showNavigationHint();
           startPolling();
         }
       }
     } catch (err) {
-      console.error('Error checking active jobs:', err);
+      // Silencioso si falla
+      console.log('No se pudo verificar jobs activos');
     }
   }
 
@@ -593,18 +587,14 @@
   }
 
   async function loadExecution(id) {
-    console.log('Executing loadExecution for ID:', id);
     try {
       const res = await fetch(`/api/gestures/get.php?id=${id}`, {
         credentials: 'include'
       });
       const data = await res.json();
 
-      console.log('loadExecution response:', data);
-
       if (!res.ok || !data.execution) {
-        console.error('Error loading execution:', data);
-        showError('Error al cargar el podcast');
+        alert('Error al cargar el podcast');
         return;
       }
 
@@ -612,12 +602,12 @@
       const outputData = exec.output_data || {};
 
       // Mostrar resultado
-      if (podcastTitle) podcastTitle.textContent = exec.title || 'Podcast';
-      if (podcastSummary) podcastSummary.textContent = outputData.summary || '';
-      if (podcastScript) podcastScript.innerHTML = mdToHtml(formatScript(outputData.script || ''));
+      podcastTitle.textContent = exec.title || 'Podcast';
+      podcastSummary.textContent = outputData.summary || '';
+      podcastScript.innerHTML = mdToHtml(formatScript(outputData.script || ''));
       
       // Audio
-      if (outputData.audio_url && audioPlayer) {
+      if (outputData.audio_url) {
         audioPlayer.src = outputData.audio_url;
         lastAudioUrl = outputData.audio_url;
         lastTitle = exec.title || 'Podcast';
@@ -627,18 +617,15 @@
           const blobResp = await fetch(outputData.audio_url, { credentials: 'include' });
           lastAudioBlob = await blobResp.blob();
         } catch (e) {
-          console.warn('Error fetching audio blob:', e);
           lastAudioBlob = null;
         }
       }
 
-      // Mostrar panel de resultados
-      showResult();
-      console.log('Result shown for ID:', id);
+      // Sin etiqueta de duración adicional
 
+      showResult();
     } catch (err) {
-      console.error('Exception in loadExecution:', err);
-      showError('Error al cargar el podcast');
+      alert('Error al cargar el podcast');
     }
   }
 
