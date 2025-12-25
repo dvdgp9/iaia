@@ -470,33 +470,51 @@
   // === HISTORY ===
   loadHistory();
   
-  // === CHECK FOR ACTIVE JOBS ON PAGE LOAD ===
-  checkActiveJobs();
+  // === CHECK FOR URL PARAM OR ACTIVE JOBS ===
+  const urlParams = new URLSearchParams(window.location.search);
+  const initialId = urlParams.get('id');
+
+  console.log('Initial load check:', { initialId });
+
+  if (initialId) {
+    // Si hay ID en URL, cargamos esa ejecución y comprobamos jobs en segundo plano (silenciosamente)
+    loadExecution(initialId);
+    checkActiveJobs(false);
+  } else {
+    // Si no hay ID, comprobamos jobs y mostramos progreso si hay alguno
+    checkActiveJobs(true);
+  }
   
-  async function checkActiveJobs() {
+  async function checkActiveJobs(showUI = true) {
     try {
       const res = await fetch('/api/jobs/active.php', { credentials: 'include' });
       const data = await res.json();
       
+      console.log('Active jobs check:', { data, showUI });
+
       if (data.success && data.jobs && data.jobs.length > 0) {
         // Buscar job de podcast activo
         const podcastJob = data.jobs.find(j => j.job_type === 'podcast');
         if (podcastJob) {
+          console.log('Found active podcast job:', podcastJob);
           // Reanudar polling para este job
           currentJobId = podcastJob.id;
           pollStartTime = Date.now() - 30000; // Asumir que ya lleva tiempo
-          showProgress();
-          updateProgress(
-            podcastJob.progress_text || 'Procesando...',
-            'Recuperando estado del podcast en proceso...'
-          );
-          showNavigationHint();
+          
+          if (showUI) {
+            showProgress();
+            updateProgress(
+              podcastJob.progress_text || 'Procesando...',
+              'Recuperando estado del podcast en proceso...'
+            );
+            showNavigationHint();
+          }
+          
           startPolling();
         }
       }
     } catch (err) {
-      // Silencioso si falla
-      console.log('No se pudo verificar jobs activos');
+      console.error('Error checking active jobs:', err);
     }
   }
 
