@@ -17,7 +17,7 @@ use Audio\ContentExtractor;
 use Audio\PodcastScriptGenerator;
 use Audio\GeminiTtsClient;
 use Gestures\GestureExecutionsRepo;
-use Repos\UsageLogRepo;
+use Usage\UsageLogRepo;
 
 // Permitir llamadas desde cron (sin sesión) o desde frontend (con sesión)
 // Para cron, verificar token secreto; para frontend, verificar sesión
@@ -286,7 +286,7 @@ function processPodcastJob(int $jobId, array $inputData, int $userId, Background
         'model' => 'gemini-2.5-flash-preview-tts'
     ]);
     
-    // Registrar uso de gesto para estadísticas
+    // Registrar en estadísticas (usage_log)
     $usageLog = new UsageLogRepo();
     $usageLog->log($userId, 'gesture', 1, ['gesture_type' => 'podcast-from-article']);
     
