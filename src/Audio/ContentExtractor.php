@@ -218,56 +218,67 @@ class ContentExtractor
     }
 
     /**
-     * Extrae texto de PDF usando Gemini API (multimodal)
+     * Extrae texto de PDF usando OpenRouter (multimodal con file-parser plugin)
      * @throws \Exception si hay error para que el llamador sepa qué falló
      */
     private function extractWithGemini(string $base64Data): string
     {
-        $apiKey = \App\Env::get('GEMINI_API_KEY');
+        $apiKey = \App\Env::get('OPENROUTER_API_KEY');
         if (empty($apiKey)) {
-            throw new \Exception('Falta GEMINI_API_KEY para extraer PDF');
+            throw new \Exception('Falta OPENROUTER_API_KEY para extraer PDF');
         }
 
-        // Verificar tamaño del PDF (Gemini tiene límite de ~20MB para inline)
+        // Verificar tamaño del PDF (OpenRouter tiene límite razonable)
         $pdfSizeBytes = strlen(base64_decode($base64Data));
         $pdfSizeMB = $pdfSizeBytes / (1024 * 1024);
-        if ($pdfSizeMB > 15) {
-            throw new \Exception("El PDF es demasiado grande (" . round($pdfSizeMB, 1) . "MB). Máximo 15MB.");
+        if ($pdfSizeMB > 20) {
+            throw new \Exception("El PDF es demasiado grande (" . round($pdfSizeMB, 1) . "MB). Máximo 20MB.");
         }
 
-        // Usar gemini-1.5-pro para PDFs largos (mejor contexto)
-        $url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' . $apiKey;
+        $url = 'https://openrouter.ai/api/v1/chat/completions';
         
+        // Formato OpenRouter para PDFs: type: file con file_data
         $payload = [
-            'contents' => [
+            'model' => 'google/gemini-3-flash-preview',
+            'messages' => [
                 [
-                    'parts' => [
+                    'role' => 'user',
+                    'content' => [
                         [
-                            'inline_data' => [
-                                'mime_type' => 'application/pdf',
-                                'data' => $base64Data
+                            'type' => 'file',
+                            'file' => [
+                                'filename' => 'document.pdf',
+                                'file_data' => 'data:application/pdf;base64,' . $base64Data
                             ]
                         ],
                         [
-                            'text' => 'Extrae TODO el contenido de texto de este documento PDF. Devuelve SOLO el texto extraído, sin introducción, explicación ni formato adicional. Mantén la estructura de párrafos.'
+                            'type' => 'text',
+                            'text' => 'Extrae TODO el contenido de texto de este documento PDF. Devuelve SOLO el texto extraído, sin introducción, explicación ni formato adicional. Mantén la estructura de párrafos y secciones.'
                         ]
                     ]
                 ]
             ],
-            'generationConfig' => [
-                'temperature' => 0.1,
-                'maxOutputTokens' => 65536  // Máximo para documentos largos
-            ]
+            'plugins' => [
+                [
+                    'id' => 'file-parser',
+                    'pdf' => ['engine' => 'pdf-text']
+                ]
+            ],
+            'temperature' => 0.1,
+            'max_tokens' => 65536
         ];
 
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json'
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . $apiKey,
+            'HTTP-Referer: ' . (\App\Env::get('APP_URL') ?? 'https://ebonia.es'),
+            'X-Title: Ebonia'
         ]);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 120); // 2 minutos para PDFs largos
+        curl_setopt($ch, CURLOPT_TIMEOUT, 120);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
 
         $response = curl_exec($ch);
@@ -280,37 +291,31 @@ class ContentExtractor
         }
 
         if (!$response) {
-            throw new \Exception('No se recibió respuesta de Gemini al extraer PDF');
+            throw new \Exception('No se recibió respuesta de OpenRouter al extraer PDF');
         }
 
         $data = json_decode($response, true);
 
         // Verificar errores de la API
         if (isset($data['error'])) {
-            $errorMsg = $data['error']['message'] ?? 'Error desconocido de Gemini';
-            throw new \Exception('Error de Gemini: ' . $errorMsg);
+            $errorMsg = $data['error']['message'] ?? 'Error desconocido de OpenRouter';
+            throw new \Exception('Error de OpenRouter: ' . $errorMsg);
         }
 
         if ($httpCode !== 200) {
-            throw new \Exception("Error HTTP {$httpCode} de Gemini al extraer PDF");
+            throw new \Exception("Error HTTP {$httpCode} de OpenRouter al extraer PDF");
         }
 
-        // Verificar si el contenido fue bloqueado
-        if (isset($data['candidates'][0]['finishReason']) && 
-            $data['candidates'][0]['finishReason'] === 'SAFETY') {
-            throw new \Exception('El contenido del PDF fue bloqueado por filtros de seguridad');
-        }
-        
-        if (isset($data['candidates'][0]['content']['parts'][0]['text'])) {
-            $text = trim($data['candidates'][0]['content']['parts'][0]['text']);
+        // Extraer texto de la respuesta (formato OpenAI)
+        if (isset($data['choices'][0]['message']['content'])) {
+            $text = trim($data['choices'][0]['message']['content']);
             if (empty($text)) {
-                throw new \Exception('Gemini no pudo extraer texto del PDF (respuesta vacía)');
+                throw new \Exception('OpenRouter no pudo extraer texto del PDF (respuesta vacía)');
             }
             return $text;
         }
 
-        // Si llegamos aquí, algo raro pasó
-        throw new \Exception('Respuesta inesperada de Gemini al extraer PDF');
+        throw new \Exception('Respuesta inesperada de OpenRouter al extraer PDF');
     }
 
     /**
