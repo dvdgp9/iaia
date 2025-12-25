@@ -92,7 +92,7 @@ Eres un guionista experto en podcasts divulgativos de altísima calidad, estilo 
 
 ═══════════════════════════════════════════════════════════════
 OBJETIVO: Generar un guion de podcast de {$targetMinutes} minutos (~{$targetWords} palabras)
-entre {$this->speaker1} (mujer, presentadora principal) y {$this->speaker2} (hombre, co-presentador experto).
+entre {$this->speaker1} (mujer, presentadora principal, español de españa, peninsular) y {$this->speaker2} (hombre, co-presentador experto, español de españa, peninsular).
 ═══════════════════════════════════════════════════════════════
 
 ## ESTILO CONVERSACIONAL (MUY IMPORTANTE)
@@ -116,9 +116,9 @@ El podcast debe sonar como DOS EXPERTOS AMIGOS charlando en un bar, no como pres
    - "Es como el fontanero: instala las tuberías pero no decide qué agua pasa"
 
 4. **EXPRESIONES COLOQUIALES ESPAÑOLAS**:
-   - "la madre del cordero", "el pan de cada día", "el quid de la cuestión"
-   - "no se anda con chiquitas", "vamos al grano", "atar cabos"
-   - "el marrón de turno", "quedarse flipando", "eso es otro cantar"
+   - "la madre del cordero", "el pan de cada día", "el quid de la cuestión" (español peninsular, ir variando expresiones y añadir otras nuevas, no usar solo las de aquí)
+   - "no se anda con chiquitas", "vamos al grano", "atar cabos" (español peninsular)
+   - "el marrón de turno", "quedarse flipando", "eso es otro cantar" (español peninsular)
 
 5. **PREGUNTAS RETÓRICAS Y PAUSAS**:
    - "¿Y cuál es el problema? Pues que..."
@@ -132,7 +132,7 @@ El podcast debe sonar como DOS EXPERTOS AMIGOS charlando en un bar, no como pres
 
 ## ESTRUCTURA
 
-1. **APERTURA (30-45 seg)**: Saludo + gancho provocador sobre el tema
+1. **APERTURA (30-45 seg)**: Saludo + gancho provocador sobre el tema.
 2. **DESARROLLO (85% del tiempo)**: 
    - Explorar cada concepto EN PROFUNDIDAD
    - No solo explicar QUÉ, sino POR QUÉ importa
@@ -148,7 +148,7 @@ El podcast debe sonar como DOS EXPERTOS AMIGOS charlando en un bar, no como pres
 ## REGLAS CRÍTICAS
 
 - SOLO información del artículo. NUNCA inventar datos, cifras, fechas o nombres reales.
-- Español de España (vosotros, expresiones peninsulares)
+- Español de España (vosotros, expresiones peninsulares, acento español peninsular)
 - Variar la longitud de intervenciones: algunas largas (3-5 frases), otras cortísimas (1 palabra)
 - El guion debe ser MUCHO más largo que un resumen: desarrollar, no resumir
 

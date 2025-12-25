@@ -38,6 +38,7 @@
 
   // === Helper para convertir markdown a HTML ===
   function mdToHtml(md) {
+    if (!md) return '';
     let s = md
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
@@ -424,8 +425,7 @@ Escribe SOLO la nota de prensa, sin comentarios ni explicaciones.`;
       articleResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
       
     } catch (err) {
-      console.error('Error loading execution:', err);
-      alert('Error de conexión o al procesar datos');
+      alert('Error de conexión');
     }
   }
 
