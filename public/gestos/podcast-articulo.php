@@ -160,7 +160,7 @@ $headerDrawerId = 'podcast-history-drawer';
                     </div>
                   </div>
                   <button type="button" id="cancel-btn" class="px-3 py-1.5 text-xs bg-white hover:bg-red-50 text-slate-600 hover:text-red-600 border border-slate-200 hover:border-red-300 rounded-lg transition-colors flex items-center gap-1.5" title="Cancelar generación">
-                    <i class="iconoir-cancel text-sm"></i>
+                    <i class="iconoir-xmark text-sm"></i>
                     <span>Cancelar</span>
                   </button>
                 </div>
