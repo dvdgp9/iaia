@@ -1212,43 +1212,177 @@ $headerShowLogo = true;
           }
         }
 
-        const data = await api('/api/chat.php', { method: 'POST', body });
+        // Usar streaming si no es modo imagen (mejor UX)
+        const useStreaming = !imageMode;
         
-        // Ocultar indicador de escritura
-        typingIndicator.classList.add('hidden');
-        
-        if (!currentConversationId && data.conversation && data.conversation.id) {
-          currentConversationId = data.conversation.id;
-          await loadConversations();
-        }
-        // Actualizar título tras auto-title
-        if (data.conversation && data.conversation.id === currentConversationId) {
-          const convData = await api(`/api/conversations/list.php`);
-          const conv = convData.items?.find(c => c.id === currentConversationId);
-          if (conv) updateConvTitle(conv.title);
-        }
-        // Al enviar el primer mensaje, ya no es conversación vacía
-        if (emptyConversationId === currentConversationId) emptyConversationId = null;
-        // Mostrar/ocultar aviso de truncamiento
-        const warning = document.getElementById('context-warning');
-        if (data.context_truncated) {
-          warning.classList.remove('hidden');
+        if (useStreaming) {
+          await handleStreamingResponse(body);
         } else {
-          warning.classList.add('hidden');
-        }
-        // Pasar imágenes generadas si las hay
-        const images = data.message.images || null;
-        append('assistant', data.message.content, null, images);
-        
-        // Si se generó imagen, desactivar modo imagen después
-        if (imageMode && images && images.length > 0) {
-          imageMode = false;
-          updateImageModeUI();
+          // Modo no-streaming (para generación de imágenes)
+          const data = await api('/api/chat.php', { method: 'POST', body });
+          
+          // Ocultar indicador de escritura
+          typingIndicator.classList.add('hidden');
+          
+          if (!currentConversationId && data.conversation && data.conversation.id) {
+            currentConversationId = data.conversation.id;
+            await loadConversations();
+          }
+          // Actualizar título tras auto-title
+          if (data.conversation && data.conversation.id === currentConversationId) {
+            const convData = await api(`/api/conversations/list.php`);
+            const conv = convData.items?.find(c => c.id === currentConversationId);
+            if (conv) updateConvTitle(conv.title);
+          }
+          // Al enviar el primer mensaje, ya no es conversación vacía
+          if (emptyConversationId === currentConversationId) emptyConversationId = null;
+          // Mostrar/ocultar aviso de truncamiento
+          const warning = document.getElementById('context-warning');
+          if (data.context_truncated) {
+            warning.classList.remove('hidden');
+          } else {
+            warning.classList.add('hidden');
+          }
+          // Pasar imágenes generadas si las hay
+          const images = data.message.images || null;
+          append('assistant', data.message.content, null, images);
+          
+          // Si se generó imagen, desactivar modo imagen después
+          if (imageMode && images && images.length > 0) {
+            imageMode = false;
+            updateImageModeUI();
+          }
         }
       } catch(e){
         typingIndicator.classList.add('hidden');
         append('assistant', 'Error: ' + e.message);
       }
+    }
+
+    // Manejar respuesta con streaming SSE
+    async function handleStreamingResponse(body) {
+      const params = new URLSearchParams({
+        stream: '1'
+      });
+      
+      const response = await fetch('/api/chat.php?' + params, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrf
+        },
+        body: JSON.stringify(body)
+      });
+
+      if (!response.ok) {
+        throw new Error('Error en la petición: ' + response.status);
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let fullText = '';
+      let assistantBubble = null;
+      let conversationIdReceived = null;
+      
+      // Ocultar typing indicator y crear burbuja vacía para el asistente
+      typingIndicator.classList.add('hidden');
+      assistantBubble = createEmptyAssistantBubble();
+      
+      try {
+        while (true) {
+          const {done, value} = await reader.read();
+          if (done) break;
+          
+          buffer += decoder.decode(value, {stream: true});
+          
+          // Procesar eventos SSE completos en el buffer
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || ''; // Guardar línea incompleta
+          
+          for (const line of lines) {
+            if (!line.trim() || !line.startsWith('data: ')) continue;
+            
+            try {
+              const json = line.substring(6); // Quitar "data: "
+              const event = JSON.parse(json);
+              
+              if (event.type === 'start') {
+                conversationIdReceived = event.conversation_id;
+              } else if (event.chunk) {
+                // Acumular y actualizar burbuja progresivamente
+                fullText += event.chunk;
+                updateAssistantBubble(assistantBubble, fullText);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+              } else if (event.type === 'complete') {
+                // Streaming completado
+                if (!currentConversationId && conversationIdReceived) {
+                  currentConversationId = conversationIdReceived;
+                  await loadConversations();
+                }
+                
+                // Actualizar título tras auto-title
+                if (currentConversationId) {
+                  const convData = await api(`/api/conversations/list.php`);
+                  const conv = convData.items?.find(c => c.id === currentConversationId);
+                  if (conv) updateConvTitle(conv.title);
+                }
+                
+                // Al enviar el primer mensaje, ya no es conversación vacía
+                if (emptyConversationId === currentConversationId) emptyConversationId = null;
+                
+                // Mostrar/ocultar aviso de truncamiento
+                const warning = document.getElementById('context-warning');
+                if (event.context_truncated) {
+                  warning.classList.remove('hidden');
+                } else {
+                  warning.classList.add('hidden');
+                }
+              } else if (event.error) {
+                throw new Error(event.error);
+              }
+            } catch (parseErr) {
+              console.warn('Error parseando evento SSE:', parseErr);
+            }
+          }
+        }
+      } catch (streamErr) {
+        console.error('Error en streaming:', streamErr);
+        if (assistantBubble) {
+          updateAssistantBubble(assistantBubble, fullText + '\n\n[Error: la conexión se interrumpió]');
+        }
+      }
+    }
+
+    // Crear burbuja vacía para el asistente (streaming)
+    function createEmptyAssistantBubble() {
+      if(messagesEl.children.length === 0) showChatMode();
+      
+      const wrap = document.createElement('div');
+      wrap.className = 'mb-6 flex flex-col items-start';
+      
+      const msgContainer = document.createElement('div');
+      msgContainer.className = 'flex gap-3 max-w-3xl';
+      
+      const avatar = document.createElement('div');
+      avatar.className = 'w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 text-sm font-semibold flex-shrink-0';
+      avatar.textContent = 'E';
+      
+      const bubble = document.createElement('div');
+      bubble.className = 'bg-white border border-slate-200 px-5 py-3.5 rounded-2xl rounded-tl-sm shadow-sm prose prose-slate prose-sm max-w-none';
+      bubble.innerHTML = '<span class="inline-block w-2 h-4 bg-slate-400 animate-pulse rounded"></span>';
+      
+      msgContainer.appendChild(avatar);
+      msgContainer.appendChild(bubble);
+      wrap.appendChild(msgContainer);
+      messagesEl.appendChild(wrap);
+      
+      return bubble;
+    }
+
+    // Actualizar burbuja del asistente con nuevo contenido (streaming)
+    function updateAssistantBubble(bubble, content) {
+      bubble.innerHTML = mdToHtml(content);
     }
 
     function fileToBase64(file) {

@@ -219,4 +219,194 @@ class OpenRouterClient {
     {
         return $this->lastImages;
     }
+
+    /**
+     * Genera respuesta con streaming (SSE)
+     * Emite eventos al frontend progresivamente
+     * 
+     * @param array $messages Array de mensajes del historial
+     * @param array|null $modalities Modalidades de salida (ej: ['image', 'text'])
+     * @param callable|null $onChunk Callback opcional para procesar chunks (para testing)
+     * @return void Emite eventos SSE directamente
+     */
+    public function generateWithMessagesStreaming(array $messages, ?array $modalities = null, ?callable $onChunk = null): void
+    {
+        if (!$this->apiKey) {
+            $this->emitSSE(['error' => 'Falta OPENROUTER_API_KEY en .env']);
+            return;
+        }
+
+        // Construir payload (mismo que generateWithMessages pero con stream: true)
+        $messagesPayload = [];
+        
+        if ($this->systemInstruction !== null && $this->systemInstruction !== '') {
+            $messagesPayload[] = [
+                'role' => 'system',
+                'content' => $this->systemInstruction
+            ];
+        }
+        
+        $hasPdf = false;
+        foreach ($messages as $m) {
+            $content = [];
+            
+            if (isset($m['file']) && $m['role'] === 'user') {
+                $file = $m['file'];
+                if (str_starts_with($file['mime_type'], 'image/')) {
+                    $content[] = [
+                        'type' => 'image_url',
+                        'image_url' => [
+                            'url' => 'data:' . $file['mime_type'] . ';base64,' . $file['data']
+                        ]
+                    ];
+                } elseif ($file['mime_type'] === 'application/pdf') {
+                    $hasPdf = true;
+                    $filename = $file['name'] ?? 'document.pdf';
+                    $content[] = [
+                        'type' => 'file',
+                        'file' => [
+                            'filename' => $filename,
+                            'file_data' => 'data:application/pdf;base64,' . $file['data']
+                        ]
+                    ];
+                }
+            }
+            
+            if (!empty($m['content'])) {
+                if (!empty($content)) {
+                    $content[] = [
+                        'type' => 'text',
+                        'text' => (string)$m['content']
+                    ];
+                } else {
+                    $content = (string)$m['content'];
+                }
+            }
+            
+            $messagesPayload[] = [
+                'role' => $m['role'] === 'assistant' ? 'assistant' : 'user',
+                'content' => $content
+            ];
+        }
+
+        $payload = [
+            'model' => $this->model,
+            'messages' => $messagesPayload,
+            'stream' => true  // Activar streaming
+        ];
+        
+        if ($hasPdf) {
+            $payload['plugins'] = [
+                [
+                    'id' => 'file-parser',
+                    'pdf' => [ 'engine' => 'pdf-text' ]
+                ]
+            ];
+        }
+        
+        if ($modalities !== null && !empty($modalities)) {
+            $payload['modalities'] = $modalities;
+        }
+        
+        if ($this->temperature !== null) {
+            $payload['temperature'] = $this->temperature;
+        }
+        if ($this->maxTokens !== null) {
+            $payload['max_tokens'] = $this->maxTokens;
+        }
+
+        $ch = curl_init($this->baseUrl);
+        
+        // Buffer para acumular líneas parciales
+        $buffer = '';
+        $fullText = '';
+        
+        curl_setopt_array($ch, [
+            CURLOPT_POST => true,
+            CURLOPT_HTTPHEADER => [
+                'Content-Type: application/json',
+                'Authorization: Bearer ' . $this->apiKey,
+                'HTTP-Referer: ' . (Env::get('APP_URL') ?? 'https://ebonia.es'),
+                'X-Title: Ebonia'
+            ],
+            CURLOPT_POSTFIELDS => json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+            CURLOPT_TIMEOUT => 180,
+            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_WRITEFUNCTION => function($ch, $data) use (&$buffer, &$fullText, $onChunk) {
+                $buffer .= $data;
+                
+                // Procesar líneas completas
+                while (($pos = strpos($buffer, "\n")) !== false) {
+                    $line = substr($buffer, 0, $pos);
+                    $buffer = substr($buffer, $pos + 1);
+                    
+                    $line = trim($line);
+                    if (empty($line) || $line === 'data: [DONE]') {
+                        continue;
+                    }
+                    
+                    // Parsear línea SSE
+                    if (str_starts_with($line, 'data: ')) {
+                        $json = substr($line, 6);
+                        $parsed = json_decode($json, true);
+                        
+                        if ($parsed === null) continue;
+                        
+                        // Extraer contenido del delta
+                        $delta = $parsed['choices'][0]['delta']['content'] ?? '';
+                        
+                        if ($delta !== '') {
+                            $fullText .= $delta;
+                            
+                            // Callback para testing o emitir SSE
+                            if ($onChunk !== null) {
+                                $onChunk($delta, $fullText);
+                            } else {
+                                $this->emitSSE(['chunk' => $delta]);
+                            }
+                        }
+                        
+                        // Capturar modelo usado
+                        if (isset($parsed['model'])) {
+                            $this->usedModel = $parsed['model'];
+                        }
+                    }
+                }
+                
+                return strlen($data);
+            }
+        ]);
+        
+        $result = curl_exec($ch);
+        $err = curl_error($ch);
+        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($result === false || $err) {
+            $this->emitSSE(['error' => 'Error de conexión: ' . $err]);
+            return;
+        }
+
+        if ($status < 200 || $status >= 300) {
+            $this->emitSSE(['error' => 'Error del servidor (HTTP ' . $status . ')']);
+            return;
+        }
+
+        // Emitir evento final
+        if ($onChunk === null) {
+            $this->emitSSE(['done' => true, 'full_text' => $fullText]);
+        }
+    }
+
+    /**
+     * Emite un evento SSE al frontend
+     */
+    private function emitSSE(array $data): void
+    {
+        echo "data: " . json_encode($data, JSON_UNESCAPED_UNICODE) . "\n\n";
+        if (ob_get_level() > 0) {
+            ob_flush();
+        }
+        flush();
+    }
 }
