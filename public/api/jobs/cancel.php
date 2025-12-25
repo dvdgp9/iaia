@@ -42,7 +42,8 @@ if (!in_array($job['status'], ['pending', 'processing'])) {
 // Marcar como failed con mensaje de cancelación
 $repo->markFailed($jobId, 'Cancelado por el usuario');
 
-Response::success([
+Response::json([
+    'success' => true,
     'message' => 'Job cancelado correctamente',
     'job_id' => $jobId
 ]);
