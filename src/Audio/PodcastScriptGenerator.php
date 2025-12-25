@@ -132,7 +132,7 @@ El podcast debe sonar como DOS EXPERTOS AMIGOS charlando en un bar, no como pres
 
 ## ESTRUCTURA
 
-1. **APERTURA (30-45 seg)**: Saludo + gancho provocador sobre el tema.
+1. **APERTURA (30-45 seg)**: Saludo (el podcast se llamará "El Pulso de Ebonia" + gancho provocador sobre el tema.
 2. **DESARROLLO (85% del tiempo)**: 
    - Explorar cada concepto EN PROFUNDIDAD
    - No solo explicar QUÉ, sino POR QUÉ importa
