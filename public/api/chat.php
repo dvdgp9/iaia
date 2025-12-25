@@ -168,59 +168,10 @@ if (count($history) > 20) {
 // Determinar modalities para la generación
 $modalities = $imageMode ? ['image', 'text'] : null;
 
-// Detectar si el cliente solicita streaming (solo para chat normal, no para imágenes)
-$useStreaming = !$imageMode && isset($_GET['stream']) && $_GET['stream'] === '1';
+$assistantMsg = $svc->replyWithHistory($history, $modalities);
 
-if ($useStreaming) {
-    // === MODO STREAMING ===
-    // Configurar headers SSE
-    header('Content-Type: text/event-stream');
-    header('Cache-Control: no-cache');
-    header('Connection: keep-alive');
-    header('X-Accel-Buffering: no'); // Desactivar buffering en nginx
-    
-    // Desactivar output buffering de PHP
-    if (ob_get_level()) ob_end_clean();
-    
-    // Emitir evento inicial
-    echo "data: " . json_encode(['type' => 'start', 'conversation_id' => $conversationId]) . "\n\n";
-    flush();
-    
-    // Generar con streaming
-    $fullText = '';
-    $streamClient = $provider->getClient();
-    
-    $streamClient->generateWithMessagesStreaming($history, $modalities, function($chunk, $accumulated) use (&$fullText) {
-        $fullText = $accumulated;
-    });
-    
-    // Determinar el modelo usado
-    $usedModel = $streamClient->getModel();
-    
-    // Guardar respuesta completa del asistente
-    $assistantMsgId = $msgs->create($conversationId, null, 'assistant', $fullText, $usedModel ?: null);
-    
-    // Actualizar conversación
-    $convos->touch($conversationId);
-    
-    // Emitir evento final con ID del mensaje
-    echo "data: " . json_encode([
-        'type' => 'complete',
-        'message_id' => $assistantMsgId,
-        'model' => $usedModel,
-        'context_truncated' => $contextTruncated
-    ]) . "\n\n";
-    flush();
-    
-    exit;
-    
-} else {
-    // === MODO NO-STREAMING (compatibilidad) ===
-    $assistantMsg = $svc->replyWithHistory($history, $modalities);
-    
-    // Determinar el modelo usado
-    $usedModel = $provider->getModel();
-}
+// Determinar el modelo usado
+$usedModel = $provider->getModel();
 
 // Obtener imágenes generadas si las hay
 $generatedImages = $svc->getLastImages();

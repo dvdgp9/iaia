@@ -210,5 +210,17 @@ $pageTitle = $pageTitle ?? 'Ebonia — IA Corporativa';
     .animate-slide-in {
       animation: slideIn 0.3s ease-out;
     }
+    
+    /* Streaming cursor animation */
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+    .streaming-cursor {
+      display: inline;
+      color: #23AAC5;
+      animation: blink 0.8s infinite;
+      font-weight: normal;
+    }
   </style>
 </head>

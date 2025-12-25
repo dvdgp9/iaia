@@ -221,22 +221,21 @@ class OpenRouterClient {
     }
 
     /**
-     * Genera respuesta con streaming (SSE)
-     * Emite eventos al frontend progresivamente
+     * Genera respuesta en modo streaming (Server-Sent Events)
+     * Cada chunk se pasa al callback inmediatamente.
      * 
-     * @param array $messages Array de mensajes del historial
-     * @param array|null $modalities Modalidades de salida (ej: ['image', 'text'])
-     * @param callable|null $onChunk Callback opcional para procesar chunks (para testing)
-     * @return void Emite eventos SSE directamente
+     * @param array $messages Array de mensajes [{role, content, file?}]
+     * @param callable $onChunk Callback que recibe cada chunk de texto: fn(string $chunk): void
+     * @param callable|null $onComplete Callback al completar: fn(string $fullText, string $model): void
+     * @return string El texto completo generado
      */
-    public function generateWithMessagesStreaming(array $messages, ?array $modalities = null, ?callable $onChunk = null): void
+    public function generateWithMessagesStreaming(array $messages, callable $onChunk, ?callable $onComplete = null): string
     {
         if (!$this->apiKey) {
-            $this->emitSSE(['error' => 'Falta OPENROUTER_API_KEY en .env']);
-            return;
+            throw new \Exception('Falta OPENROUTER_API_KEY en .env');
         }
 
-        // Construir payload (mismo que generateWithMessages pero con stream: true)
+        // Construir mensajes en formato OpenAI
         $messagesPayload = [];
         
         if ($this->systemInstruction !== null && $this->systemInstruction !== '') {
@@ -292,7 +291,7 @@ class OpenRouterClient {
         $payload = [
             'model' => $this->model,
             'messages' => $messagesPayload,
-            'stream' => true  // Activar streaming
+            'stream' => true
         ];
         
         if ($hasPdf) {
@@ -304,10 +303,6 @@ class OpenRouterClient {
             ];
         }
         
-        if ($modalities !== null && !empty($modalities)) {
-            $payload['modalities'] = $modalities;
-        }
-        
         if ($this->temperature !== null) {
             $payload['temperature'] = $this->temperature;
         }
@@ -315,60 +310,49 @@ class OpenRouterClient {
             $payload['max_tokens'] = $this->maxTokens;
         }
 
-        $ch = curl_init($this->baseUrl);
-        
-        // Buffer para acumular líneas parciales
-        $buffer = '';
         $fullText = '';
+        $buffer = '';
         
+        $ch = curl_init($this->baseUrl);
         curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => false,
             CURLOPT_POST => true,
             CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json',
                 'Authorization: Bearer ' . $this->apiKey,
                 'HTTP-Referer: ' . (Env::get('APP_URL') ?? 'https://ebonia.es'),
-                'X-Title: Ebonia'
+                'X-Title: Ebonia',
+                'Accept: text/event-stream'
             ],
             CURLOPT_POSTFIELDS => json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
             CURLOPT_TIMEOUT => 180,
             CURLOPT_CONNECTTIMEOUT => 10,
-            CURLOPT_WRITEFUNCTION => function($ch, $data) use (&$buffer, &$fullText, $onChunk) {
+            CURLOPT_WRITEFUNCTION => function($ch, $data) use (&$fullText, &$buffer, $onChunk) {
                 $buffer .= $data;
                 
-                // Procesar líneas completas
+                // Procesar líneas completas del buffer
                 while (($pos = strpos($buffer, "\n")) !== false) {
                     $line = substr($buffer, 0, $pos);
                     $buffer = substr($buffer, $pos + 1);
                     
                     $line = trim($line);
-                    if (empty($line) || $line === 'data: [DONE]') {
+                    if ($line === '' || $line === 'data: [DONE]') {
                         continue;
                     }
                     
-                    // Parsear línea SSE
-                    if (str_starts_with($line, 'data: ')) {
-                        $json = substr($line, 6);
-                        $parsed = json_decode($json, true);
+                    if (strpos($line, 'data: ') === 0) {
+                        $jsonStr = substr($line, 6);
+                        $json = json_decode($jsonStr, true);
                         
-                        if ($parsed === null) continue;
-                        
-                        // Extraer contenido del delta
-                        $delta = $parsed['choices'][0]['delta']['content'] ?? '';
-                        
-                        if ($delta !== '') {
-                            $fullText .= $delta;
-                            
-                            // Callback para testing o emitir SSE
-                            if ($onChunk !== null) {
-                                $onChunk($delta, $fullText);
-                            } else {
-                                $this->emitSSE(['chunk' => $delta]);
-                            }
+                        if ($json && isset($json['choices'][0]['delta']['content'])) {
+                            $chunk = $json['choices'][0]['delta']['content'];
+                            $fullText .= $chunk;
+                            $onChunk($chunk);
                         }
                         
                         // Capturar modelo usado
-                        if (isset($parsed['model'])) {
-                            $this->usedModel = $parsed['model'];
+                        if ($json && isset($json['model'])) {
+                            $this->usedModel = $json['model'];
                         }
                     }
                 }
@@ -381,32 +365,19 @@ class OpenRouterClient {
         $err = curl_error($ch);
         $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
-
-        if ($result === false || $err) {
-            $this->emitSSE(['error' => 'Error de conexión: ' . $err]);
-            return;
+        
+        if ($err) {
+            throw new \Exception('Error de conexión con OpenRouter: ' . $err);
         }
-
-        if ($status < 200 || $status >= 300) {
-            $this->emitSSE(['error' => 'Error del servidor (HTTP ' . $status . ')']);
-            return;
+        
+        if ($status >= 400) {
+            throw new \Exception('Error HTTP ' . $status . ' de OpenRouter');
         }
-
-        // Emitir evento final
-        if ($onChunk === null) {
-            $this->emitSSE(['done' => true, 'full_text' => $fullText]);
+        
+        if ($onComplete) {
+            $onComplete($fullText, $this->usedModel ?? $this->model);
         }
-    }
-
-    /**
-     * Emite un evento SSE al frontend
-     */
-    private function emitSSE(array $data): void
-    {
-        echo "data: " . json_encode($data, JSON_UNESCAPED_UNICODE) . "\n\n";
-        if (ob_get_level() > 0) {
-            ob_flush();
-        }
-        flush();
+        
+        return $fullText;
     }
 }
