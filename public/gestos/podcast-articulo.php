@@ -86,6 +86,16 @@ $headerDrawerId = 'podcast-history-drawer';
       <div class="flex-1 overflow-auto pb-16 lg:pb-0">
         <div class="max-w-2xl mx-auto p-4 lg:p-6 space-y-4 lg:space-y-6">
           
+          <!-- Intro -->
+          <div class="text-center mb-6">
+            <h1 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-600 to-red-600 mb-2">
+              Convierte texto en audio
+            </h1>
+            <p class="text-slate-500 max-w-lg mx-auto">
+              Transforma cualquier artículo, documento o texto en un podcast dinámico presentado por dos voces de IA. Ideal para consumir contenido mientras haces otras cosas.
+            </p>
+          </div>
+
           <!-- Input Section -->
           <section class="glass-strong rounded-2xl p-6 border border-slate-200/50">
             <form id="podcast-form" class="space-y-5">
