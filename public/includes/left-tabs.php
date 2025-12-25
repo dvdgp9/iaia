@@ -89,14 +89,63 @@ $voicesList = [
     ]
 ];
 
-// Apps disponibles (placeholder)
+// Apps disponibles (catálogo real)
 $appsList = [
     [
-        'id' => 'coming',
-        'name' => 'Próximamente',
-        'icon' => 'iconoir-clock',
-        'href' => '/aplicaciones/',
-        'description' => 'Nuevas apps en camino'
+        'id' => 'campus',
+        'name' => 'Campus',
+        'icon' => 'iconoir-book',
+        'href' => 'https://campus.ebone.es',
+        'description' => 'Formación online'
+    ],
+    [
+        'id' => 'firmas',
+        'name' => 'Firmas',
+        'icon' => 'iconoir-mail',
+        'href' => 'https://firmas.ebone.es',
+        'description' => 'Firmas de correo'
+    ],
+    [
+        'id' => 'happy',
+        'name' => 'Happy',
+        'icon' => 'iconoir-emoji',
+        'href' => 'https://happy.ebone.es',
+        'description' => 'Encuestas'
+    ],
+    [
+        'id' => 'loop',
+        'name' => 'Loop',
+        'icon' => 'iconoir-calendar',
+        'href' => 'https://loop.ebone.es',
+        'description' => 'RRSS y Blogs'
+    ],
+    [
+        'id' => 'passwords',
+        'name' => 'Passwords',
+        'icon' => 'iconoir-lock',
+        'href' => 'https://passwords.ebone.es/gestionar',
+        'description' => 'Gestor seguro'
+    ],
+    [
+        'id' => 'prisma',
+        'name' => 'Prisma',
+        'icon' => 'iconoir-folder',
+        'href' => 'https://prisma.wthefox.com/solicitud.php?empresa=Ebone',
+        'description' => 'Cambios y mejoras'
+    ],
+    [
+        'id' => 'puri',
+        'name' => 'Puri',
+        'icon' => 'iconoir-check-circle',
+        'href' => 'https://puri.ebone.es',
+        'description' => 'Control asistencia'
+    ],
+    [
+        'id' => 'resq',
+        'name' => 'RESQ',
+        'icon' => 'iconoir-swimming',
+        'href' => 'https://resq.ebone.es',
+        'description' => 'Seguridad acuática'
     ]
 ];
 ?>
@@ -140,7 +189,7 @@ $appsList = [
           </div>
         </div>
         
-        <div class="hover-panel-content">
+        <div class="hover-panel-content <?php echo ($tabId === 'gestures') ? 'overflow-visible' : ''; ?>">
           <?php if ($tabId === 'conversations'): ?>
             <!-- Cargado dinámicamente via JS -->
             <div class="hover-panel-loading">
@@ -160,14 +209,16 @@ $appsList = [
             <?php endforeach; ?>
           <?php elseif ($tabId === 'gestures'): ?>
             <?php foreach ($gesturesList as $gesture): ?>
-              <div class="hover-panel-item hover-panel-item-expandable" data-gesture-type="<?php echo $gesture['type']; ?>">
-                <div class="hover-panel-item-icon">
-                  <i class="<?php echo $gesture['icon']; ?>"></i>
-                </div>
-                <div class="hover-panel-item-info">
-                  <div class="hover-panel-item-title"><?php echo htmlspecialchars($gesture['name']); ?></div>
-                  <div class="hover-panel-item-meta"><?php echo htmlspecialchars($gesture['description']); ?></div>
-                </div>
+              <div class="hover-panel-item-wrapper hover-panel-item-expandable" data-gesture-type="<?php echo $gesture['type']; ?>">
+                <a href="<?php echo $gesture['href']; ?>" class="hover-panel-item">
+                  <div class="hover-panel-item-icon">
+                    <i class="<?php echo $gesture['icon']; ?>"></i>
+                  </div>
+                  <div class="hover-panel-item-info">
+                    <div class="hover-panel-item-title"><?php echo htmlspecialchars($gesture['name']); ?></div>
+                    <div class="hover-panel-item-meta"><?php echo htmlspecialchars($gesture['description']); ?></div>
+                  </div>
+                </a>
                 
                 <!-- Submenú con historial -->
                 <div class="hover-submenu">
@@ -188,7 +239,7 @@ $appsList = [
             <?php endforeach; ?>
           <?php elseif ($tabId === 'apps'): ?>
             <?php foreach ($appsList as $app): ?>
-              <a href="<?php echo $app['href']; ?>" class="hover-panel-item">
+              <a href="<?php echo $app['href']; ?>" target="_blank" class="hover-panel-item">
                 <div class="hover-panel-item-icon">
                   <i class="<?php echo $app['icon']; ?>"></i>
                 </div>

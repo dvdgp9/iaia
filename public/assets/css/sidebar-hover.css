@@ -93,6 +93,11 @@
   overflow-y: auto;
 }
 
+.hover-panel-content.overflow-visible {
+  overflow: visible;
+  max-height: none;
+}
+
 /* Items del listado */
 .hover-panel-item {
   display: flex;
@@ -104,9 +109,18 @@
   text-decoration: none;
   transition: all 0.15s ease;
   cursor: pointer;
+  position: relative; /* Para z-index si es necesario */
 }
 
-.hover-panel-item:hover {
+/* Wrapper para items con submenú */
+.hover-panel-item-wrapper {
+  position: relative;
+  border-radius: 10px;
+}
+
+/* Highlight al hacer hover en el item O en el wrapper (para cuando estás en el submenú) */
+.hover-panel-item:hover,
+.hover-panel-item-wrapper:hover > .hover-panel-item {
   background: linear-gradient(135deg, rgba(251, 146, 60, 0.1) 0%, rgba(239, 68, 68, 0.08) 100%);
   color: #ea580c;
 }
@@ -124,7 +138,8 @@
   transition: all 0.15s ease;
 }
 
-.hover-panel-item:hover .hover-panel-item-icon {
+.hover-panel-item:hover .hover-panel-item-icon,
+.hover-panel-item-wrapper:hover > .hover-panel-item .hover-panel-item-icon {
   background: linear-gradient(135deg, #f97316 0%, #ef4444 100%);
   color: white;
 }
@@ -143,7 +158,8 @@
   text-overflow: ellipsis;
 }
 
-.hover-panel-item:hover .hover-panel-item-title {
+.hover-panel-item:hover .hover-panel-item-title,
+.hover-panel-item-wrapper:hover > .hover-panel-item .hover-panel-item-title {
   color: #ea580c;
 }
 
@@ -153,12 +169,8 @@
   margin-top: 2px;
 }
 
-/* Item con submenú (gestos) */
-.hover-panel-item-expandable {
-  position: relative;
-}
-
-.hover-panel-item-expandable::after {
+/* Flecha indicadora de submenú */
+.hover-panel-item-expandable > .hover-panel-item::after {
   content: '›';
   font-size: 16px;
   color: #94a3b8;
@@ -166,7 +178,7 @@
   transition: transform 0.15s ease;
 }
 
-.hover-panel-item-expandable:hover::after {
+.hover-panel-item-expandable:hover > .hover-panel-item::after {
   transform: translateX(2px);
   color: #ea580c;
 }
