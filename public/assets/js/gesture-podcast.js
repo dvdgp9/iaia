@@ -152,6 +152,9 @@
       }
 
       currentJobId = data.job_id;
+      try {
+        sessionStorage.setItem('podcast_job_id', String(currentJobId));
+      } catch (_) {}
       pollStartTime = Date.now();
       
       // Mostrar mensaje de que puede navegar
@@ -243,6 +246,9 @@
       pollTimer = null;
     }
     currentJobId = null;
+    try {
+      sessionStorage.removeItem('podcast_job_id');
+    } catch (_) {}
     hideNavigationHint();
   }
 
@@ -407,6 +413,21 @@
     lastAudioBlob = null;
     lastAudioUrl = '';
     lastTitle = '';
+
+    // Si hay un job activo en servidor, reanudar visualización/progreso
+    // Esto cubre el caso de volver desde "crear otro podcast" mientras sigue generando
+    try {
+      const savedId = sessionStorage.getItem('podcast_job_id');
+      if (savedId) {
+        // Mostrar panel y reanudar polling vía API
+        showProgress();
+        updateProgress('Procesando...', 'Recuperando estado del podcast en proceso...');
+        checkActiveJobs();
+        return;
+      }
+    } catch (_) {}
+    // Si no hay info local, igualmente consultar al servidor
+    checkActiveJobs();
   }
 
   // === HISTORY ===
