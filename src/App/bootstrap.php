@@ -10,6 +10,9 @@ require_once __DIR__ . '/DB.php';
 // Gestures
 require_once dirname(__DIR__) . '/Gestures/GestureExecutionsRepo.php';
 
+// Jobs (Background processing)
+require_once dirname(__DIR__) . '/Jobs/BackgroundJobsRepo.php';
+
 // Chat (LLM)
 require_once dirname(__DIR__) . '/Chat/OpenRouterClient.php';
 
