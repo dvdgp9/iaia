@@ -490,6 +490,23 @@ Devuelve SOLO el texto reescrito de la publicación, sin explicaciones ni marcad
 
   // === HISTORIAL ===
   loadHistory();
+  
+  // === CHECK FOR URL PARAMETER (from sidebar navigation) ===
+  checkUrlParameter();
+  
+  function checkUrlParameter() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const executionId = urlParams.get('id');
+    
+    if (executionId) {
+      // Cargar el contenido automáticamente
+      loadExecution(executionId);
+      
+      // Limpiar el parámetro de la URL sin recargar
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, newUrl);
+    }
+  }
 
   async function loadHistory() {
     try {

@@ -298,6 +298,23 @@ Escribe SOLO la nota de prensa, sin comentarios ni explicaciones.`;
   // Cargar historial al iniciar
   loadHistory();
   
+  // === CHECK FOR URL PARAMETER (from sidebar navigation) ===
+  checkUrlParameter();
+  
+  function checkUrlParameter() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const executionId = urlParams.get('id');
+    
+    if (executionId) {
+      // Cargar el contenido automáticamente
+      loadExecution(executionId);
+      
+      // Limpiar el parámetro de la URL sin recargar
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, newUrl);
+    }
+  }
+  
   async function loadHistory() {
     try {
       const res = await fetch(`/api/gestures/history.php?type=${GESTURE_TYPE}`, {
