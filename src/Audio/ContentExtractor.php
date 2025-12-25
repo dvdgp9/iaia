@@ -75,9 +75,9 @@ class ContentExtractor
             // 1. Intentar con pdftotext (si está disponible)
             $text = $this->extractWithPdftotext($tempFile);
             
-            // 2. Si falla, usar Gemini API (mejor opción para PDFs modernos)
+            // 2. Si falla, usar OpenRouter (mejor opción para PDFs modernos)
             if (empty($text)) {
-                $text = $this->extractWithGemini($base64Data);
+                $text = $this->extractWithOpenRouter($base64Data);
             }
             
             // 3. Último fallback: extracción básica
@@ -221,14 +221,14 @@ class ContentExtractor
      * Extrae texto de PDF usando OpenRouter (multimodal con file-parser plugin)
      * @throws \Exception si hay error para que el llamador sepa qué falló
      */
-    private function extractWithGemini(string $base64Data): string
+    private function extractWithOpenRouter(string $base64Data): string
     {
         $apiKey = \App\Env::get('OPENROUTER_API_KEY');
         if (empty($apiKey)) {
             throw new \Exception('Falta OPENROUTER_API_KEY para extraer PDF');
         }
 
-        // Verificar tamaño del PDF (OpenRouter tiene límite razonable)
+        // Verificar tamaño del PDF
         $pdfSizeBytes = strlen(base64_decode($base64Data));
         $pdfSizeMB = $pdfSizeBytes / (1024 * 1024);
         if ($pdfSizeMB > 20) {
@@ -237,7 +237,7 @@ class ContentExtractor
 
         $url = 'https://openrouter.ai/api/v1/chat/completions';
         
-        // Formato OpenRouter para PDFs: type: file con file_data
+        // Formato OpenRouter para PDFs según documentación
         $payload = [
             'model' => 'google/gemini-3-flash-preview',
             'messages' => [
@@ -265,21 +265,33 @@ class ContentExtractor
                 ]
             ],
             'temperature' => 0.1,
-            'max_tokens' => 65536
+            'max_tokens' => 16384
         ];
+
+        $jsonPayload = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        
+        if ($jsonPayload === false) {
+            throw new \Exception('Error codificando PDF a JSON: ' . json_last_error_msg());
+        }
+        
+        $payloadSizeMB = strlen($jsonPayload) / (1024 * 1024);
+        if ($payloadSizeMB > 25) {
+            throw new \Exception("El payload es demasiado grande (" . round($payloadSizeMB, 1) . "MB).");
+        }
 
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonPayload);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Content-Type: application/json',
+            'Content-Length: ' . strlen($jsonPayload),
             'Authorization: Bearer ' . $apiKey,
             'HTTP-Referer: ' . (\App\Env::get('APP_URL') ?? 'https://ebonia.es'),
             'X-Title: Ebonia'
         ]);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 120);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 300);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
 
         $response = curl_exec($ch);
         $curlError = curl_error($ch);
@@ -287,35 +299,41 @@ class ContentExtractor
         curl_close($ch);
 
         if ($curlError) {
-            throw new \Exception('Error de conexión extrayendo PDF: ' . $curlError);
+            throw new \Exception('Error de conexión: ' . $curlError);
         }
 
         if (!$response) {
-            throw new \Exception('No se recibió respuesta de OpenRouter al extraer PDF');
+            throw new \Exception('No se recibió respuesta de OpenRouter');
         }
 
         $data = json_decode($response, true);
 
-        // Verificar errores de la API
         if (isset($data['error'])) {
-            $errorMsg = $data['error']['message'] ?? 'Error desconocido de OpenRouter';
+            $errorMsg = $data['error']['message'] ?? 'Error desconocido';
             throw new \Exception('Error de OpenRouter: ' . $errorMsg);
         }
 
         if ($httpCode !== 200) {
-            throw new \Exception("Error HTTP {$httpCode} de OpenRouter al extraer PDF");
+            throw new \Exception("Error HTTP {$httpCode} de OpenRouter");
         }
 
-        // Extraer texto de la respuesta (formato OpenAI)
         if (isset($data['choices'][0]['message']['content'])) {
             $text = trim($data['choices'][0]['message']['content']);
             if (empty($text)) {
-                throw new \Exception('OpenRouter no pudo extraer texto del PDF (respuesta vacía)');
+                throw new \Exception('OpenRouter devolvió respuesta vacía');
             }
             return $text;
         }
 
-        throw new \Exception('Respuesta inesperada de OpenRouter al extraer PDF');
+        throw new \Exception('Respuesta inesperada de OpenRouter');
+    }
+
+    /**
+     * Mantener compatibilidad con nombre anterior del método
+     */
+    private function extractWithGemini(string $base64Data): string
+    {
+        return $this->extractWithOpenRouter($base64Data);
     }
 
     /**
@@ -323,17 +341,13 @@ class ContentExtractor
      */
     private function extractPdfBasic(string $pdfData): string
     {
-        // Buscar streams de texto en el PDF
         $text = '';
         
-        // Buscar texto entre BT y ET (Begin Text / End Text)
         if (preg_match_all('/BT\s*(.*?)\s*ET/s', $pdfData, $matches)) {
             foreach ($matches[1] as $block) {
-                // Extraer strings entre paréntesis
                 if (preg_match_all('/\(([^)]+)\)/', $block, $stringMatches)) {
                     $text .= implode(' ', $stringMatches[1]) . ' ';
                 }
-                // Extraer strings hexadecimales
                 if (preg_match_all('/<([0-9A-Fa-f]+)>/', $block, $hexMatches)) {
                     foreach ($hexMatches[1] as $hex) {
                         $text .= hex2bin($hex) . ' ';
@@ -342,7 +356,6 @@ class ContentExtractor
             }
         }
 
-        // Limpiar
         $text = preg_replace('/[^\x20-\x7E\xA0-\xFF\n]/', ' ', $text);
         $text = preg_replace('/\s+/', ' ', $text);
 
