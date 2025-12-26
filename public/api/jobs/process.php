@@ -170,10 +170,14 @@ try {
  */
 function processPodcastJob(int $jobId, array $inputData, int $userId, BackgroundJobsRepo $repo): array
 {
+    $logFile = dirname(__DIR__, 2) . '/logs/job_process.log';
+    
     $sourceType = $inputData['source_type'] ?? 'url';
     $sourceUrl = $inputData['url'] ?? '';
     $sourceText = $inputData['text'] ?? '';
     $sourcePdf = $inputData['pdf_base64'] ?? '';
+    
+    logJob("Job #{$jobId} - Iniciando extracción. Source type: {$sourceType}", $logFile);
     
     // === PASO 1: Extraer contenido ===
     $repo->updateProgress($jobId, 'Extrayendo contenido del artículo...');
@@ -188,6 +192,7 @@ function processPodcastJob(int $jobId, array $inputData, int $userId, Background
             if (empty($sourceUrl)) {
                 throw new \Exception('URL no proporcionada');
             }
+            logJob("Job #{$jobId} - Extrayendo de URL: {$sourceUrl}", $logFile);
             $result = $extractor->extractFromUrl($sourceUrl);
             if (!$result['success']) {
                 throw new \Exception('Error extrayendo URL: ' . $result['error']);
@@ -195,12 +200,14 @@ function processPodcastJob(int $jobId, array $inputData, int $userId, Background
             $content = $result['content'];
             $title = $result['title'];
             $source = $result['source'];
+            logJob("Job #{$jobId} - Extraído. Título: {$title}, palabras: " . str_word_count($content), $logFile);
             break;
             
         case 'pdf':
             if (empty($sourcePdf)) {
                 throw new \Exception('PDF no proporcionado');
             }
+            logJob("Job #{$jobId} - Extrayendo de PDF", $logFile);
             $result = $extractor->extractFromPdf($sourcePdf);
             if (!$result['success']) {
                 throw new \Exception('Error extrayendo PDF: ' . $result['error']);
@@ -208,12 +215,14 @@ function processPodcastJob(int $jobId, array $inputData, int $userId, Background
             $content = $result['content'];
             $title = $result['title'];
             $source = 'PDF';
+            logJob("Job #{$jobId} - Extraído. Título: {$title}, palabras: " . str_word_count($content), $logFile);
             break;
             
         case 'text':
             if (empty($sourceText)) {
                 throw new \Exception('Texto no proporcionado');
             }
+            logJob("Job #{$jobId} - Procesando texto", $logFile);
             $result = $extractor->extractFromText($sourceText);
             if (!$result['success']) {
                 throw new \Exception('Error procesando texto: ' . $result['error']);
@@ -221,6 +230,7 @@ function processPodcastJob(int $jobId, array $inputData, int $userId, Background
             $content = $result['content'];
             $title = $result['title'];
             $source = 'Texto';
+            logJob("Job #{$jobId} - Extraído. Título: {$title}, palabras: " . str_word_count($content), $logFile);
             break;
             
         default:
@@ -228,10 +238,12 @@ function processPodcastJob(int $jobId, array $inputData, int $userId, Background
     }
     
     // === PASO 2: Generar guion ===
+    logJob("Job #{$jobId} - Iniciando generación de guion", $logFile);
     $repo->updateProgress($jobId, 'Generando guion del podcast...');
     
     $scriptGenerator = new PodcastScriptGenerator();
     $scriptResult = $scriptGenerator->generate($content, $title, 15);
+    logJob("Job #{$jobId} - Guion generado exitosamente", $logFile);
     
     if (!$scriptResult['success']) {
         throw new \Exception('Error generando guion: ' . $scriptResult['error']);
@@ -244,6 +256,7 @@ function processPodcastJob(int $jobId, array $inputData, int $userId, Background
     $estimatedDuration = $scriptResult['estimated_duration'];
     
     // === PASO 3: Generar audio ===
+    logJob("Job #{$jobId} - Iniciando generación de audio", $logFile);
     $repo->updateProgress($jobId, 'Sintetizando audio con IA (esto puede tardar hasta 5 minutos)...');
     
     $geminiKey = Env::get('GEMINI_API_KEY');
@@ -261,12 +274,14 @@ function processPodcastJob(int $jobId, array $inputData, int $userId, Background
         'Aoede',
         'Orus'
     );
+    logJob("Job #{$jobId} - Audio generado exitosamente", $logFile);
     
     if (!$audioResult['success']) {
         throw new \Exception('Error generando audio: ' . $audioResult['error']);
     }
     
     // Convertir PCM a WAV y guardar
+    logJob("Job #{$jobId} - Convirtiendo PCM a WAV", $logFile);
     $pcmData = base64_decode($audioResult['audio_data']);
     $wavData = GeminiTtsClient::pcmToWav($pcmData);
     
@@ -278,8 +293,10 @@ function processPodcastJob(int $jobId, array $inputData, int $userId, Background
     $filePath = $publicTmp . '/' . $fileName;
     file_put_contents($filePath, $wavData);
     $wavUrl = '/tmp/' . $fileName;
+    logJob("Job #{$jobId} - Audio guardado en {$wavUrl}", $logFile);
     
     // === PASO 4: Guardar en historial de gestos ===
+    logJob("Job #{$jobId} - Guardando en historial de gestos", $logFile);
     $repo->updateProgress($jobId, 'Guardando resultado...');
     
     $gesturesRepo = new GestureExecutionsRepo();
@@ -306,10 +323,13 @@ function processPodcastJob(int $jobId, array $inputData, int $userId, Background
         'business_line' => null,
         'model' => 'gemini-2.5-flash-preview-tts'
     ]);
+    logJob("Job #{$jobId} - Guardado en gestos con ID: {$executionId}", $logFile);
     
     // Registrar en estadísticas (usage_log)
+    logJob("Job #{$jobId} - Registrando en usage_log", $logFile);
     $usageLog = new UsageLogRepo();
     $usageLog->log($userId, 'gesture', 1, ['gesture_type' => 'podcast-from-article']);
+    logJob("Job #{$jobId} - Usage log registrado", $logFile);
     
     // Devolver datos para output_data del job
     return [
