@@ -1014,7 +1014,7 @@ $headerShowLogo = true;
         btn.setAttribute('data-conv-id', c.id);
 
         const textContainer = document.createElement('div');
-        textContainer.className = 'flex-1 min-w-0';
+        textContainer.className = 'flex-1 min-w-0 max-w-[180px]';
         const titleEl = document.createElement('div');
         titleEl.className = 'font-medium text-sm truncate ' + (isActive ? 'text-[#115c6c]' : 'text-slate-700 group-hover:text-slate-900');
         titleEl.textContent = c.title || `Conversación ${c.id}`;
