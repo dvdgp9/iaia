@@ -199,8 +199,6 @@
         const data = await res.json();
         const job = data.job;
         
-        console.log('Job status:', job.status, 'Output data:', job.output_data); // Debug
-        
         if (job.status === 'processing' || job.status === 'pending') {
           // Actualizar progreso
           updateProgress(
@@ -223,7 +221,6 @@
           
         } else if (job.status === 'completed') {
           // ¡Éxito!
-          console.log('Job completed! Output data:', job.output_data); // Debug
           stopPolling();
           await handleJobCompleted(job.output_data);
           
@@ -231,8 +228,6 @@
           // Error
           stopPolling();
           showError(job.error_message || 'Error al generar el podcast');
-        } else {
-          console.warn('Estado desconocido del job:', job.status); // Debug
         }
         
       } catch (err) {
@@ -559,12 +554,15 @@
       const inputData = item.input_data || {};
       const sourceIcon = inputData.source_type === 'url' ? 'iconoir-link' : 
                          inputData.source_type === 'pdf' ? 'iconoir-page' : 'iconoir-text';
+      
+      // Truncar título a 50 caracteres
+      const title = item.title.length > 50 ? item.title.substring(0, 50) + '...' : item.title;
 
       return `
         <div class="history-item w-full p-3 hover:bg-slate-50 border-b border-slate-100 transition-colors group flex items-start gap-2" data-id="${item.id}">
           <i class="${sourceIcon} text-orange-500 mt-0.5"></i>
           <div class="flex-1 min-w-0 cursor-pointer history-item-main">
-            <p class="text-sm font-medium text-slate-700 truncate group-hover:text-orange-600">${escapeHtml(item.title)}</p>
+            <p class="text-sm font-medium text-slate-700 truncate group-hover:text-orange-600">${escapeHtml(title)}</p>
             <div class="flex items-center gap-2 mt-1">
               <span class="text-[10px] text-slate-400">${timeAgo}</span>
             </div>
