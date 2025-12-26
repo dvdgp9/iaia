@@ -46,8 +46,6 @@ if (!$isCliOrCron) {
 
 // Configurar tiempo máximo de ejecución (5 minutos para podcasts largos)
 set_time_limit(300);
-// Aumentar límite de memoria para procesamiento de audio (WAV/Base64)
-ini_set('memory_limit', '512M');
 
 // Enviar respuesta inmediata al frontend para no bloquear
 if (!$isCliOrCron && isset($_SERVER['HTTP_HOST'])) {
@@ -132,16 +130,6 @@ try {
     
     // Marcar como completed
     $repo->markCompleted($jobId, $outputData);
-    
-    // Registrar en estadísticas (usage_log) - Hacerlo DESPUÉS de marcar completed
-    try {
-        logJob("Job #{$jobId} - Registrando en usage_log", $logFile);
-        $usageLog = new Repos\UsageLogRepo();
-        $usageLog->log($userId, 'gesture', 1, ['gesture_type' => 'podcast-from-article']);
-        logJob("Job #{$jobId} - Usage log registrado", $logFile);
-    } catch (\Throwable $e) {
-        logJob("Job #{$jobId} - ERROR en usage_log (ignorado): " . $e->getMessage(), $logFile);
-    }
     
     logJob("Job #{$jobId} COMPLETADO exitosamente", $logFile);
     
@@ -295,12 +283,7 @@ function processPodcastJob(int $jobId, array $inputData, int $userId, Background
     // Convertir PCM a WAV y guardar
     logJob("Job #{$jobId} - Convirtiendo PCM a WAV", $logFile);
     $pcmData = base64_decode($audioResult['audio_data']);
-    // Liberar memoria del array original grande
-    unset($audioResult);
-    
     $wavData = GeminiTtsClient::pcmToWav($pcmData);
-    // Liberar PCM data
-    unset($pcmData);
     
     $publicTmp = dirname(__DIR__, 2) . '/tmp';
     if (!is_dir($publicTmp)) {
@@ -310,10 +293,6 @@ function processPodcastJob(int $jobId, array $inputData, int $userId, Background
     $filePath = $publicTmp . '/' . $fileName;
     file_put_contents($filePath, $wavData);
     $wavUrl = '/tmp/' . $fileName;
-    
-    // Liberar WAV data (grande)
-    unset($wavData);
-    
     logJob("Job #{$jobId} - Audio guardado en {$wavUrl}", $logFile);
     
     // === PASO 4: Guardar en historial de gestos ===
@@ -345,6 +324,12 @@ function processPodcastJob(int $jobId, array $inputData, int $userId, Background
         'model' => 'gemini-2.5-flash-preview-tts'
     ]);
     logJob("Job #{$jobId} - Guardado en gestos con ID: {$executionId}", $logFile);
+    
+    // Registrar en estadísticas (usage_log)
+    logJob("Job #{$jobId} - Registrando en usage_log", $logFile);
+    $usageLog = new UsageLogRepo();
+    $usageLog->log($userId, 'gesture', 1, ['gesture_type' => 'podcast-from-article']);
+    logJob("Job #{$jobId} - Usage log registrado", $logFile);
     
     // Devolver datos para output_data del job
     return [
