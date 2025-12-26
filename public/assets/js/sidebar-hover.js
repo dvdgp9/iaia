@@ -194,12 +194,16 @@
         return;
       }
 
-      submenu.innerHTML = items.map(item => `
-        <a href="${getGestureUrl(gestureType)}?id=${item.id}" class="hover-submenu-item">
-          <span class="hover-submenu-item-title">${escapeHtml(item.title || 'Sin título')}</span>
-          <span class="hover-submenu-item-time">${formatTimeAgo(item.created_at)}</span>
-        </a>
-      `).join('');
+      submenu.innerHTML = items.map(item => {
+        const title = item.title || 'Sin título';
+        const truncatedTitle = title.length > 50 ? title.substring(0, 50) + '...' : title;
+        return `
+          <a href="${getGestureUrl(gestureType)}?id=${item.id}" class="hover-submenu-item">
+            <span class="hover-submenu-item-title">${escapeHtml(truncatedTitle)}</span>
+            <span class="hover-submenu-item-time">${formatTimeAgo(item.created_at)}</span>
+          </a>
+        `;
+      }).join('');
 
     } catch (error) {
       console.error('Error loading gesture history:', error);
