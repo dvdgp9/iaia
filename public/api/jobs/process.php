@@ -17,7 +17,7 @@ use Audio\ContentExtractor;
 use Audio\PodcastScriptGenerator;
 use Audio\GeminiTtsClient;
 use Gestures\GestureExecutionsRepo;
-use Usage\UsageLogRepo;
+use Repos\UsageLogRepo;
 
 // Permitir llamadas desde cron (sin sesión) o desde frontend (con sesión)
 // Para cron, verificar token secreto; para frontend, verificar sesión
@@ -327,18 +327,12 @@ function processPodcastJob(int $jobId, array $inputData, int $userId, Background
     
     // Registrar en estadísticas (usage_log)
     logJob("Job #{$jobId} - Registrando en usage_log", $logFile);
-    try {
-        $usageLog = new UsageLogRepo();
-        $usageLog->log($userId, 'gesture', 1, ['gesture_type' => 'podcast-from-article']);
-        logJob("Job #{$jobId} - Usage log registrado", $logFile);
-    } catch (\Exception $e) {
-        logJob("Job #{$jobId} - ERROR en usage_log (no crítico): " . $e->getMessage(), $logFile);
-        // No fallar el job por esto, continuar
-    }
+    $usageLog = new UsageLogRepo();
+    $usageLog->log($userId, 'gesture', 1, ['gesture_type' => 'podcast-from-article']);
+    logJob("Job #{$jobId} - Usage log registrado", $logFile);
     
     // Devolver datos para output_data del job
-    logJob("Job #{$jobId} - Preparando output_data para return", $logFile);
-    $outputData = [
+    return [
         'execution_id' => $executionId,
         'title' => $title,
         'summary' => $summary,
@@ -349,6 +343,4 @@ function processPodcastJob(int $jobId, array $inputData, int $userId, Background
         'duration_estimate' => $estimatedDuration,
         'source' => $source
     ];
-    logJob("Job #{$jobId} - Retornando output_data", $logFile);
-    return $outputData;
 }
