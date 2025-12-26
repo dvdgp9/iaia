@@ -122,7 +122,7 @@
   async function loadVoices(panel) {
     // Por ahora las voces son estáticas, pero preparado para API
     const voices = [
-      { id: 'lex', name: 'Lex', description: 'Abogado experto', icon: 'iconoir-balance-scale', href: '/voices/lex.php' }
+      { id: 'lex', name: 'Lex', description: 'Abogado experto', icon: 'iconoir-book-stack', href: '/voices/lex.php' }
       // Añadir más voces aquí cuando estén disponibles
     ];
 
