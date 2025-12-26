@@ -327,12 +327,18 @@ function processPodcastJob(int $jobId, array $inputData, int $userId, Background
     
     // Registrar en estadísticas (usage_log)
     logJob("Job #{$jobId} - Registrando en usage_log", $logFile);
-    $usageLog = new UsageLogRepo();
-    $usageLog->log($userId, 'gesture', 1, ['gesture_type' => 'podcast-from-article']);
-    logJob("Job #{$jobId} - Usage log registrado", $logFile);
+    try {
+        $usageLog = new UsageLogRepo();
+        $usageLog->log($userId, 'gesture', 1, ['gesture_type' => 'podcast-from-article']);
+        logJob("Job #{$jobId} - Usage log registrado", $logFile);
+    } catch (\Exception $e) {
+        logJob("Job #{$jobId} - ERROR en usage_log (no crítico): " . $e->getMessage(), $logFile);
+        // No fallar el job por esto, continuar
+    }
     
     // Devolver datos para output_data del job
-    return [
+    logJob("Job #{$jobId} - Preparando output_data para return", $logFile);
+    $outputData = [
         'execution_id' => $executionId,
         'title' => $title,
         'summary' => $summary,
@@ -343,4 +349,6 @@ function processPodcastJob(int $jobId, array $inputData, int $userId, Background
         'duration_estimate' => $estimatedDuration,
         'source' => $source
     ];
+    logJob("Job #{$jobId} - Retornando output_data", $logFile);
+    return $outputData;
 }
