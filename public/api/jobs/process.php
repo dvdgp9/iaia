@@ -97,23 +97,41 @@ if ($isCliOrCron) {
     echo "Procesando job #{$jobId} (tipo: {$jobType})\n";
 }
 
+// Log file para debug
+$logFile = dirname(__DIR__, 2) . '/logs/job_process.log';
+@mkdir(dirname($logFile), 0775, true);
+
+function logJob(string $message, string $logFile) {
+    $timestamp = date('Y-m-d H:i:s');
+    file_put_contents($logFile, "[$timestamp] $message\n", FILE_APPEND);
+}
+
 try {
+    logJob("Iniciando job #{$jobId} tipo: {$jobType}", $logFile);
+    
     // Marcar como processing
     $repo->markProcessing($jobId, 'Iniciando procesamiento...');
+    logJob("Job #{$jobId} marcado como processing", $logFile);
     
     $outputData = [];
     
     switch ($jobType) {
         case 'podcast':
+            logJob("Job #{$jobId} llamando processPodcastJob", $logFile);
             $outputData = processPodcastJob($jobId, $inputData, $userId, $repo);
+            logJob("Job #{$jobId} processPodcastJob completado", $logFile);
             break;
             
         default:
             throw new \Exception("Tipo de job no soportado: {$jobType}");
     }
     
+    logJob("Job #{$jobId} marcando como completed con output: " . json_encode(array_keys($outputData)), $logFile);
+    
     // Marcar como completed
     $repo->markCompleted($jobId, $outputData);
+    
+    logJob("Job #{$jobId} COMPLETADO exitosamente", $logFile);
     
     if ($isCliOrCron) {
         echo "Job #{$jobId} completado exitosamente\n";
@@ -127,6 +145,9 @@ try {
     }
     
 } catch (\Exception $e) {
+    logJob("Job #{$jobId} ERROR: " . $e->getMessage(), $logFile);
+    logJob("Job #{$jobId} Stack trace: " . $e->getTraceAsString(), $logFile);
+    
     // Marcar como failed
     $repo->markFailed($jobId, $e->getMessage());
     
