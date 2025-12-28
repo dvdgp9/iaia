@@ -1,19 +1,12 @@
 <?php
 /**
- * Script temporal para ejecutar la ingesta RAG desde el navegador
+ * Script de ingesta RAG - Procesa UN archivo por llamada
+ * Recarga la página para procesar el siguiente archivo
  * ¡ELIMINAR DESPUÉS DE USAR!
- * 
- * Este script incluye directamente la lógica de ingesta para evitar
- * problemas con exec() y rutas de PHP en servidores compartidos.
  */
 
-// Aumentar límites para procesamiento largo
-set_time_limit(600); // 10 minutos
-ini_set('memory_limit', '512M');
-
-// Flush output en tiempo real
-ob_implicit_flush(true);
-if (ob_get_level()) ob_end_flush();
+set_time_limit(120); // 2 minutos max por archivo
+ini_set('memory_limit', '256M');
 
 require_once __DIR__ . '/../../../src/App/bootstrap.php';
 require_once __DIR__ . '/../../../src/Rag/QdrantClient.php';
@@ -28,97 +21,112 @@ define('COLLECTION_NAME', 'lex_convenios');
 define('VECTOR_SIZE', 4096);
 define('CHUNK_SIZE', 500);
 define('CHUNK_OVERLAP', 50);
-define('BATCH_SIZE', 5); // Reducido para evitar timeouts
+define('BATCH_SIZE', 3); // Pequeño para evitar timeouts
 
 $conveniosPath = __DIR__ . '/../../../docs/context/voices/lex/convenios';
+$progressFile = sys_get_temp_dir() . '/lex_ingest_progress.json';
 
-echo "<html><head><title>Ingesta RAG</title></head><body>";
-echo "<h1>🔄 Ingesta RAG para Lex</h1>";
-echo "<pre style='background: #1e1e1e; color: #d4d4d4; padding: 20px; border-radius: 8px; white-space: pre-wrap;'>";
+// Leer progreso
+$progress = file_exists($progressFile) ? json_decode(file_get_contents($progressFile), true) : [];
+$processedFiles = $progress['processed'] ?? [];
+$pointId = $progress['pointId'] ?? 1;
+$totalChunks = $progress['totalChunks'] ?? 0;
 
-function output($msg) {
-    echo htmlspecialchars($msg) . "\n";
-    flush();
+// Reset si se pide
+if (isset($_GET['reset'])) {
+    @unlink($progressFile);
+    header('Location: ' . strtok($_SERVER['REQUEST_URI'], '?'));
+    exit;
 }
+
+// HTML
+echo "<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Ingesta RAG</title>";
+echo "<meta http-equiv='refresh' content='3'>"; // Auto-refresh cada 3s
+echo "<style>body{font-family:system-ui;max-width:800px;margin:40px auto;padding:20px;background:#0d1117;color:#c9d1d9}";
+echo "pre{background:#161b22;padding:20px;border-radius:8px;overflow-x:auto}";
+echo ".ok{color:#3fb950}.err{color:#f85149}.warn{color:#d29922}a{color:#58a6ff}</style></head><body>";
+
+echo "<h1>🔄 Ingesta RAG para Lex</h1>";
 
 try {
     // Verificar API key
     $openrouterKey = Env::get('OPENROUTER_API_KEY');
     if (!$openrouterKey) {
-        throw new Exception("OPENROUTER_API_KEY no configurada en .env");
+        throw new Exception("OPENROUTER_API_KEY no configurada");
     }
-    output("✓ API Key encontrada");
 
-    // Verificar configuración Qdrant
+    // Conectar Qdrant
     $qdrantHost = Env::get('QDRANT_HOST', 'localhost');
     $qdrantPort = (int) Env::get('QDRANT_PORT', 6333);
-    output("→ Conectando a Qdrant en {$qdrantHost}:{$qdrantPort}...");
-
     $qdrant = new QdrantClient($qdrantHost, $qdrantPort);
     $embeddings = new EmbeddingService($openrouterKey);
 
-    // Verificar conexión
     if (!$qdrant->health()) {
-        throw new Exception("No se puede conectar con Qdrant. ¿Está el contenedor corriendo?");
+        throw new Exception("No se puede conectar con Qdrant en {$qdrantHost}:{$qdrantPort}");
     }
-    output("✓ Conexión con Qdrant OK");
 
     // Crear colección si no existe
     if (!$qdrant->collectionExists(COLLECTION_NAME)) {
-        output("→ Creando colección '" . COLLECTION_NAME . "'...");
         $qdrant->createCollection(COLLECTION_NAME, VECTOR_SIZE, 'Cosine');
-        output("✓ Colección creada");
-    } else {
-        output("✓ Colección ya existe");
+        echo "<p class='ok'>✓ Colección creada</p>";
     }
 
-    // Buscar archivos de texto (NO PDFs - ya convertidos a .txt localmente)
+    // Buscar archivos pendientes
     $txtFiles = glob($conveniosPath . '/*.txt');
-    $mdFiles = glob($conveniosPath . '/*.md');
-    $files = array_merge($txtFiles, $mdFiles);
+    $files = array_filter($txtFiles, fn($f) => basename($f) !== 'README.md');
+    $files = array_values($files);
     
-    // Filtrar README.md
-    $files = array_filter($files, fn($f) => basename($f) !== 'README.md');
+    $pending = array_filter($files, fn($f) => !in_array(basename($f), $processedFiles));
+    $pending = array_values($pending);
 
-    if (empty($files)) {
-        throw new Exception("No se encontraron archivos en: {$conveniosPath}");
+    $total = count($files);
+    $done = count($processedFiles);
+
+    echo "<h2>Progreso: {$done}/{$total} archivos</h2>";
+    echo "<progress value='{$done}' max='{$total}' style='width:100%;height:30px'></progress>";
+
+    if (empty($pending)) {
+        // Terminado
+        echo "<pre>";
+        echo "<span class='ok'>✅ INGESTA COMPLETADA</span>\n\n";
+        echo "Archivos procesados: {$done}\n";
+        echo "Total chunks indexados: {$totalChunks}\n";
+        $count = $qdrant->countPoints(COLLECTION_NAME);
+        echo "Puntos en colección: {$count}\n";
+        echo "</pre>";
+        echo "<p><a href='?reset=1'>🔄 Reiniciar ingesta</a></p>";
+        echo "<p><strong>Ahora borra este archivo: public/api/voices/ingest_lex_web.php</strong></p>";
+        // Quitar auto-refresh
+        echo "<script>document.querySelector('meta[http-equiv]').remove();</script>";
+        exit;
     }
-    output("\n📁 Archivos encontrados: " . count($files));
 
-    $totalChunks = 0;
-    $pointId = 1;
-    $errors = [];
+    // Procesar siguiente archivo
+    $file = $pending[0];
+    $filename = basename($file);
+    
+    echo "<pre>";
+    echo "→ Procesando: <strong>{$filename}</strong>\n";
 
-    foreach ($files as $file) {
-        $filename = basename($file);
-        $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-        
-        output("\n--- Procesando: {$filename} ---");
-        
-        // Leer archivo de texto
-        $text = file_get_contents($file);
-        
-        // Limpiar caracteres problemáticos para JSON
-        $text = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', ' ', $text);
-        $text = mb_convert_encoding($text, 'UTF-8', 'UTF-8');
-        
-        output("  Leído: " . strlen($text) . " chars");
+    $text = file_get_contents($file);
+    $text = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', ' ', $text);
+    $text = mb_convert_encoding($text, 'UTF-8', 'UTF-8');
+    
+    echo "  Tamaño: " . number_format(strlen($text)) . " chars\n";
 
-        if (strlen(trim($text)) < 50) {
-            output("  ⚠ Archivo vacío o muy corto, saltando...");
-            continue;
-        }
-
+    if (strlen(trim($text)) < 50) {
+        echo "<span class='warn'>  ⚠ Archivo vacío, saltando...</span>\n";
+        $processedFiles[] = $filename;
+    } else {
         // Chunking
-        $chunks = chunkText($text, CHUNK_SIZE, CHUNK_OVERLAP, $filename);
-        output("  Chunks generados: " . count($chunks));
+        $chunks = chunkText($text, CHUNK_SIZE, CHUNK_OVERLAP);
+        echo "  Chunks: " . count($chunks) . "\n";
 
         // Procesar en batches
         $batches = array_chunk($chunks, BATCH_SIZE);
+        $fileChunks = 0;
         
         foreach ($batches as $batchIndex => $batch) {
-            output("  Batch " . ($batchIndex + 1) . "/" . count($batches) . "...");
-            
             try {
                 $batchTexts = array_column($batch, 'text');
                 $vectors = $embeddings->embedBatch($batchTexts);
@@ -139,51 +147,46 @@ try {
                 }
                 
                 $qdrant->upsertPoints(COLLECTION_NAME, $points);
+                $fileChunks += count($batch);
                 $totalChunks += count($batch);
-                output("    ✓ " . count($batch) . " chunks indexados");
                 
             } catch (Exception $e) {
-                output("    ✗ Error: " . $e->getMessage());
-                $errors[] = "Error en {$filename}: " . $e->getMessage();
+                echo "<span class='err'>  ✗ Batch error: " . htmlspecialchars($e->getMessage()) . "</span>\n";
             }
             
-            // Pequeña pausa para no saturar la API
-            usleep(200000); // 200ms
+            usleep(300000); // 300ms entre batches
         }
+        
+        echo "<span class='ok'>  ✓ {$fileChunks} chunks indexados</span>\n";
+        $processedFiles[] = $filename;
     }
 
-    output("\n" . str_repeat("=", 50));
-    output("✅ INGESTA COMPLETADA");
-    output("Total chunks indexados: {$totalChunks}");
-    
-    $count = $qdrant->countPoints(COLLECTION_NAME);
-    output("Puntos en colección: {$count}");
-    
-    if (!empty($errors)) {
-        output("\n⚠ Errores encontrados:");
-        foreach ($errors as $err) {
-            output("  - " . $err);
-        }
-    }
+    // Guardar progreso
+    file_put_contents($progressFile, json_encode([
+        'processed' => $processedFiles,
+        'pointId' => $pointId,
+        'totalChunks' => $totalChunks
+    ]));
+
+    echo "\n<span class='warn'>Recargando automáticamente en 3 segundos...</span>";
+    echo "</pre>";
 
 } catch (Exception $e) {
-    output("\n❌ ERROR FATAL: " . $e->getMessage());
+    echo "<pre class='err'>❌ ERROR: " . htmlspecialchars($e->getMessage()) . "</pre>";
+    echo "<script>document.querySelector('meta[http-equiv]').remove();</script>";
 }
 
-echo "</pre>";
-echo "<p><strong>Recuerda borrar este archivo después de usarlo.</strong></p>";
 echo "</body></html>";
 
-// === Funciones auxiliares ===
+// === Funciones ===
 
-function chunkText(string $text, int $targetTokens, int $overlap, string $filename): array
+function chunkText(string $text, int $targetTokens, int $overlap): array
 {
     $charsPerToken = 4;
     $targetChars = $targetTokens * $charsPerToken;
     $overlapChars = $overlap * $charsPerToken;
     
-    $text = preg_replace('/\s+/', ' ', $text);
-    $text = trim($text);
+    $text = preg_replace('/\s+/', ' ', trim($text));
     
     $chunks = [];
     $start = 0;
@@ -194,21 +197,19 @@ function chunkText(string $text, int $targetTokens, int $overlap, string $filena
         $end = min($start + $targetChars, $length);
         
         if ($end < $length) {
-            $lastPeriod = strrpos(substr($text, $start, $end - $start), '. ');
-            $lastNewline = strrpos(substr($text, $start, $end - $start), "\n");
-            $cutPoint = max($lastPeriod, $lastNewline);
-            
-            if ($cutPoint !== false && $cutPoint > ($targetChars * 0.5)) {
-                $end = $start + $cutPoint + 1;
+            $sub = substr($text, $start, $end - $start);
+            $lastPeriod = strrpos($sub, '. ');
+            if ($lastPeriod !== false && $lastPeriod > $targetChars * 0.5) {
+                $end = $start + $lastPeriod + 1;
             }
         }
         
         $chunkText = trim(substr($text, $start, $end - $start));
         
-        if (!empty($chunkText) && strlen($chunkText) > 20) {
+        if (strlen($chunkText) > 20) {
             $section = '';
-            if (preg_match('/^(Artículo\s+\d+|CAPÍTULO\s+[IVXLC]+|Sección\s+\d+)[.:]\s*(.+?)(?:\n|$)/i', $chunkText, $matches)) {
-                $section = trim($matches[1] . ': ' . $matches[2]);
+            if (preg_match('/^(Artículo\s+\d+|CAPÍTULO\s+[IVXLC]+|Sección\s+\d+)[.:]/i', $chunkText, $m)) {
+                $section = $m[1];
             }
             
             $chunks[] = [
