@@ -109,8 +109,14 @@ try {
     echo "→ Procesando: <strong>{$filename}</strong>\n";
 
     $text = file_get_contents($file);
+    // Limpiar caracteres problemáticos para JSON
     $text = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', ' ', $text);
     $text = mb_convert_encoding($text, 'UTF-8', 'UTF-8');
+    // Eliminar caracteres no UTF-8 válidos
+    $text = iconv('UTF-8', 'UTF-8//IGNORE', $text);
+    // Normalizar espacios y saltos de línea
+    $text = str_replace(["\r\n", "\r"], "\n", $text);
+    $text = preg_replace('/\n{3,}/', "\n\n", $text);
     
     echo "  Tamaño: " . number_format(strlen($text)) . " chars\n";
 
@@ -128,7 +134,18 @@ try {
         
         foreach ($batches as $batchIndex => $batch) {
             try {
-                $batchTexts = array_column($batch, 'text');
+                // Sanitizar cada texto para que sea JSON-safe
+                $batchTexts = array_map(function($chunk) {
+                    $t = $chunk['text'];
+                    // Forzar encoding UTF-8 limpio
+                    $t = mb_convert_encoding($t, 'UTF-8', 'UTF-8');
+                    // Verificar que sea JSON-encodeable, si no, limpiar
+                    if (json_encode($t) === false) {
+                        $t = preg_replace('/[^\PC\s]/u', '', $t);
+                    }
+                    return $t;
+                }, $batch);
+                
                 $vectors = $embeddings->embedBatch($batchTexts);
                 
                 $points = [];
@@ -137,7 +154,7 @@ try {
                         'id' => $pointId++,
                         'vector' => $vectors[$i],
                         'payload' => [
-                            'text' => $chunk['text'],
+                            'text' => $batchTexts[$i], // Usar texto sanitizado
                             'document_id' => pathinfo($filename, PATHINFO_FILENAME),
                             'document_name' => $filename,
                             'chunk_index' => $chunk['index'],
