@@ -125,13 +125,13 @@ $headerShowLogo = true;
               </h2>
               <p class="text-base text-slate-500 mb-8 max-w-lg mx-auto">¿En qué puedo ayudarte hoy? Escribe tu pregunta o elige una opción de abajo.</p>
               
-              <!-- Input principal con glassmorphism -->
-              <div class="glass-strong rounded-[28px] p-2 border border-slate-200/50 shadow-xl glow-soft max-w-2xl mx-auto bg-white/90">
+              <!-- Input principal con diseño moderno -->
+              <div class="bg-white rounded-3xl p-4 lg:p-5 border border-slate-200 shadow-lg max-w-2xl mx-auto">
                 <form id="chat-form-empty" class="w-full">
                   <!-- Preview de archivo adjunto en estado vacío -->
-                  <div id="file-preview-empty" class="hidden mx-2 mt-2 mb-2 p-3 bg-slate-50/80 rounded-2xl flex items-center gap-3 border border-slate-100">
+                  <div id="file-preview-empty" class="hidden mb-3 p-3 bg-slate-50 rounded-xl flex items-center gap-3">
                     <div class="flex-1 flex items-center gap-3">
-                      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#23AAC5]/10 to-[#115c6c]/10 flex items-center justify-center flex-shrink-0">
+                      <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-[#23AAC5]/10 to-[#115c6c]/10 flex items-center justify-center flex-shrink-0">
                         <i id="file-icon-empty" class="iconoir-page text-xl text-[#23AAC5]"></i>
                       </div>
                       <div class="flex-1 min-w-0">
@@ -146,32 +146,25 @@ $headerShowLogo = true;
                   
                   <input type="file" id="file-input-empty" class="hidden" accept=".pdf,.png,.jpg,.jpeg,.gif,.webp" />
                   
-                  <!-- Área de Texto Superior -->
-                  <div class="relative px-4 pt-3 pb-1">
-                    <textarea id="chat-input-empty" rows="1" class="w-full border-none focus:ring-0 p-0 text-[16px] text-slate-700 placeholder:text-slate-400 bg-transparent resize-none overflow-hidden" placeholder="Pregúntame lo que quieras" style="min-height: 24px; max-height: 200px;"></textarea>
-                  </div>
-
-                  <!-- Barra de Herramientas Inferior -->
-                  <div class="flex items-center justify-between px-2 pb-1">
-                    <div class="flex items-center gap-1">
-                      <button type="button" id="attach-btn-empty" class="p-2.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-smooth shrink-0" title="Adjuntar archivo">
-                        <i class="iconoir-plus text-xl"></i>
-                      </button>
-                      <button type="button" id="image-mode-btn-empty" class="p-2.5 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-full transition-smooth shrink-0" title="Generar imagen">
-                        <i class="iconoir-media-image text-xl"></i>
-                      </button>
-                    </div>
-
-                    <button type="submit" class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-[#23AAC5] transition-smooth shrink-0">
-                      <i class="iconoir-arrow-up text-2xl"></i>
+                  <!-- Fila superior: textarea + botón enviar -->
+                  <div class="flex items-start gap-3 mb-3">
+                    <textarea id="chat-input-empty" rows="1" class="flex-1 min-w-0 bg-transparent border-0 px-1 py-1 text-base text-slate-700 placeholder:text-slate-400 placeholder:italic focus:outline-none focus:ring-0 resize-none overflow-hidden" placeholder="Pregúntame lo que quieras" style="min-height: 28px; max-height: 120px;"></textarea>
+                    <button type="submit" class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-xl transition-smooth shrink-0" title="Enviar">
+                      <i class="iconoir-arrow-up text-xl"></i>
                     </button>
                   </div>
-
-                  <!-- Layout desktop hidden (se unifica el diseño) -->
-                  <div class="hidden">
-                    <button type="button" id="attach-btn-empty-desktop"></button>
-                    <button type="button" id="image-mode-btn-empty-desktop"></button>
-                    <textarea id="chat-input-empty-desktop"></textarea>
+                  
+                  <!-- Fila inferior: botones de acción -->
+                  <div class="flex items-center gap-1">
+                    <button type="button" id="attach-btn-empty" class="p-2 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-lg transition-smooth" title="Adjuntar archivo (PDF o imagen)">
+                      <i class="iconoir-plus text-lg"></i>
+                    </button>
+                    <button type="button" id="attach-btn-empty-desktop" class="p-2 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-lg transition-smooth" title="Adjuntar archivo (PDF o imagen)">
+                      <i class="iconoir-attachment text-lg"></i>
+                    </button>
+                    <button type="button" id="image-mode-btn-empty" class="p-2 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-lg transition-smooth" title="Generar imagen con nanobanana 🍌">
+                      <i class="iconoir-media-image text-lg"></i>
+                    </button>
                   </div>
                 </form>
               </div>
@@ -322,52 +315,46 @@ $headerShowLogo = true;
         </div>
       </section>
       <!-- Footer del chat: fijo en móvil sobre el bottom-nav -->
-      <footer id="chat-footer" class="p-4 bg-gradient-to-t from-slate-50 via-slate-50/80 to-transparent hidden">
-        <div class="max-w-4xl mx-auto">
-          <div class="glass-strong rounded-[28px] p-2 border border-slate-200/50 shadow-xl glow-soft bg-white/90">
-            <form id="chat-form" class="w-full">
-              <!-- Preview de archivo adjunto -->
-              <div id="file-preview" class="hidden mx-2 mt-2 mb-2 p-3 bg-slate-50/80 rounded-2xl flex items-center gap-3 border border-slate-100">
-                <div class="flex-1 flex items-center gap-3">
-                  <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#23AAC5]/10 to-[#115c6c]/10 flex items-center justify-center flex-shrink-0">
-                    <i id="file-icon" class="iconoir-page text-xl text-[#23AAC5]"></i>
-                  </div>
-                  <div class="flex-1 min-w-0">
-                    <div id="file-name" class="text-sm font-medium text-slate-800 truncate"></div>
-                    <div id="file-size" class="text-xs text-slate-500"></div>
-                  </div>
+      <footer id="chat-footer" class="hidden fixed lg:relative bottom-16 lg:bottom-0 left-0 right-0 p-3 lg:p-4 bg-gradient-to-t from-white via-white to-white/80 z-40">
+        <form id="chat-form" class="max-w-3xl mx-auto">
+          <div class="bg-white rounded-2xl lg:rounded-3xl p-3 lg:p-4 border border-slate-200 shadow-lg">
+            <!-- Preview de archivo adjunto -->
+            <div id="file-preview" class="hidden mb-3 p-3 bg-slate-50 rounded-xl flex items-center gap-3">
+              <div class="flex-1 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-[#23AAC5]/10 to-[#115c6c]/10 flex items-center justify-center flex-shrink-0">
+                  <i id="file-icon" class="iconoir-page text-xl text-[#23AAC5]"></i>
                 </div>
-                <button type="button" id="remove-file" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-smooth">
-                  <i class="iconoir-xmark"></i>
-                </button>
-              </div>
-              
-              <input type="file" id="file-input" class="hidden" accept=".pdf,.png,.jpg,.jpeg,.gif,.webp" />
-              
-              <!-- Área de Texto Superior -->
-              <div class="relative px-4 pt-3 pb-1">
-                <textarea id="chat-input" rows="1" class="w-full border-none focus:ring-0 p-0 text-[16px] text-slate-700 placeholder:text-slate-400 bg-transparent resize-none overflow-hidden" placeholder="Escribe un mensaje..." style="min-height: 24px; max-height: 200px;"></textarea>
-              </div>
-
-              <!-- Barra de Herramientas Inferior -->
-              <div class="flex items-center justify-between px-2 pb-1">
-                <div class="flex items-center gap-1">
-                  <button type="button" id="attach-btn" class="p-2.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-smooth shrink-0" title="Adjuntar archivo">
-                    <i class="iconoir-plus text-xl"></i>
-                  </button>
-                  <button type="button" id="image-mode-btn" class="p-2.5 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-full transition-smooth shrink-0" title="Generar imagen">
-                    <i class="iconoir-media-image text-xl"></i>
-                  </button>
+                <div class="flex-1 min-w-0">
+                  <div id="file-name" class="text-sm font-medium text-slate-800 truncate"></div>
+                  <div id="file-size" class="text-xs text-slate-500"></div>
                 </div>
-
-                <button type="submit" class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-[#23AAC5] transition-smooth shrink-0">
-                  <i class="iconoir-arrow-up text-2xl"></i>
-                </button>
               </div>
-            </form>
+              <button type="button" id="remove-file" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                <i class="iconoir-xmark"></i>
+              </button>
+            </div>
+            
+            <input type="file" id="file-input" class="hidden" accept=".pdf,.png,.jpg,.jpeg,.gif,.webp" />
+            
+            <!-- Fila superior: textarea + botón enviar -->
+            <div class="flex items-start gap-3 mb-2">
+              <textarea id="chat-input" rows="1" class="flex-1 min-w-0 bg-transparent border-0 px-1 py-1 text-base text-slate-700 placeholder:text-slate-400 placeholder:italic focus:outline-none focus:ring-0 resize-none overflow-hidden" placeholder="Escribe un mensaje..." style="min-height: 28px; max-height: 120px;"></textarea>
+              <button type="submit" class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-xl transition-smooth shrink-0" title="Enviar">
+                <i class="iconoir-arrow-up text-xl"></i>
+              </button>
+            </div>
+            
+            <!-- Fila inferior: botones de acción -->
+            <div class="flex items-center gap-1">
+              <button type="button" id="attach-btn" class="p-2 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-lg transition-smooth" title="Adjuntar archivo (PDF o imagen)">
+                <i class="iconoir-plus text-lg"></i>
+              </button>
+              <button type="button" id="image-mode-btn" class="p-2 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-lg transition-smooth" title="Generar imagen con nanobanana 🍌">
+                <i class="iconoir-media-image text-lg"></i>
+              </button>
+            </div>
           </div>
-          <p class="text-[10px] text-center text-slate-400 mt-2">Ebonia puede cometer errores. Considera verificar la información importante.</p>
-        </div>
+        </form>
       </footer>
     </main>
   </div>
@@ -473,8 +460,6 @@ $headerShowLogo = true;
     const attachBtnEmpty = document.getElementById('attach-btn-empty');
     const imageModeBtnEmpty = document.getElementById('image-mode-btn-empty');
     const attachBtnEmptyDesktop = document.getElementById('attach-btn-empty-desktop');
-    const imageModeBtnEmptyDesktop = document.getElementById('image-mode-btn-empty-desktop');
-    const chatInputEmptyDesktop = document.getElementById('chat-input-empty-desktop');
     const filePreviewEmpty = document.getElementById('file-preview-empty');
     const fileNameEmpty = document.getElementById('file-name-empty');
     const fileSizeEmpty = document.getElementById('file-size-empty');
@@ -1274,7 +1259,7 @@ $headerShowLogo = true;
     const chatInput = document.getElementById('chat-input');
     const chatInputEmpty = document.getElementById('chat-input-empty');
     const defaultPlaceholder = 'Escribe un mensaje...';
-    const defaultPlaceholderEmpty = 'Escribe tu pregunta aquí...';
+    const defaultPlaceholderEmpty = 'Pregúntame lo que quieras';
     const imagePlaceholder = 'Describe la imagen que quieres crear... 🍌';
 
     // Auto-resize para textareas
@@ -1286,14 +1271,11 @@ $headerShowLogo = true;
     // Event listeners para auto-resize
     chatInput.addEventListener('input', () => autoResize(chatInput));
     chatInputEmpty.addEventListener('input', () => autoResize(chatInputEmpty));
-    if (chatInputEmptyDesktop) {
-      chatInputEmptyDesktop.addEventListener('input', () => autoResize(chatInputEmptyDesktop));
-    }
 
     function updateImageModeUI() {
-      // Clases para botón imagen en chat normal e empty state (ahora unificado)
-      const btnActive = 'p-2.5 text-amber-600 bg-amber-50 rounded-full transition-smooth shrink-0';
-      const btnInactive = 'p-2.5 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-full transition-smooth shrink-0';
+      // Clases para el nuevo diseño moderno
+      const btnActive = 'p-2 text-amber-600 bg-amber-50 rounded-lg transition-smooth';
+      const btnInactive = 'p-2 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-lg transition-smooth';
 
       if (imageMode) {
         // Chat normal
@@ -1306,6 +1288,10 @@ $headerShowLogo = true;
         chatInputEmpty.placeholder = imagePlaceholder;
         attachBtnEmpty.disabled = true;
         attachBtnEmpty.classList.add('opacity-50', 'cursor-not-allowed');
+        if (attachBtnEmptyDesktop) {
+          attachBtnEmptyDesktop.disabled = true;
+          attachBtnEmptyDesktop.classList.add('opacity-50', 'cursor-not-allowed');
+        }
       } else {
         // Chat normal
         imageModeBtn.className = btnInactive;
@@ -1317,6 +1303,10 @@ $headerShowLogo = true;
         chatInputEmpty.placeholder = defaultPlaceholderEmpty;
         attachBtnEmpty.disabled = false;
         attachBtnEmpty.classList.remove('opacity-50', 'cursor-not-allowed');
+        if (attachBtnEmptyDesktop) {
+          attachBtnEmptyDesktop.disabled = false;
+          attachBtnEmptyDesktop.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
       }
     }
 
@@ -1401,13 +1391,11 @@ $headerShowLogo = true;
 
     formEmptyEl.addEventListener('submit', async (e)=>{
       e.preventDefault();
-      // Obtener texto del textarea visible (móvil o desktop)
-      const text = (inputEmptyEl.value || chatInputEmptyDesktop?.value || '').trim();
+      const text = inputEmptyEl.value.trim();
       
       if (!text && !currentFileEmpty) return;
       
       inputEmptyEl.value = '';
-      if (chatInputEmptyDesktop) chatInputEmptyDesktop.value = '';
       await handleSubmit(text, currentFileEmpty);
       
       // Limpiar archivo después de enviar
@@ -1418,7 +1406,7 @@ $headerShowLogo = true;
       }
     });
 
-    // Manejar adjuntar archivo en estado vacío (móvil y desktop)
+    // Manejar adjuntar archivo en estado vacío
     attachBtnEmpty.addEventListener('click', () => {
       fileInputEmpty.click();
     });
@@ -1428,7 +1416,7 @@ $headerShowLogo = true;
       });
     }
 
-    // Event listener para botón de imagen en estado vacío (móvil y desktop)
+    // Event listener para botón de imagen en estado vacío
     imageModeBtnEmpty.addEventListener('click', () => {
       imageMode = !imageMode;
       updateImageModeUI();
@@ -1439,18 +1427,6 @@ $headerShowLogo = true;
         filePreviewEmpty.classList.add('hidden');
       }
     });
-    if (imageModeBtnEmptyDesktop) {
-      imageModeBtnEmptyDesktop.addEventListener('click', () => {
-        imageMode = !imageMode;
-        updateImageModeUI();
-        // Si se activa modo imagen, limpiar archivo adjunto
-        if (imageMode && currentFileEmpty) {
-          currentFileEmpty = null;
-          fileInputEmpty.value = '';
-          filePreviewEmpty.classList.add('hidden');
-        }
-      });
-    }
 
     // Asegurar estado visual inicial correcto (texto) para los botones de imagen en empty state
     updateImageModeUI();
