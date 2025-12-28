@@ -78,7 +78,7 @@ if ($voiceContext->hasRagEnabled()) {
 
 // Construir system prompt (con RAG si está disponible)
 if ($useRag) {
-    $systemPrompt = $voiceContext->buildSystemPromptWithRag($message, 5);
+    $systemPrompt = $voiceContext->buildSystemPromptWithRag($message, 8);
 } else {
     $systemPrompt = $voiceContext->buildSystemPrompt();
 }

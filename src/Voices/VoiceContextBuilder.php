@@ -215,7 +215,7 @@ class VoiceContextBuilder
      * Construye el system prompt con contexto RAG
      * Usa búsqueda semántica para encontrar los chunks relevantes
      */
-    public function buildSystemPromptWithRag(string $userQuery, int $topK = 5): ?string
+    public function buildSystemPromptWithRag(string $userQuery, int $topK = 8): ?string
     {
         if (!$this->voiceExists()) {
             return null;
