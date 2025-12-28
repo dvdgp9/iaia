@@ -19,9 +19,9 @@ use Rag\EmbeddingService;
 // Configuración
 define('COLLECTION_NAME', 'lex_convenios');
 define('VECTOR_SIZE', 4096);
-define('CHUNK_SIZE', 500);
-define('CHUNK_OVERLAP', 50);
-define('BATCH_SIZE', 3); // Pequeño para evitar timeouts
+define('CHUNK_SIZE', 1000); // Aumentado para artículos más largos
+define('CHUNK_OVERLAP', 100);
+define('BATCH_SIZE', 2); // Reducido un poco para compensar chunks más grandes
 
 $conveniosPath = __DIR__ . '/../../../docs/context/voices/lex/convenios';
 $progressFile = sys_get_temp_dir() . '/lex_ingest_progress.json';
@@ -226,40 +226,39 @@ function chunkText(string $text, int $targetTokens, int $overlap): array
     
     // Patrones para detectar divisiones estructurales
     $patterns = [
-        'capitulo' => '/^(CAPÍTULO|TÍTULO|PARTE)\s+([IVXLCDM]+|[0-9]+)[.:\s]/im',
-        'articulo' => '/^(Artículo|Art\.|ARTÍCULO)\s*([0-9]+)[.:\s]/im',
-        'seccion' => '/^(Sección|SECCIÓN)\s*([0-9]+)[.:\s]/im',
+        'capitulo' => '/^(CAPÍTULO|TÍTULO|PARTE|SECCIÓN)\s+([IVXLCDM]+|[0-9]+)[.:\s]/im',
+        'articulo' => '/^((Artículo|Art\.|ARTÍCULO)\s*([0-9]+))([.:\s]|$)/im',
     ];
     
     // Dividir por artículos primero
     $articles = [];
     $lines = explode("\n", $text);
-    $currentArticle = ['header' => '', 'content' => '', 'type' => ''];
+    $currentArticle = ['header' => '', 'content' => '', 'type' => 'preambulo'];
     $currentChapter = '';
     
     foreach ($lines as $line) {
-        $line = trim($line);
-        if (empty($line)) {
+        $trimmedLine = trim($line);
+        if (empty($trimmedLine)) {
             $currentArticle['content'] .= "\n";
             continue;
         }
         
         // Detectar capítulo/título
-        if (preg_match($patterns['capitulo'], $line, $m)) {
-            $currentChapter = trim($m[0]);
+        if (preg_match($patterns['capitulo'], $trimmedLine, $m)) {
+            $currentChapter = $trimmedLine;
             $currentArticle['content'] .= $line . "\n";
             continue;
         }
         
         // Detectar nuevo artículo
-        if (preg_match($patterns['articulo'], $line, $m)) {
+        if (preg_match($patterns['articulo'], $trimmedLine, $m)) {
             // Guardar artículo anterior si tiene contenido
             if (!empty(trim($currentArticle['content']))) {
                 $articles[] = $currentArticle;
             }
             // Iniciar nuevo artículo
             $currentArticle = [
-                'header' => trim($m[0]),
+                'header' => trim($m[1]),
                 'content' => ($currentChapter ? $currentChapter . "\n" : '') . $line . "\n",
                 'type' => 'articulo',
                 'chapter' => $currentChapter
@@ -322,7 +321,8 @@ function chunkText(string $text, int $targetTokens, int $overlap): array
         }
         
         // Si agregar este artículo excede el límite, crear nuevo chunk
-        if (!empty($buffer) && (strlen($buffer) + $articleLen) > $maxChars) {
+        // Pero intentamos ser generosos: si el artículo es pequeño y el buffer no está gigante, lo metemos
+        if (!empty($buffer) && (strlen($buffer) + $articleLen) > ($maxChars * 1.2)) {
             $chunks[] = [
                 'text' => trim($buffer),
                 'index' => $index++,
