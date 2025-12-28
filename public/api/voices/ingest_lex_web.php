@@ -72,11 +72,10 @@ try {
         output("✓ Colección ya existe");
     }
 
-    // Buscar archivos
-    $files = glob($conveniosPath . '/*.pdf');
+    // Buscar archivos de texto (NO PDFs - ya convertidos a .txt localmente)
     $txtFiles = glob($conveniosPath . '/*.txt');
     $mdFiles = glob($conveniosPath . '/*.md');
-    $files = array_merge($files, $txtFiles, $mdFiles);
+    $files = array_merge($txtFiles, $mdFiles);
     
     // Filtrar README.md
     $files = array_filter($files, fn($f) => basename($f) !== 'README.md');
@@ -96,40 +95,14 @@ try {
         
         output("\n--- Procesando: {$filename} ---");
         
-        // Extraer texto
-        $text = '';
-        if ($extension === 'pdf') {
-            // Intentar con pdftotext primero
-            $tempFile = sys_get_temp_dir() . '/lex_pdf_' . uniqid() . '.txt';
-            @exec("pdftotext -layout -enc UTF-8 " . escapeshellarg($file) . " " . escapeshellarg($tempFile) . " 2>&1", $pdfOutput, $pdfReturn);
-            
-            if ($pdfReturn === 0 && file_exists($tempFile)) {
-                $text = file_get_contents($tempFile);
-                @unlink($tempFile);
-                output("  Extraído con pdftotext: " . strlen($text) . " chars");
-            } else {
-                // Fallback: intentar leer como texto plano (algunos PDFs simples)
-                $rawContent = @file_get_contents($file);
-                // Extraer texto entre streams de PDF (muy básico)
-                if (preg_match_all('/stream\s*(.*?)\s*endstream/s', $rawContent, $matches)) {
-                    foreach ($matches[1] as $stream) {
-                        $decoded = @gzuncompress($stream);
-                        if ($decoded) {
-                            $text .= preg_replace('/[^\x20-\x7E\xA0-\xFF\n\r\t]/', ' ', $decoded);
-                        }
-                    }
-                }
-                if (strlen($text) < 100) {
-                    output("  ⚠ No se pudo extraer texto del PDF (pdftotext no disponible)");
-                    $errors[] = "PDF sin texto extraíble: {$filename}";
-                    continue;
-                }
-                output("  Extraído con fallback: " . strlen($text) . " chars");
-            }
-        } else {
-            $text = file_get_contents($file);
-            output("  Leído directamente: " . strlen($text) . " chars");
-        }
+        // Leer archivo de texto
+        $text = file_get_contents($file);
+        
+        // Limpiar caracteres problemáticos para JSON
+        $text = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', ' ', $text);
+        $text = mb_convert_encoding($text, 'UTF-8', 'UTF-8');
+        
+        output("  Leído: " . strlen($text) . " chars");
 
         if (strlen(trim($text)) < 50) {
             output("  ⚠ Archivo vacío o muy corto, saltando...");
