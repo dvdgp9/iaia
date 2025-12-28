@@ -197,47 +197,170 @@ echo "</body></html>";
 
 // === Funciones ===
 
+/**
+ * Chunking inteligente por artículos para documentos legales
+ * Detecta artículos, capítulos y secciones, evitando cortar unidades semánticas
+ */
 function chunkText(string $text, int $targetTokens, int $overlap): array
 {
     $charsPerToken = 4;
-    $targetChars = $targetTokens * $charsPerToken;
-    $overlapChars = $overlap * $charsPerToken;
+    $maxChars = $targetTokens * $charsPerToken;
     
-    $text = preg_replace('/\s+/', ' ', trim($text));
+    // Normalizar saltos de línea y espacios
+    $text = str_replace(["\r\n", "\r"], "\n", $text);
+    $text = preg_replace('/[ \t]+/', ' ', $text);
+    $text = preg_replace('/\n{3,}/', "\n\n", $text);
     
-    $chunks = [];
-    $start = 0;
-    $index = 0;
-    $length = strlen($text);
+    // Patrones para detectar divisiones estructurales
+    $patterns = [
+        'capitulo' => '/^(CAPÍTULO|TÍTULO|PARTE)\s+([IVXLCDM]+|[0-9]+)[.:\s]/im',
+        'articulo' => '/^(Artículo|Art\.|ARTÍCULO)\s*([0-9]+)[.:\s]/im',
+        'seccion' => '/^(Sección|SECCIÓN)\s*([0-9]+)[.:\s]/im',
+    ];
     
-    while ($start < $length) {
-        $end = min($start + $targetChars, $length);
-        
-        if ($end < $length) {
-            $sub = substr($text, $start, $end - $start);
-            $lastPeriod = strrpos($sub, '. ');
-            if ($lastPeriod !== false && $lastPeriod > $targetChars * 0.5) {
-                $end = $start + $lastPeriod + 1;
-            }
+    // Dividir por artículos primero
+    $articles = [];
+    $lines = explode("\n", $text);
+    $currentArticle = ['header' => '', 'content' => '', 'type' => ''];
+    $currentChapter = '';
+    
+    foreach ($lines as $line) {
+        $line = trim($line);
+        if (empty($line)) {
+            $currentArticle['content'] .= "\n";
+            continue;
         }
         
-        $chunkText = trim(substr($text, $start, $end - $start));
+        // Detectar capítulo/título
+        if (preg_match($patterns['capitulo'], $line, $m)) {
+            $currentChapter = trim($m[0]);
+            $currentArticle['content'] .= $line . "\n";
+            continue;
+        }
         
-        if (strlen($chunkText) > 20) {
-            $section = '';
-            if (preg_match('/^(Artículo\s+\d+|CAPÍTULO\s+[IVXLC]+|Sección\s+\d+)[.:]/i', $chunkText, $m)) {
-                $section = $m[1];
+        // Detectar nuevo artículo
+        if (preg_match($patterns['articulo'], $line, $m)) {
+            // Guardar artículo anterior si tiene contenido
+            if (!empty(trim($currentArticle['content']))) {
+                $articles[] = $currentArticle;
+            }
+            // Iniciar nuevo artículo
+            $currentArticle = [
+                'header' => trim($m[0]),
+                'content' => ($currentChapter ? $currentChapter . "\n" : '') . $line . "\n",
+                'type' => 'articulo',
+                'chapter' => $currentChapter
+            ];
+            continue;
+        }
+        
+        // Agregar línea al artículo actual
+        $currentArticle['content'] .= $line . "\n";
+    }
+    
+    // Guardar último artículo
+    if (!empty(trim($currentArticle['content']))) {
+        $articles[] = $currentArticle;
+    }
+    
+    // Si no se detectaron artículos, usar el texto completo como un solo bloque
+    if (empty($articles)) {
+        $articles[] = [
+            'header' => '',
+            'content' => $text,
+            'type' => 'documento',
+            'chapter' => ''
+        ];
+    }
+    
+    // Agrupar artículos en chunks respetando límite de tamaño
+    $chunks = [];
+    $index = 0;
+    $buffer = '';
+    $bufferHeaders = [];
+    
+    foreach ($articles as $article) {
+        $articleText = trim($article['content']);
+        $articleLen = strlen($articleText);
+        
+        // Si un artículo solo es muy grande, dividirlo
+        if ($articleLen > $maxChars * 1.5) {
+            // Guardar buffer actual si tiene contenido
+            if (!empty($buffer)) {
+                $chunks[] = [
+                    'text' => trim($buffer),
+                    'index' => $index++,
+                    'section' => implode(', ', array_unique($bufferHeaders))
+                ];
+                $buffer = '';
+                $bufferHeaders = [];
             }
             
-            $chunks[] = [
-                'text' => $chunkText,
-                'index' => $index++,
-                'section' => $section
-            ];
+            // Dividir artículo grande en sub-chunks
+            $subChunks = splitLargeArticle($articleText, $maxChars, $article['header']);
+            foreach ($subChunks as $subChunk) {
+                $chunks[] = [
+                    'text' => $subChunk,
+                    'index' => $index++,
+                    'section' => $article['header']
+                ];
+            }
+            continue;
         }
         
-        $start = $end - $overlapChars;
-        if ($start >= $length - $overlapChars) break;
+        // Si agregar este artículo excede el límite, crear nuevo chunk
+        if (!empty($buffer) && (strlen($buffer) + $articleLen) > $maxChars) {
+            $chunks[] = [
+                'text' => trim($buffer),
+                'index' => $index++,
+                'section' => implode(', ', array_unique($bufferHeaders))
+            ];
+            $buffer = '';
+            $bufferHeaders = [];
+        }
+        
+        // Agregar artículo al buffer
+        $buffer .= $articleText . "\n\n";
+        if (!empty($article['header'])) {
+            $bufferHeaders[] = $article['header'];
+        }
+    }
+    
+    // Guardar último buffer
+    if (!empty(trim($buffer))) {
+        $chunks[] = [
+            'text' => trim($buffer),
+            'index' => $index++,
+            'section' => implode(', ', array_unique($bufferHeaders))
+        ];
+    }
+    
+    return $chunks;
+}
+
+/**
+ * Divide un artículo muy largo en sub-chunks por párrafos
+ */
+function splitLargeArticle(string $text, int $maxChars, string $header): array
+{
+    $paragraphs = preg_split('/\n\n+/', $text);
+    $chunks = [];
+    $buffer = $header ? $header . "\n" : '';
+    
+    foreach ($paragraphs as $para) {
+        $para = trim($para);
+        if (empty($para)) continue;
+        
+        if (!empty($buffer) && (strlen($buffer) + strlen($para)) > $maxChars) {
+            $chunks[] = trim($buffer);
+            $buffer = $header ? $header . "\n" : '';
+        }
+        
+        $buffer .= $para . "\n\n";
+    }
+    
+    if (!empty(trim($buffer))) {
+        $chunks[] = trim($buffer);
     }
     
     return $chunks;
