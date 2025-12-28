@@ -14,6 +14,9 @@ require_once __DIR__ . '/../../../src/Chat/LlmProviderFactory.php';
 require_once __DIR__ . '/../../../src/Voices/VoiceExecutionsRepo.php';
 require_once __DIR__ . '/../../../src/Voices/VoiceContextBuilder.php';
 require_once __DIR__ . '/../../../src/Repos/UsageLogRepo.php';
+require_once __DIR__ . '/../../../src/Rag/QdrantClient.php';
+require_once __DIR__ . '/../../../src/Rag/EmbeddingService.php';
+require_once __DIR__ . '/../../../src/Rag/LexRetriever.php';
 
 use App\Session;
 use App\Response;
@@ -55,10 +58,29 @@ if (!$message) {
 
 // Obtener contexto especializado de la voz
 $voiceContext = new VoiceContextBuilder($voiceId);
-$systemPrompt = $voiceContext->buildSystemPrompt();
 
-if (!$systemPrompt) {
+if (!$voiceContext->voiceExists()) {
     Response::error('invalid_voice', 'Voz no encontrada', 404);
+}
+
+// Intentar usar RAG si está habilitado para esta voz
+$useRag = false;
+if ($voiceContext->hasRagEnabled()) {
+    $openrouterKey = Env::get('OPENROUTER_API_KEY');
+    $qdrantHost = Env::get('QDRANT_HOST', 'localhost');
+    $qdrantPort = (int) Env::get('QDRANT_PORT', 6333);
+    
+    if ($openrouterKey) {
+        $voiceContext->initRetriever($openrouterKey, $qdrantHost, $qdrantPort);
+        $useRag = $voiceContext->isRagReady();
+    }
+}
+
+// Construir system prompt (con RAG si está disponible)
+if ($useRag) {
+    $systemPrompt = $voiceContext->buildSystemPromptWithRag($message, 5);
+} else {
+    $systemPrompt = $voiceContext->buildSystemPrompt();
 }
 
 // Construir mensajes para el LLM

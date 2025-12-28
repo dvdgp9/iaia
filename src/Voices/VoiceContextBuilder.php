@@ -1,14 +1,20 @@
 <?php
 namespace Voices;
 
+use Rag\QdrantClient;
+use Rag\EmbeddingService;
+use Rag\LexRetriever;
+
 /**
  * Construye el contexto especializado para cada voz
  * Lee archivos de docs/context/voices/{voice_id}/ para cargar el conocimiento específico
+ * Para voces con RAG habilitado, usa búsqueda semántica en lugar de cargar todo el contexto
  */
 class VoiceContextBuilder
 {
     private string $voiceId;
     private string $contextPath;
+    private ?LexRetriever $retriever = null;
     
     // Definición de voces disponibles
     private static array $voices = [
@@ -17,7 +23,9 @@ class VoiceContextBuilder
             'role' => 'Asistente Legal del Grupo Ebone',
             'description' => 'Experto en convenios colectivos, normativas laborales y documentación legal interna.',
             'personality' => 'Profesional, preciso y claro. Cita fuentes cuando sea posible.',
-            'folder' => 'lex'
+            'folder' => 'lex',
+            'rag_enabled' => true,  // Usa RAG para esta voz
+            'rag_collection' => 'lex_convenios'
         ],
         'cubo' => [
             'name' => 'Cubo',
@@ -149,5 +157,106 @@ class VoiceContextBuilder
     public static function getAllVoices(): array
     {
         return self::$voices;
+    }
+
+    /**
+     * Verifica si la voz tiene RAG habilitado
+     */
+    public function hasRagEnabled(): bool
+    {
+        $voice = self::$voices[$this->voiceId] ?? null;
+        return $voice && ($voice['rag_enabled'] ?? false);
+    }
+
+    /**
+     * Inicializa el retriever RAG para esta voz
+     */
+    public function initRetriever(string $openaiKey, string $qdrantHost = 'localhost', int $qdrantPort = 6333): void
+    {
+        if (!$this->hasRagEnabled()) {
+            return;
+        }
+
+        $voice = self::$voices[$this->voiceId];
+        $collection = $voice['rag_collection'] ?? 'default';
+
+        $qdrant = new QdrantClient($qdrantHost, $qdrantPort);
+        $embeddings = new EmbeddingService($openaiKey);
+        $this->retriever = new LexRetriever($qdrant, $embeddings, $collection);
+    }
+
+    /**
+     * Obtiene el retriever RAG
+     */
+    public function getRetriever(): ?LexRetriever
+    {
+        return $this->retriever;
+    }
+
+    /**
+     * Construye el system prompt con contexto RAG
+     * Usa búsqueda semántica para encontrar los chunks relevantes
+     */
+    public function buildSystemPromptWithRag(string $userQuery, int $topK = 5): ?string
+    {
+        if (!$this->voiceExists()) {
+            return null;
+        }
+
+        $voice = self::$voices[$this->voiceId];
+        
+        // System prompt base
+        $prompt = "# Identidad\n";
+        $prompt .= "Eres **{$voice['name']}**, {$voice['role']}.\n\n";
+        $prompt .= "## Descripción\n{$voice['description']}\n\n";
+        $prompt .= "## Personalidad\n{$voice['personality']}\n\n";
+        
+        // Instrucciones generales
+        $prompt .= "## Instrucciones\n";
+        $prompt .= "- Responde siempre en español\n";
+        $prompt .= "- Sé conciso pero completo\n";
+        $prompt .= "- **IMPORTANTE**: Cuando cites información de los convenios, indica siempre la fuente (nombre del documento y sección si está disponible)\n";
+        $prompt .= "- Si la información proporcionada no es suficiente para responder, indícalo claramente\n";
+        $prompt .= "- Mantén un tono profesional y accesible\n";
+        $prompt .= "- No inventes información que no esté en los fragmentos proporcionados\n\n";
+
+        // Obtener contexto relevante via RAG
+        if ($this->retriever && $this->retriever->isReady()) {
+            $chunks = $this->retriever->retrieve($userQuery, $topK);
+            $ragContext = $this->retriever->formatForPrompt($chunks);
+            $prompt .= $ragContext;
+        } else {
+            // Fallback a documentos estáticos si RAG no está disponible
+            $contextDocs = $this->loadContextDocuments();
+            if ($contextDocs) {
+                $prompt .= "## Documentación de referencia\n";
+                $prompt .= "A continuación tienes la documentación que debes usar para responder consultas:\n\n";
+                $prompt .= $contextDocs;
+            }
+        }
+
+        return $prompt;
+    }
+
+    /**
+     * Verifica si el RAG está listo (colección existe y tiene datos)
+     */
+    public function isRagReady(): bool
+    {
+        return $this->retriever && $this->retriever->isReady();
+    }
+
+    /**
+     * Obtiene estadísticas del RAG
+     */
+    public function getRagStats(): array
+    {
+        if (!$this->retriever) {
+            return ['enabled' => false];
+        }
+
+        $stats = $this->retriever->getStats();
+        $stats['enabled'] = true;
+        return $stats;
     }
 }

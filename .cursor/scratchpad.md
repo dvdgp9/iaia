@@ -412,6 +412,244 @@ Añadir capacidad de generación de imágenes al chat principal usando el modelo
 
 ---
 
+## Feature: RAG para Lex (Asistente Legal)
+
+### Motivación
+La voz Lex necesita acceder a ~20 artículos de convenios laborales (~30 páginas c/u = **~600 páginas totales**). El sistema actual (`VoiceContextBuilder`) concatena todos los `.md` en el system prompt, lo que:
+- **Excede límites de contexto** (~150K tokens para Gemini, pero el coste por request sería brutal)
+- **Degrada precisión**: El LLM "se pierde" en documentos largos
+- **Escala mal**: Añadir más documentos empeora todo
+
+**Objetivo**: Implementar RAG (Retrieval Augmented Generation) para buscar solo los fragmentos relevantes antes de cada respuesta.
+
+### Recursos disponibles
+- **VPS**: 4 vCPU, 4GB RAM
+- **Carga esperada**: 2-3 usuarios concurrentes (picos)
+- **Stack actual**: PHP 8.2, MySQL, OpenRouter para LLM
+
+### Volumen de datos estimado
+- 20 artículos × 30 páginas × ~500 palabras/página = **~300K palabras**
+- Chunks de ~500 tokens → **~800-1200 chunks**
+- Embeddings (1536 dims, float32) → **~5-7 MB** de vectores
+- **Conclusión**: Dataset pequeño, cabe en RAM fácilmente
+
+---
+
+### Opciones de implementación
+
+#### Opción A: SQLite + sqlite-vss (embebido)
+**Complejidad**: Baja | **RAM adicional**: 0 (embebido en PHP)
+
+```
+Arquitectura:
+┌─────────────┐     ┌──────────────┐     ┌─────────────┐
+│   PHP App   │────▶│ SQLite + vss │────▶│  Embeddings │
+│             │     │  (archivo)   │     │   (OpenAI)  │
+└─────────────┘     └──────────────┘     └─────────────┘
+```
+
+**Pros**:
+- Sin proceso adicional (archivo .db)
+- PHP puede acceder vía PDO + extensión
+- Perfecto para datasets pequeños (<100K chunks)
+- Backup = copiar un archivo
+
+**Contras**:
+- Requiere compilar extensión sqlite-vss (o usar FFI)
+- Rendimiento limitado con millones de vectores (no es nuestro caso)
+- Menos maduro que alternativas
+
+**Coste**: Solo embeddings (~$0.0001 por 1K tokens → ~$0.03 total para indexar)
+
+---
+
+#### Opción B: Qdrant (vector DB standalone)
+**Complejidad**: Media | **RAM adicional**: ~300-500 MB
+
+```
+Arquitectura:
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│   PHP App   │────▶│   Qdrant    │────▶│  Embeddings │
+│             │     │  (Docker)   │     │   (OpenAI)  │
+└─────────────┘     └──────────────┘     └─────────────┘
+```
+
+**Pros**:
+- Muy eficiente en memoria (Rust)
+- API REST simple
+- Filtrado por metadatos (ej: tipo de documento, sección)
+- Persiste en disco automáticamente
+- Producción-ready
+
+**Contras**:
+- Requiere Docker o binario
+- Proceso adicional corriendo
+- Overkill para <10K chunks
+
+**Coste**: Solo embeddings + VPS RAM
+
+---
+
+#### Opción C: PostgreSQL + pgvector
+**Complejidad**: Media | **RAM adicional**: Variable (depende de config)
+
+**Pros**:
+- Si ya usáis PostgreSQL, sin nueva infra
+- SQL estándar para queries híbridas
+- Muy maduro
+
+**Contras**:
+- **No usamos PostgreSQL** (tenemos MySQL)
+- Migrar BD solo por esto no tiene sentido
+
+**Veredicto**: ❌ Descartada (no aplica)
+
+---
+
+#### Opción D: Meilisearch (búsqueda híbrida)
+**Complejidad**: Media | **RAM adicional**: ~200-400 MB
+
+**Pros**:
+- Búsqueda keyword + semántica
+- Muy rápido
+- API REST sencilla
+- Typo-tolerant (útil para términos legales)
+
+**Contras**:
+- No es vector DB puro
+- Embeddings integrados (menos control)
+- Otro proceso corriendo
+
+---
+
+#### Opción E: Servicio cloud (Pinecone/Weaviate)
+**Complejidad**: Baja | **RAM adicional**: 0
+
+**Pros**:
+- Sin infraestructura local
+- Escalabilidad infinita
+- Free tier disponible
+
+**Contras**:
+- Latencia de red adicional
+- Dependencia externa
+- Free tier limitado (Pinecone: 100K vectores)
+- Datos salen del VPS
+
+---
+
+#### Opción F: MySQL Full-Text + Embeddings en tabla
+**Complejidad**: Baja | **RAM adicional**: 0
+
+```sql
+CREATE TABLE lex_chunks (
+  id INT PRIMARY KEY,
+  document_id VARCHAR(100),
+  chunk_text TEXT,
+  embedding BLOB,  -- 1536 floats serialized
+  FULLTEXT idx_text (chunk_text)
+);
+```
+
+**Pros**:
+- Sin nueva infraestructura
+- MySQL ya está
+- Full-text para búsqueda keyword
+- Embeddings para reranking
+
+**Contras**:
+- Sin búsqueda vectorial nativa (hay que calcular similitud en PHP)
+- Lento para >10K chunks
+- Workaround, no solución elegante
+
+---
+
+### ⭐ Recomendación: Opción B (Qdrant)
+
+**Razones**:
+1. **Bajo consumo RAM** (~300MB) - Cabe perfecto en 4GB
+2. **Producción-ready** - Usado en empresas serias
+3. **API REST** - Fácil integrar desde PHP
+4. **Filtros por metadatos** - Útil para filtrar por convenio/sección
+5. **Escala si crece** - Si añadís más voces/documentos
+6. **Docker** - Un `docker-compose up -d` y listo
+
+**Alternativa si no queréis Docker**: Opción A (SQLite + vss), pero requiere más setup inicial.
+
+---
+
+### Arquitectura propuesta (Qdrant)
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                         INGESTA (1 vez)                     │
+├─────────────────────────────────────────────────────────────┤
+│  PDFs/Markdown → Chunks (~500 tokens) → Embeddings → Qdrant │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│                      CONSULTA (cada request)                │
+├─────────────────────────────────────────────────────────────┤
+│  1. Usuario pregunta: "¿Cuántos días de vacaciones?"        │
+│  2. Embedding de la pregunta                                │
+│  3. Qdrant: top-5 chunks más similares                      │
+│  4. LLM recibe: system prompt + chunks + pregunta           │
+│  5. Respuesta con citas: "Según Art. 23 del Convenio..."    │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Modelo de embeddings
+
+| Modelo | Dimensiones | Coste | Rendimiento |
+|--------|-------------|-------|-------------|
+| `text-embedding-3-small` (OpenAI) | 1536 | $0.02/1M tokens | Muy bueno |
+| `text-embedding-3-large` (OpenAI) | 3072 | $0.13/1M tokens | Mejor |
+| Gemini embedding (via OpenRouter) | 768 | Incluido | Bueno |
+
+**Recomendación**: `text-embedding-3-small` - Balance coste/calidad, ya tenéis OpenRouter.
+
+---
+
+### Tareas de implementación
+
+1. [x] **Preparar documentos**
+   - Convertir PDFs a Markdown/texto limpio
+   - Estructurar en carpeta `docs/context/voices/lex/convenios/`
+   - Success: 20 archivos listos
+
+2. [x] **Configurar Qdrant**
+   - docker-compose.yml creado con Qdrant
+   - Success: Listo para `docker-compose up -d`
+
+3. [x] **Crear script de ingesta**
+   - `scripts/rag/ingest_lex.php` creado
+   - Chunking con overlap (~500 tokens)
+   - Embeddings via OpenAI text-embedding-3-small
+   - Success: Script listo
+
+4. [x] **Crear servicio RAG**
+   - `src/Rag/QdrantClient.php` - Cliente HTTP para Qdrant
+   - `src/Rag/EmbeddingService.php` - Genera embeddings
+   - `src/Rag/LexRetriever.php` - Busca chunks relevantes
+   - Success: Servicios creados
+
+5. [x] **Integrar con VoiceContextBuilder**
+   - Añadidos métodos `hasRagEnabled()`, `initRetriever()`, `buildSystemPromptWithRag()`
+   - Fallback automático a documentos estáticos si RAG no disponible
+   - Success: Integración completa
+
+6. [x] **Modificar endpoint voices/chat.php**
+   - Usa RAG automáticamente si está configurado
+   - Success: Endpoint actualizado
+
+7. [ ] **Testing y ajustes**
+   - Probar preguntas típicas
+   - Ajustar top-k (5-10 chunks)
+   - Verificar citas correctas
+   - Success: Respuestas precisas con fuentes
+
+---
+
 ## Feature: Podcast en Background (generación asíncrona)
 
 ### Motivación
