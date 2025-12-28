@@ -46,21 +46,28 @@ if (!$doc) {
     Response::error('not_found', 'Documento no encontrado', 404);
 }
 
-// Determinar si es PDF para manejarlo diferente
-$isPdf = strtolower(pathinfo($doc['path'], PATHINFO_EXTENSION)) === 'pdf';
-$content = '';
-$url = '';
+// Detectar tipo de archivo
+$extension = strtolower(pathinfo($doc['path'], PATHINFO_EXTENSION));
 
-if ($isPdf) {
-    // Para PDFs, proporcionamos la URL relativa para que el frontend pueda mostrarlo en un iframe o similar
-    // Asumiendo que docs/ está accesible o mapeado
-    $url = '/docs/context/voices/' . $voiceId . '/convenios/' . basename($doc['path']);
-} else {
-    // Leer contenido para archivos de texto/markdown
-    $content = file_get_contents($doc['path']);
-    if ($content === false) {
-        Response::error('read_error', 'Error al leer el documento', 500);
-    }
+// Si es PDF u otro binario, no se puede mostrar en el visor de texto
+if (in_array($extension, ['pdf', 'doc', 'docx', 'xls', 'xlsx'])) {
+    Response::json([
+        'success' => true,
+        'document' => [
+            'id' => $doc['id'],
+            'name' => $doc['name'],
+            'size' => $doc['size'],
+            'type' => $extension,
+            'isBinary' => true,
+            'message' => 'Este es un archivo PDF. Los documentos están indexados y disponibles para consulta con el asistente Lex. Si necesitas ver el contenido completo, por favor descarga el archivo.'
+        ]
+    ]);
+}
+
+// Leer contenido de archivos de texto
+$content = file_get_contents($doc['path']);
+if ($content === false) {
+    Response::error('read_error', 'Error al leer el documento', 500);
 }
 
 Response::json([
@@ -69,8 +76,8 @@ Response::json([
         'id' => $doc['id'],
         'name' => $doc['name'],
         'size' => $doc['size'],
-        'content' => $content,
-        'url' => $url,
-        'is_pdf' => $isPdf
+        'type' => $extension,
+        'isBinary' => false,
+        'content' => $content
     ]
 ]);

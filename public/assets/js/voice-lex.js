@@ -171,21 +171,20 @@
       const data = await res.json();
       docViewerTitle.textContent = data.document.name;
       
-      if (data.document.is_pdf) {
-        // Mostrar PDF en un iframe
+      // Si es archivo binario (PDF), mostrar mensaje
+      if (data.document.isBinary) {
         docViewerContent.innerHTML = `
-          <div class="h-[70vh] w-full border border-slate-200 rounded-lg overflow-hidden bg-slate-100">
-            <iframe src="${data.document.url}" class="w-full h-full" frameborder="0"></iframe>
-          </div>
-          <div class="mt-4 flex justify-center">
-            <a href="${data.document.url}" target="_blank" class="flex items-center gap-2 text-rose-600 hover:text-rose-700 font-medium text-sm">
-              <i class="iconoir-open-in-window"></i>
-              Abrir en nueva pestaña
-            </a>
+          <div class="text-center py-12 px-6">
+            <i class="iconoir-page text-6xl text-gray-400 mb-4"></i>
+            <h3 class="text-xl font-semibold mb-2">Archivo PDF</h3>
+            <p class="text-gray-600 mb-6">${data.document.message}</p>
+            <div class="flex flex-col gap-2 max-w-md mx-auto">
+              <p class="text-sm text-gray-500">Puedes preguntarle a Lex sobre el contenido de este convenio y él te responderá con la información indexada.</p>
+            </div>
           </div>
         `;
       } else {
-        // Render markdown as HTML para archivos de texto
+        // Render markdown as HTML
         const html = mdToHtml(data.document.content);
         docViewerContent.innerHTML = `<div class="prose prose-slate max-w-none">${html}</div>`;
       }
