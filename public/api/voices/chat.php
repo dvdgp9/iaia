@@ -106,7 +106,7 @@ $messages[] = [
 try {
     $client = new OpenRouterClient(
         Env::get('OPENROUTER_API_KEY'),
-        'z-ai/glm-4.7', // Forzado por código
+        'google/gemini-3-flash-preview', // Forzado por código
         $systemPrompt
     );
     
