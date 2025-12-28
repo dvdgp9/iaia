@@ -126,12 +126,12 @@ $headerShowLogo = true;
               <p class="text-base text-slate-500 mb-8 max-w-lg mx-auto">¿En qué puedo ayudarte hoy? Escribe tu pregunta o elige una opción de abajo.</p>
               
               <!-- Input principal con glassmorphism -->
-              <div class="glass-strong rounded-3xl p-5 border border-slate-200/50 shadow-lg glow-soft max-w-2xl mx-auto">
+              <div class="glass-strong rounded-[28px] p-2 border border-slate-200/50 shadow-xl glow-soft max-w-2xl mx-auto bg-white/90">
                 <form id="chat-form-empty" class="w-full">
                   <!-- Preview de archivo adjunto en estado vacío -->
-                  <div id="file-preview-empty" class="hidden mb-4 p-3 bg-slate-50 rounded-xl flex items-center gap-3">
+                  <div id="file-preview-empty" class="hidden mx-2 mt-2 mb-2 p-3 bg-slate-50/80 rounded-2xl flex items-center gap-3 border border-slate-100">
                     <div class="flex-1 flex items-center gap-3">
-                      <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-[#23AAC5]/10 to-[#115c6c]/10 flex items-center justify-center flex-shrink-0">
+                      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#23AAC5]/10 to-[#115c6c]/10 flex items-center justify-center flex-shrink-0">
                         <i id="file-icon-empty" class="iconoir-page text-xl text-[#23AAC5]"></i>
                       </div>
                       <div class="flex-1 min-w-0">
@@ -144,42 +144,34 @@ $headerShowLogo = true;
                     </button>
                   </div>
                   
-                  <!-- Móvil: 2 filas (textarea arriba, botones abajo). Desktop: 1 fila -->
                   <input type="file" id="file-input-empty" class="hidden" accept=".pdf,.png,.jpg,.jpeg,.gif,.webp" />
                   
-                  <!-- Textarea en su propia fila en móvil -->
-                  <div class="mb-3 lg:mb-0 lg:hidden">
-                    <textarea id="chat-input-empty" rows="1" class="w-full border-2 border-slate-200 rounded-xl lg:rounded-2xl px-3 lg:px-5 py-[10px] text-base input-focus transition-smooth bg-white/80 resize-none overflow-hidden" placeholder="Escribe tu pregunta aquí..." style="min-height: 44px; max-height: 120px;"></textarea>
+                  <!-- Área de Texto Superior -->
+                  <div class="relative px-4 pt-3 pb-1">
+                    <textarea id="chat-input-empty" rows="1" class="w-full border-none focus:ring-0 p-0 text-[16px] text-slate-700 placeholder:text-slate-400 bg-transparent resize-none overflow-hidden" placeholder="Pregúntame lo que quieras" style="min-height: 24px; max-height: 200px;"></textarea>
                   </div>
-                  
-                  <!-- Botones en fila inferior en móvil, integrados en desktop -->
-                  <div class="flex gap-2 lg:gap-3 items-center lg:hidden">
-                    <button type="button" id="attach-btn-empty" class="p-2 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-xl transition-smooth border-2 border-slate-200 hover:border-[#23AAC5] leading-none shrink-0" title="Adjuntar archivo (PDF o imagen)">
-                      <i class="iconoir-attachment text-lg"></i>
-                    </button>
-                    <button type="button" id="image-mode-btn-empty" class="p-2 text-slate-400 hover:text-amber-500 rounded-xl transition-smooth border-2 border-slate-200 leading-none shrink-0" title="Generar imagen con nanobanana 🍌">
-                      <i class="iconoir-media-image text-lg"></i>
-                    </button>
-                    <div class="flex-1"></div>
-                    <button type="submit" class="h-11 px-6 gradient-brand text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-smooth flex items-center justify-center gap-2 leading-none">
-                      <span>Enviar</span>
-                      <i class="iconoir-send-diagonal text-base"></i>
+
+                  <!-- Barra de Herramientas Inferior -->
+                  <div class="flex items-center justify-between px-2 pb-1">
+                    <div class="flex items-center gap-1">
+                      <button type="button" id="attach-btn-empty" class="p-2.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-smooth shrink-0" title="Adjuntar archivo">
+                        <i class="iconoir-plus text-xl"></i>
+                      </button>
+                      <button type="button" id="image-mode-btn-empty" class="p-2.5 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-full transition-smooth shrink-0" title="Generar imagen">
+                        <i class="iconoir-media-image text-xl"></i>
+                      </button>
+                    </div>
+
+                    <button type="submit" class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-[#23AAC5] transition-smooth shrink-0">
+                      <i class="iconoir-arrow-up text-2xl"></i>
                     </button>
                   </div>
-                  
-                  <!-- Layout desktop en una sola línea -->
-                  <div class="hidden lg:flex gap-3 items-center">
-                    <button type="button" id="attach-btn-empty-desktop" class="p-[10px] text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-2xl transition-smooth border-2 border-slate-200 hover:border-[#23AAC5] leading-none shrink-0" title="Adjuntar archivo (PDF o imagen)">
-                      <i class="iconoir-attachment text-lg"></i>
-                    </button>
-                    <button type="button" id="image-mode-btn-empty-desktop" class="p-[10px] text-slate-400 hover:text-amber-500 rounded-2xl transition-smooth border-2 border-slate-200 leading-none shrink-0" title="Generar imagen con nanobanana 🍌">
-                      <i class="iconoir-media-image text-lg"></i>
-                    </button>
-                    <textarea id="chat-input-empty-desktop" rows="1" class="flex-1 min-w-0 border-2 border-slate-200 rounded-2xl px-5 py-[10px] text-base input-focus transition-smooth bg-white/80 resize-none overflow-hidden" placeholder="Escribe tu pregunta aquí..." style="min-height: 44px; max-height: 120px;"></textarea>
-                    <button type="submit" class="h-11 px-7 py-[10px] gradient-brand text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-smooth flex items-center justify-center gap-2 leading-none shrink-0">
-                      <span>Enviar</span>
-                      <i class="iconoir-send-diagonal text-base"></i>
-                    </button>
+
+                  <!-- Layout desktop hidden (se unifica el diseño) -->
+                  <div class="hidden">
+                    <button type="button" id="attach-btn-empty-desktop"></button>
+                    <button type="button" id="image-mode-btn-empty-desktop"></button>
+                    <textarea id="chat-input-empty-desktop"></textarea>
                   </div>
                 </form>
               </div>
@@ -330,39 +322,52 @@ $headerShowLogo = true;
         </div>
       </section>
       <!-- Footer del chat: fijo en móvil sobre el bottom-nav -->
-      <footer id="chat-footer" class="hidden fixed lg:relative bottom-16 lg:bottom-0 left-0 right-0 p-3 lg:p-6 bg-white border-t border-slate-200 shadow-lg z-40">
-        <form id="chat-form" class="max-w-4xl mx-auto">
-          <!-- Preview de archivo adjunto -->
-          <div id="file-preview" class="hidden mb-3 p-3 bg-slate-50 border border-slate-200 rounded-lg flex items-center gap-3">
-            <div class="flex-1 flex items-center gap-3">
-              <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-[#23AAC5]/10 to-[#115c6c]/10 flex items-center justify-center flex-shrink-0">
-                <i id="file-icon" class="iconoir-page text-xl text-[#23AAC5]"></i>
+      <footer id="chat-footer" class="p-4 bg-gradient-to-t from-slate-50 via-slate-50/80 to-transparent hidden">
+        <div class="max-w-4xl mx-auto">
+          <div class="glass-strong rounded-[28px] p-2 border border-slate-200/50 shadow-xl glow-soft bg-white/90">
+            <form id="chat-form" class="w-full">
+              <!-- Preview de archivo adjunto -->
+              <div id="file-preview" class="hidden mx-2 mt-2 mb-2 p-3 bg-slate-50/80 rounded-2xl flex items-center gap-3 border border-slate-100">
+                <div class="flex-1 flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#23AAC5]/10 to-[#115c6c]/10 flex items-center justify-center flex-shrink-0">
+                    <i id="file-icon" class="iconoir-page text-xl text-[#23AAC5]"></i>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div id="file-name" class="text-sm font-medium text-slate-800 truncate"></div>
+                    <div id="file-size" class="text-xs text-slate-500"></div>
+                  </div>
+                </div>
+                <button type="button" id="remove-file" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-smooth">
+                  <i class="iconoir-xmark"></i>
+                </button>
               </div>
-              <div class="flex-1 min-w-0">
-                <div id="file-name" class="text-sm font-medium text-slate-800 truncate"></div>
-                <div id="file-size" class="text-xs text-slate-500"></div>
+              
+              <input type="file" id="file-input" class="hidden" accept=".pdf,.png,.jpg,.jpeg,.gif,.webp" />
+              
+              <!-- Área de Texto Superior -->
+              <div class="relative px-4 pt-3 pb-1">
+                <textarea id="chat-input" rows="1" class="w-full border-none focus:ring-0 p-0 text-[16px] text-slate-700 placeholder:text-slate-400 bg-transparent resize-none overflow-hidden" placeholder="Escribe un mensaje..." style="min-height: 24px; max-height: 200px;"></textarea>
               </div>
-            </div>
-            <button type="button" id="remove-file" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-              <i class="iconoir-xmark"></i>
-            </button>
+
+              <!-- Barra de Herramientas Inferior -->
+              <div class="flex items-center justify-between px-2 pb-1">
+                <div class="flex items-center gap-1">
+                  <button type="button" id="attach-btn" class="p-2.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-smooth shrink-0" title="Adjuntar archivo">
+                    <i class="iconoir-plus text-xl"></i>
+                  </button>
+                  <button type="button" id="image-mode-btn" class="p-2.5 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-full transition-smooth shrink-0" title="Generar imagen">
+                    <i class="iconoir-media-image text-xl"></i>
+                  </button>
+                </div>
+
+                <button type="submit" class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-[#23AAC5] transition-smooth shrink-0">
+                  <i class="iconoir-arrow-up text-2xl"></i>
+                </button>
+              </div>
+            </form>
           </div>
-          
-          <div class="flex gap-2 lg:gap-3 items-center">
-            <input type="file" id="file-input" class="hidden" accept=".pdf,.png,.jpg,.jpeg,.gif,.webp" />
-            <button type="button" id="attach-btn" class="p-2 lg:p-[10px] text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/5 rounded-xl transition-all border-2 border-slate-200 hover:border-[#23AAC5] leading-none shrink-0" title="Adjuntar archivo">
-              <i class="iconoir-attachment text-lg"></i>
-            </button>
-            <button type="button" id="image-mode-btn" class="p-2 lg:p-[10px] text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-xl transition-all border-2 border-slate-200 hover:border-amber-400 leading-none shrink-0" title="Generar imagen con nanobanana 🍌">
-              <i class="iconoir-media-image text-lg"></i>
-            </button>
-            <textarea id="chat-input" rows="1" class="flex-1 min-w-0 border-2 border-slate-200 rounded-xl px-3 lg:px-4 py-2.5 focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-all resize-none overflow-hidden" placeholder="Escribe un mensaje..." style="min-height: 40px; max-height: 120px;"></textarea>
-            <button type="submit" class="h-11 p-3 lg:px-6 lg:py-[10px] gradient-brand-btn text-white rounded-xl font-medium shadow-md hover:shadow-lg hover:opacity-90 transition-all duration-200 flex items-center justify-center gap-2 leading-none shrink-0">
-              <span class="hidden lg:inline">Enviar</span>
-              <svg class="w-5 h-5 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
-            </button>
-          </div>
-        </form>
+          <p class="text-[10px] text-center text-slate-400 mt-2">Ebonia puede cometer errores. Considera verificar la información importante.</p>
+        </div>
       </footer>
     </main>
   </div>
@@ -1286,53 +1291,32 @@ $headerShowLogo = true;
     }
 
     function updateImageModeUI() {
-      // Clases base según botón original (sin efectos de tamaño)
-      const chatBtnActive = 'p-2 lg:p-[10px] text-amber-600 bg-amber-50 rounded-xl transition-all border-2 border-amber-400 leading-none shrink-0';
-      const chatBtnInactive = 'p-2 lg:p-[10px] text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-xl transition-all border-2 border-slate-200 hover:border-amber-400 leading-none shrink-0';
-      // Clases para botón imagen en empty state (iguales al de adjuntar pero con colores ámbar)
-      const emptyBtnActiveMobile = 'p-2 text-amber-600 rounded-xl transition-smooth border-2 border-amber-400 leading-none shrink-0';
-      const emptyBtnInactiveMobile = 'p-2 text-slate-400 hover:text-amber-500 rounded-xl transition-smooth border-2 border-slate-200 leading-none shrink-0';
-      const emptyBtnActiveDesktop = 'p-[10px] text-amber-600 rounded-2xl transition-smooth border-2 border-amber-400 leading-none shrink-0';
-      const emptyBtnInactiveDesktop = 'p-[10px] text-slate-400 hover:text-amber-500 rounded-2xl transition-smooth border-2 border-slate-200 leading-none shrink-0';
+      // Clases para botón imagen en chat normal e empty state (ahora unificado)
+      const btnActive = 'p-2.5 text-amber-600 bg-amber-50 rounded-full transition-smooth shrink-0';
+      const btnInactive = 'p-2.5 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-full transition-smooth shrink-0';
 
       if (imageMode) {
         // Chat normal
-        imageModeBtn.className = chatBtnActive;
+        imageModeBtn.className = btnActive;
         chatInput.placeholder = imagePlaceholder;
         attachBtn.disabled = true;
         attachBtn.classList.add('opacity-50', 'cursor-not-allowed');
-        // Empty state (móvil y desktop)
-        imageModeBtnEmpty.className = emptyBtnActiveMobile;
+        // Empty state
+        imageModeBtnEmpty.className = btnActive;
         chatInputEmpty.placeholder = imagePlaceholder;
         attachBtnEmpty.disabled = true;
         attachBtnEmpty.classList.add('opacity-50', 'cursor-not-allowed');
-        if (imageModeBtnEmptyDesktop) {
-          imageModeBtnEmptyDesktop.className = emptyBtnActiveDesktop;
-          if (chatInputEmptyDesktop) chatInputEmptyDesktop.placeholder = imagePlaceholder;
-          if (attachBtnEmptyDesktop) {
-            attachBtnEmptyDesktop.disabled = true;
-            attachBtnEmptyDesktop.classList.add('opacity-50', 'cursor-not-allowed');
-          }
-        }
       } else {
         // Chat normal
-        imageModeBtn.className = chatBtnInactive;
+        imageModeBtn.className = btnInactive;
         chatInput.placeholder = defaultPlaceholder;
         attachBtn.disabled = false;
         attachBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-        // Empty state (móvil y desktop)
-        imageModeBtnEmpty.className = emptyBtnInactiveMobile;
+        // Empty state
+        imageModeBtnEmpty.className = btnInactive;
         chatInputEmpty.placeholder = defaultPlaceholderEmpty;
         attachBtnEmpty.disabled = false;
         attachBtnEmpty.classList.remove('opacity-50', 'cursor-not-allowed');
-        if (imageModeBtnEmptyDesktop) {
-          imageModeBtnEmptyDesktop.className = emptyBtnInactiveDesktop;
-          if (chatInputEmptyDesktop) chatInputEmptyDesktop.placeholder = defaultPlaceholderEmpty;
-          if (attachBtnEmptyDesktop) {
-            attachBtnEmptyDesktop.disabled = false;
-            attachBtnEmptyDesktop.classList.remove('opacity-50', 'cursor-not-allowed');
-          }
-        }
       }
     }
 
