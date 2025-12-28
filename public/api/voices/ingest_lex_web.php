@@ -41,19 +41,33 @@ $phpBinary = 'php';
 $possiblePaths = [
     '/usr/bin/php',
     '/usr/local/bin/php',
+    '/usr/bin/php8.1',
     '/usr/bin/php8.2',
+    '/usr/bin/php8.3',
+    '/opt/plesk/php/8.1/bin/php',
     '/opt/plesk/php/8.2/bin/php',
-    '/opt/plesk/php/8.3/bin/php'
+    '/opt/plesk/php/8.3/bin/php',
+    '/opt/plesk/php/8.4/bin/php',
+    'C:\Program Files\PHP\v8.2\php.exe',
 ];
 
 foreach ($possiblePaths as $path) {
-    if (is_executable($path)) {
+    if (@is_executable($path)) {
         $phpBinary = $path;
         break;
     }
 }
 
-echo "Usando PHP: " . htmlspecialchars($phpBinary) . "\n";
+// Si no se encuentra ninguno, intentar con 'php' pero capturar el error de forma más limpia
+echo "Intentando usar binario: " . htmlspecialchars($phpBinary) . "\n";
+echo "Ruta absoluta del script: " . htmlspecialchars($scriptPath) . "\n";
+echo "Directorio actual: " . htmlspecialchars(getcwd()) . "\n";
+echo "Usuario actual: " . htmlspecialchars(get_current_user()) . "\n";
+echo "--------------------------------------------------\n";
+
+exec("$phpBinary -v 2>&1", $versionOutput);
+echo "Versión de PHP detectada: " . htmlspecialchars(implode("\n", $versionOutput)) . "\n";
+echo "--------------------------------------------------\n";
 
 exec("$phpBinary " . escapeshellarg($scriptPath) . " 2>&1", $output, $returnVar);
 
