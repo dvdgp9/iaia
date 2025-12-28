@@ -36,7 +36,26 @@ if (!file_exists($scriptPath)) {
     die("Error: No se encuentra el script de ingesta en $scriptPath");
 }
 
-exec("php " . escapeshellarg($scriptPath) . " 2>&1", $output, $returnVar);
+// Intentar localizar el binario de PHP
+$phpBinary = 'php';
+$possiblePaths = [
+    '/usr/bin/php',
+    '/usr/local/bin/php',
+    '/usr/bin/php8.2',
+    '/opt/plesk/php/8.2/bin/php',
+    '/opt/plesk/php/8.3/bin/php'
+];
+
+foreach ($possiblePaths as $path) {
+    if (is_executable($path)) {
+        $phpBinary = $path;
+        break;
+    }
+}
+
+echo "Usando PHP: " . htmlspecialchars($phpBinary) . "\n";
+
+exec("$phpBinary " . escapeshellarg($scriptPath) . " 2>&1", $output, $returnVar);
 
 echo htmlspecialchars(implode("\n", $output));
 
