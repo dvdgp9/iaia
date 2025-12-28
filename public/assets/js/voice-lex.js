@@ -171,9 +171,24 @@
       const data = await res.json();
       docViewerTitle.textContent = data.document.name;
       
-      // Render markdown as HTML
-      const html = mdToHtml(data.document.content);
-      docViewerContent.innerHTML = `<div class="prose prose-slate max-w-none">${html}</div>`;
+      if (data.document.is_pdf) {
+        // Mostrar PDF en un iframe
+        docViewerContent.innerHTML = `
+          <div class="h-[70vh] w-full border border-slate-200 rounded-lg overflow-hidden bg-slate-100">
+            <iframe src="${data.document.url}" class="w-full h-full" frameborder="0"></iframe>
+          </div>
+          <div class="mt-4 flex justify-center">
+            <a href="${data.document.url}" target="_blank" class="flex items-center gap-2 text-rose-600 hover:text-rose-700 font-medium text-sm">
+              <i class="iconoir-open-in-window"></i>
+              Abrir en nueva pestaña
+            </a>
+          </div>
+        `;
+      } else {
+        // Render markdown as HTML para archivos de texto
+        const html = mdToHtml(data.document.content);
+        docViewerContent.innerHTML = `<div class="prose prose-slate max-w-none">${html}</div>`;
+      }
       
     } catch (e) {
       console.error('Error loading document:', e);
