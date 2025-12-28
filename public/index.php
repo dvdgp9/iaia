@@ -157,9 +157,6 @@ $headerShowLogo = true;
                   <!-- Fila inferior: botones de acción -->
                   <div class="flex items-center gap-1">
                     <button type="button" id="attach-btn-empty" class="p-2 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-lg transition-smooth" title="Adjuntar archivo (PDF o imagen)">
-                      <i class="iconoir-plus text-lg"></i>
-                    </button>
-                    <button type="button" id="attach-btn-empty-desktop" class="p-2 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-lg transition-smooth" title="Adjuntar archivo (PDF o imagen)">
                       <i class="iconoir-attachment text-lg"></i>
                     </button>
                     <button type="button" id="image-mode-btn-empty" class="p-2 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-lg transition-smooth" title="Generar imagen con nanobanana 🍌">
@@ -347,7 +344,7 @@ $headerShowLogo = true;
             <!-- Fila inferior: botones de acción -->
             <div class="flex items-center gap-1">
               <button type="button" id="attach-btn" class="p-2 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-lg transition-smooth" title="Adjuntar archivo (PDF o imagen)">
-                <i class="iconoir-plus text-lg"></i>
+                <i class="iconoir-attachment text-lg"></i>
               </button>
               <button type="button" id="image-mode-btn" class="p-2 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-lg transition-smooth" title="Generar imagen con nanobanana 🍌">
                 <i class="iconoir-media-image text-lg"></i>
