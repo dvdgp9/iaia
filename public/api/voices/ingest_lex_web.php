@@ -61,17 +61,9 @@ foreach ($possiblePaths as $path) {
 // Si no se encuentra ninguno, intentar con 'php' pero capturar el error de forma más limpia
 echo "Intentando usar binario: " . htmlspecialchars($phpBinary) . "\n";
 echo "Ruta absoluta del script: " . htmlspecialchars($scriptPath) . "\n";
-echo "Directorio actual: " . htmlspecialchars(getcwd()) . "\n";
-echo "Usuario actual: " . htmlspecialchars(get_current_user()) . "\n";
 echo "--------------------------------------------------\n";
 
-exec("$phpBinary -v 2>&1", $versionOutput);
-echo "Versión de PHP detectada: " . htmlspecialchars(implode("\n", $versionOutput)) . "\n";
-echo "--------------------------------------------------\n";
-
-exec("$phpBinary " . escapeshellarg($scriptPath) . " 2>&1", $output, $returnVar);
-
-echo htmlspecialchars(implode("\n", $output));
+passthru("$phpBinary " . escapeshellarg($scriptPath) . " 2>&1", $returnVar);
 
 if ($returnVar === 0) {
     echo "\n\n✅ INGESTA COMPLETADA CON ÉXITO";
