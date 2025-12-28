@@ -3,7 +3,7 @@
  * Script temporal para ejecutar la ingesta RAG desde el navegador
  * ¡ELIMINAR DESPUÉS DE USAR!
  */
-require_once __DIR__ . '/../../src/App/bootstrap.php';
+require_once __DIR__ . '/../../../src/App/bootstrap.php';
 use App\Session;
 
 // Seguridad básica: solo admin
@@ -13,14 +13,21 @@ if (!$user || $user['role'] !== 'admin') {
 }
 
 echo "<h1>Iniciando ingesta RAG...</h1>";
-echo "<pre>";
+echo "<p>Esto puede tardar varios minutos (procesando 20 convenios)...</p>";
+echo "<pre style='background: #1e1e1e; color: #d4d4d4; padding: 20px; border-radius: 8px; overflow-x: auto;'>";
 
 // Ejecutar el script de ingesta y capturar salida
 $output = [];
 $returnVar = 0;
-exec("php " . __DIR__ . "/ingest_lex.php 2>&1", $output, $returnVar);
+$scriptPath = __DIR__ . '/../../../scripts/rag/ingest_lex.php';
 
-echo implode("\n", $output);
+if (!file_exists($scriptPath)) {
+    die("Error: No se encuentra el script de ingesta en $scriptPath");
+}
+
+exec("php " . escapeshellarg($scriptPath) . " 2>&1", $output, $returnVar);
+
+echo htmlspecialchars(implode("\n", $output));
 
 if ($returnVar === 0) {
     echo "\n\n✅ INGESTA COMPLETADA CON ÉXITO";
