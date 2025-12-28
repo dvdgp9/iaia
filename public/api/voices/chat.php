@@ -106,7 +106,7 @@ $messages[] = [
 try {
     $client = new OpenRouterClient(
         Env::get('OPENROUTER_API_KEY'),
-        'qwen/qwen3-235b-a22b-2507', // Forzado por código
+        'google/gemini-3-pro-preview', // Forzado por código
         $systemPrompt
     );
     
