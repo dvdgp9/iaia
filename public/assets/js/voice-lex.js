@@ -30,6 +30,7 @@
   const docViewerContent = document.getElementById('doc-viewer-content');
   const closeDocViewerBtn = document.getElementById('close-doc-viewer');
   const closeDocViewerBtn2 = document.getElementById('close-doc-viewer-btn');
+  const docsSearchInput = document.getElementById('docs-search');
 
   // ===== HELPERS =====
   function escapeHtml(str) {
@@ -203,6 +204,60 @@
   
   function closeDocViewer() {
     docViewerModal?.classList.add('hidden');
+  }
+
+  async function loadDocs() {
+    try {
+      const res = await fetch(`/api/voices/list_docs_ajax.php?voice_id=${VOICE_ID}`, {
+        credentials: 'include'
+      });
+      if (!res.ok) return;
+      
+      const data = await res.json();
+      if (data.success) {
+        window.LEX_DOCS = data.documents; // Guardar en caché para búsqueda
+        renderDocs(data.documents);
+      }
+    } catch (e) {
+      console.error('Error loading docs:', e);
+    }
+  }
+
+  function renderDocs(docs) {
+    if (!docsList) return;
+    
+    if (docs.length === 0) {
+      docsList.innerHTML = '<div class="text-center text-slate-400 py-8 text-sm">No se encontraron documentos</div>';
+      return;
+    }
+
+    docsList.innerHTML = docs.map(doc => `
+      <button class="doc-item w-full p-3 bg-white/50 hover:bg-white border border-slate-200/50 hover:border-rose-300 rounded-xl transition-smooth text-left group" data-doc-id="${doc.id}">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg bg-rose-50 flex items-center justify-center text-rose-600 group-hover:bg-rose-100 transition-smooth">
+            <i class="${doc.type === 'rag' ? 'iconoir-page' : 'iconoir-journal'}"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-medium text-slate-700 truncate group-hover:text-rose-600 transition-smooth">${doc.name}</div>
+            <div class="text-[10px] text-slate-400 uppercase tracking-wider">${doc.type === 'rag' ? 'Convenio' : 'Referencia'}</div>
+          </div>
+        </div>
+      </button>
+    `).join('');
+
+    // Re-attach listeners
+    docsList.querySelectorAll('.doc-item').forEach(btn => {
+      btn.addEventListener('click', () => openDocViewer(btn.dataset.docId));
+    });
+  }
+
+  function filterDocs(query) {
+    if (!window.LEX_DOCS) return;
+    const q = query.toLowerCase().trim();
+    const filtered = window.LEX_DOCS.filter(doc => 
+      doc.name.toLowerCase().includes(q)
+    );
+    renderDocs(filtered);
   }
 
   // ===== INIT =====
@@ -453,6 +508,11 @@
   });
 
   newChatBtn?.addEventListener('click', startNewChat);
+
+  // Docs search
+  docsSearchInput?.addEventListener('input', (e) => {
+    filterDocs(e.target.value);
+  });
 
   // Suggestion buttons
   document.querySelectorAll('.suggestion-btn').forEach(btn => {

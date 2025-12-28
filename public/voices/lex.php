@@ -167,6 +167,14 @@ $headerDrawerId = 'lex-history-drawer';
               Documentos disponibles
             </h3>
             <p class="text-xs text-slate-500 mt-1">Fuentes de conocimiento de Lex</p>
+            
+            <!-- Buscador de documentos -->
+            <div class="mt-3 relative">
+              <i class="iconoir-search text-xs text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+              <input type="text" id="docs-search" 
+                class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-rose-300 transition-colors" 
+                placeholder="Buscar por título...">
+            </div>
           </div>
           
           <div id="docs-list" class="flex-1 overflow-auto p-4 space-y-2">
