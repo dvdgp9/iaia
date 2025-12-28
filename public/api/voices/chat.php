@@ -106,7 +106,7 @@ $messages[] = [
 try {
     $client = new OpenRouterClient(
         Env::get('OPENROUTER_API_KEY'),
-        Env::get('OPENROUTER_MODEL', 'google/gemini-2.5-flash'),
+        Env::get('OPENROUTER_MODEL', 'google/gemini-2.0-flash-exp:free'),
         $systemPrompt
     );
     
