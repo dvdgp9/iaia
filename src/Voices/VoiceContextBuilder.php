@@ -127,25 +127,43 @@ class VoiceContextBuilder
     }
 
     /**
-     * Lista los documentos disponibles para esta voz
+     * Lista los documentos disponibles para esta voz (incluyendo convenios RAG)
      */
     public function listDocuments(): array
     {
-        if (!is_dir($this->contextPath)) {
-            return [];
+        $docs = [];
+        
+        // 1. Documentos estáticos (.md)
+        if (is_dir($this->contextPath)) {
+            $files = glob($this->contextPath . '/*.md');
+            foreach ($files as $file) {
+                $filename = basename($file, '.md');
+                $docs[] = [
+                    'id' => $filename,
+                    'name' => ucfirst(str_replace('_', ' ', $filename)),
+                    'type' => 'static',
+                    'path' => $file,
+                    'size' => filesize($file)
+                ];
+            }
         }
 
-        $docs = [];
-        $files = glob($this->contextPath . '/*.md');
-        
-        foreach ($files as $file) {
-            $filename = basename($file, '.md');
-            $docs[] = [
-                'id' => $filename,
-                'name' => ucfirst(str_replace('_', ' ', $filename)),
-                'path' => $file,
-                'size' => filesize($file)
-            ];
+        // 2. Documentos RAG (convenios en PDF/TXT/MD dentro de la subcarpeta convenios)
+        $ragPath = $this->contextPath . '/convenios';
+        if (is_dir($ragPath)) {
+            $files = glob($ragPath . '/*.{pdf,txt,md}', GLOB_BRACE);
+            foreach ($files as $file) {
+                $filename = basename($file);
+                if ($filename === 'README.md') continue;
+                
+                $docs[] = [
+                    'id' => 'rag_' . md5($filename),
+                    'name' => $filename,
+                    'type' => 'rag',
+                    'path' => $file,
+                    'size' => filesize($file)
+                ];
+            }
         }
 
         return $docs;
@@ -205,20 +223,32 @@ class VoiceContextBuilder
 
         $voice = self::$voices[$this->voiceId];
         
+        // Obtener lista de todos los documentos para que la IA sepa qué tiene
+        $allDocs = $this->listDocuments();
+        $docListText = "";
+        foreach ($allDocs as $doc) {
+            $docListText .= "- " . $doc['name'] . "\n";
+        }
+
         // System prompt base
         $prompt = "# Identidad\n";
         $prompt .= "Eres **{$voice['name']}**, {$voice['role']}.\n\n";
         $prompt .= "## Descripción\n{$voice['description']}\n\n";
         $prompt .= "## Personalidad\n{$voice['personality']}\n\n";
         
+        $prompt .= "## Documentación Disponible\n";
+        $prompt .= "Tienes acceso a los siguientes documentos y convenios colectivos:\n";
+        $prompt .= $docListText . "\n";
+
         // Instrucciones generales
         $prompt .= "## Instrucciones\n";
         $prompt .= "- Responde siempre en español\n";
         $prompt .= "- Sé conciso pero completo\n";
-        $prompt .= "- **IMPORTANTE**: Cuando cites información de los convenios, indica siempre la fuente (nombre del documento y sección si está disponible)\n";
-        $prompt .= "- Si la información proporcionada no es suficiente para responder, indícalo claramente\n";
+        $prompt .= "- **IMPORTANTE**: Cita siempre el nombre del documento exacto del que extraes la información.\n";
+        $prompt .= "- Si el usuario te pregunta qué documentos o convenios tienes, proporciónale la lista de arriba.\n";
+        $prompt .= "- Si no tienes información suficiente en los fragmentos recuperados, indícalo claramente.\n";
         $prompt .= "- Mantén un tono profesional y accesible\n";
-        $prompt .= "- No inventes información que no esté en los fragmentos proporcionados\n\n";
+        $prompt .= "- No inventes información que no esté en la documentación proporcionada\n\n";
 
         // Obtener contexto relevante via RAG
         if ($this->retriever && $this->retriever->isReady()) {
