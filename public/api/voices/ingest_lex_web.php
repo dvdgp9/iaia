@@ -9,10 +9,21 @@ use App\Session;
 // Inicializar sesión
 Session::start();
 
+// DEBUG temporal - Eliminar después
+echo "<!-- DEBUG SESSION: ";
+var_dump($_SESSION);
+echo " -->";
+
 // Seguridad básica: solo admin
 $user = Session::user();
-if (!$user || $user['role'] !== 'admin') {
-    die("Acceso denegado. Debes ser admin.");
+if (!$user) {
+    die("Acceso denegado. No hay sesión de usuario activa. Asegúrate de estar logueado en " . $_SERVER['HTTP_HOST']);
+}
+
+// Si eres superadmin pero el role no es exactamente 'admin', ajustamos la comprobación
+// Opcionalmente, puedes comentar la línea de abajo temporalmente para forzar la ejecución
+if ($user['role'] !== 'admin' && $user['role'] !== 'superadmin') {
+    die("Acceso denegado. Tu rol actual es: " . htmlspecialchars($user['role']) . ". Se requiere admin.");
 }
 
 echo "<h1>Iniciando ingesta RAG...</h1>";
