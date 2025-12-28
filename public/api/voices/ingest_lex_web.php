@@ -6,6 +6,9 @@
 require_once __DIR__ . '/../../../src/App/bootstrap.php';
 use App\Session;
 
+// Inicializar sesión
+Session::start();
+
 // Seguridad básica: solo admin
 $user = Session::user();
 if (!$user || $user['role'] !== 'admin') {
