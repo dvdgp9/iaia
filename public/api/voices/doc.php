@@ -48,9 +48,27 @@ if (!$doc) {
 
 // Detectar tipo de archivo
 $extension = strtolower(pathinfo($doc['path'], PATHINFO_EXTENSION));
+$isDownload = isset($_GET['download']) && $_GET['download'] == '1';
 
-// Si es PDF u otro binario, no se puede mostrar en el visor de texto
+// Si es PDF u otro binario
 if (in_array($extension, ['pdf', 'doc', 'docx', 'xls', 'xlsx'])) {
+    // Si se pide descarga, enviar el archivo
+    if ($isDownload) {
+        if (!file_exists($doc['path'])) {
+            Response::error('file_not_found', 'Archivo no encontrado en el servidor', 404);
+        }
+        
+        // Configurar headers para mostrar PDF en navegador
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: inline; filename="' . basename($doc['path']) . '"');
+        header('Content-Length: ' . filesize($doc['path']));
+        header('Cache-Control: public, max-age=3600');
+        
+        readfile($doc['path']);
+        exit;
+    }
+    
+    // Si no es descarga, devolver info JSON
     Response::json([
         'success' => true,
         'document' => [
@@ -59,7 +77,7 @@ if (in_array($extension, ['pdf', 'doc', 'docx', 'xls', 'xlsx'])) {
             'size' => $doc['size'],
             'type' => $extension,
             'isBinary' => true,
-            'message' => 'Este es un archivo PDF. Los documentos están indexados y disponibles para consulta con el asistente Lex. Si necesitas ver el contenido completo, por favor descarga el archivo.'
+            'message' => 'Este es un archivo PDF. Los documentos están indexados y disponibles para consulta con el asistente Lex. Si necesitas ver el contenido completo, puedes abrirlo en una nueva ventana.'
         ]
     ]);
 }

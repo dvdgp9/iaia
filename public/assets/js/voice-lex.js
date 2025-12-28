@@ -171,15 +171,21 @@
       const data = await res.json();
       docViewerTitle.textContent = data.document.name;
       
-      // Si es archivo binario (PDF), mostrar mensaje
+      // Si es archivo binario (PDF), mostrar mensaje con opción de descarga
       if (data.document.isBinary) {
+        const downloadUrl = `/api/voices/doc.php?voice_id=${VOICE_ID}&doc_id=${encodeURIComponent(docId)}&download=1`;
         docViewerContent.innerHTML = `
           <div class="text-center py-12 px-6">
             <i class="iconoir-page text-6xl text-gray-400 mb-4"></i>
             <h3 class="text-xl font-semibold mb-2">Archivo PDF</h3>
-            <p class="text-gray-600 mb-6">${data.document.message}</p>
-            <div class="flex flex-col gap-2 max-w-md mx-auto">
-              <p class="text-sm text-gray-500">Puedes preguntarle a Lex sobre el contenido de este convenio y él te responderá con la información indexada.</p>
+            <p class="text-gray-600 mb-4">${data.document.message}</p>
+            <a href="${downloadUrl}" target="_blank" 
+               class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium mb-4">
+              <i class="iconoir-download"></i>
+              <span>Abrir PDF en nueva ventana</span>
+            </a>
+            <div class="flex flex-col gap-2 max-w-md mx-auto mt-6">
+              <p class="text-sm text-gray-500">💡 Puedes preguntarle a Lex sobre el contenido de este convenio y él te responderá con la información indexada.</p>
             </div>
           </div>
         `;
