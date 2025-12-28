@@ -35,6 +35,19 @@ $totalChunks = $progress['totalChunks'] ?? 0;
 // Reset si se pide
 if (isset($_GET['reset'])) {
     @unlink($progressFile);
+    
+    // También intentar borrar la colección en Qdrant para limpieza total
+    try {
+        $qdrantHost = Env::get('QDRANT_HOST', 'localhost');
+        $qdrantPort = (int) Env::get('QDRANT_PORT', 6333);
+        $qdrant = new Rag\QdrantClient($qdrantHost, $qdrantPort);
+        if ($qdrant->collectionExists(COLLECTION_NAME)) {
+            $qdrant->deleteCollection(COLLECTION_NAME);
+        }
+    } catch (\Exception $e) {
+        // Ignorar errores aquí, el reset de archivos es lo principal
+    }
+
     header('Location: ' . strtok($_SERVER['REQUEST_URI'], '?'));
     exit;
 }
