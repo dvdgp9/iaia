@@ -46,10 +46,21 @@ if (!$doc) {
     Response::error('not_found', 'Documento no encontrado', 404);
 }
 
-// Leer contenido
-$content = file_get_contents($doc['path']);
-if ($content === false) {
-    Response::error('read_error', 'Error al leer el documento', 500);
+// Determinar si es PDF para manejarlo diferente
+$isPdf = strtolower(pathinfo($doc['path'], PATHINFO_EXTENSION)) === 'pdf';
+$content = '';
+$url = '';
+
+if ($isPdf) {
+    // Para PDFs, proporcionamos la URL relativa para que el frontend pueda mostrarlo en un iframe o similar
+    // Asumiendo que docs/ está accesible o mapeado
+    $url = '/docs/context/voices/' . $voiceId . '/convenios/' . basename($doc['path']);
+} else {
+    // Leer contenido para archivos de texto/markdown
+    $content = file_get_contents($doc['path']);
+    if ($content === false) {
+        Response::error('read_error', 'Error al leer el documento', 500);
+    }
 }
 
 Response::json([
@@ -58,6 +69,8 @@ Response::json([
         'id' => $doc['id'],
         'name' => $doc['name'],
         'size' => $doc['size'],
-        'content' => $content
+        'content' => $content,
+        'url' => $url,
+        'is_pdf' => $isPdf
     ]
 ]);
