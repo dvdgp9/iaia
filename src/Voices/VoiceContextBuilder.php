@@ -215,7 +215,7 @@ class VoiceContextBuilder
      * Construye el system prompt con contexto RAG
      * Usa búsqueda semántica para encontrar los chunks relevantes
      */
-    public function buildSystemPromptWithRag(string $userQuery, int $topK = 8): ?string
+    public function buildSystemPromptWithRag(string $userQuery, int $topK = 15): ?string
     {
         if (!$this->voiceExists()) {
             return null;
@@ -252,9 +252,17 @@ class VoiceContextBuilder
 
         // Obtener contexto relevante via RAG
         if ($this->retriever && $this->retriever->isReady()) {
-            $chunks = $this->retriever->retrieve($userQuery, $topK);
+            // Detectar si el usuario menciona un convenio específico para filtrar
+            $documentFilter = $this->detectMentionedDocument($userQuery, $allDocs);
+            
+            $chunks = $this->retriever->retrieve($userQuery, $topK, $documentFilter);
             $ragContext = $this->retriever->formatForPrompt($chunks);
             $prompt .= $ragContext;
+            
+            // Si se filtró por documento, indicarlo
+            if ($documentFilter) {
+                $prompt .= "\n*Búsqueda filtrada al documento: {$documentFilter}*\n";
+            }
         } else {
             // Fallback a documentos estáticos si RAG no está disponible
             $contextDocs = $this->loadContextDocuments();
@@ -288,5 +296,65 @@ class VoiceContextBuilder
         $stats = $this->retriever->getStats();
         $stats['enabled'] = true;
         return $stats;
+    }
+
+    /**
+     * Detecta si el usuario menciona un convenio específico para filtrar búsqueda
+     * @return string|null document_id si se detecta, null si no
+     */
+    private function detectMentionedDocument(string $query, array $documents): ?string
+    {
+        $queryLower = mb_strtolower($query);
+        
+        // Palabras clave de sectores para matching
+        $sectorKeywords = [
+            'agencia de viajes' => 'CC29',
+            'agencias de viajes' => 'CC29',
+            'viajes' => 'CC29',
+            'instalaciones deportivas' => 'CC1',
+            'gimnasios' => 'CC1',
+            'gimnasio' => 'CC1',
+            'ocio educativo' => 'CC10',
+            'animación sociocultural' => 'CC10',
+            'limpieza' => 'CC20',
+            'dependientes' => 'CC22',
+            'personas dependientes' => 'CC22',
+            'atención a personas' => 'CC22',
+            'discapacidad' => 'CC25',
+            'acción social' => 'CC26',
+            'intervención social' => 'CC26',
+            'socorrismo' => 'CC34',
+            'salvamento' => 'CC34',
+            'residencias' => 'CC4',
+            'centros de día' => 'CC4',
+            'deportes' => 'CC5',
+            'enseñanza' => 'CC12',
+            'formación' => 'CC12',
+        ];
+        
+        // Buscar coincidencia de sector en la query
+        foreach ($sectorKeywords as $keyword => $docPrefix) {
+            if (mb_strpos($queryLower, $keyword) !== false) {
+                // Buscar el documento que coincida con este prefijo
+                foreach ($documents as $doc) {
+                    if (isset($doc['name']) && strpos($doc['name'], $docPrefix) === 0) {
+                        // Devolver el nombre del archivo sin extensión como document_id
+                        return pathinfo($doc['name'], PATHINFO_FILENAME);
+                    }
+                }
+            }
+        }
+        
+        // Buscar mención directa de código CC
+        if (preg_match('/\bCC\s*(\d+)\b/i', $query, $matches)) {
+            $ccNumber = $matches[1];
+            foreach ($documents as $doc) {
+                if (isset($doc['name']) && preg_match("/^CC{$ccNumber}\b/", $doc['name'])) {
+                    return pathinfo($doc['name'], PATHINFO_FILENAME);
+                }
+            }
+        }
+        
+        return null;
     }
 }

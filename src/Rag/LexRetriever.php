@@ -29,7 +29,7 @@ class LexRetriever
      * @param string|null $documentFilter Filtrar por documento específico
      * @return array Chunks relevantes con metadatos
      */
-    public function retrieve(string $query, int $topK = 8, ?string $documentFilter = null): array
+    public function retrieve(string $query, int $topK = 15, ?string $documentFilter = null): array
     {
         // Generar embedding de la pregunta
         $queryVector = $this->embeddings->embed($query);
