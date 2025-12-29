@@ -1,7 +1,9 @@
 <?php
 require_once __DIR__ . '/../src/App/bootstrap.php';
+require_once __DIR__ . '/../src/Repos/UserFeatureAccessRepo.php';
 
 use App\Session;
+use Repos\UserFeatureAccessRepo;
 
 Session::start();
 $user = Session::user();
@@ -9,6 +11,11 @@ if (!$user) {
     header('Location: /login.php');
     exit;
 }
+
+$accessRepo = new UserFeatureAccessRepo();
+$userId = (int)$user['id'];
+$hasImageGenAccess = $accessRepo->hasImageGenerationAccess($userId);
+
 $csrfToken = $_SESSION['csrf_token'] ?? '';
 $activeTab = 'conversations';
 $useTabsJs = true;
@@ -159,7 +166,7 @@ $headerShowLogo = true;
                     <button type="button" id="attach-btn-empty" class="p-2 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-lg transition-smooth" title="Adjuntar archivo (PDF o imagen)">
                       <i class="iconoir-attachment text-lg"></i>
                     </button>
-                    <button type="button" id="image-mode-btn-empty" class="p-2 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-lg transition-smooth" title="Generar imagen con nanobanana 🍌">
+                    <button type="button" id="image-mode-btn-empty" class="<?php echo $hasImageGenAccess ? '' : 'hidden'; ?> p-2 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-lg transition-smooth" title="Generar imagen con nanobanana 🍌">
                       <i class="iconoir-media-image text-lg"></i>
                     </button>
                   </div>
@@ -190,6 +197,7 @@ $headerShowLogo = true;
                 </div>
                 
                 <div class="space-y-2.5">
+                  <?php if ($accessRepo->hasVoiceAccess($userId, 'lex')): ?>
                   <!-- Lex - Activo -->
                   <button class="voice-option w-full p-4 bg-white/60 hover:bg-white border border-slate-200/80 hover:border-rose-300 rounded-2xl transition-smooth text-left group hover:shadow-md" data-voice="lex">
                     <div class="flex items-center gap-3">
@@ -201,6 +209,7 @@ $headerShowLogo = true;
                       <i class="iconoir-arrow-right text-slate-300 group-hover:text-rose-500 group-hover:translate-x-1 transition-smooth"></i>
                     </div>
                   </button>
+                  <?php endif; ?>
 
                   <!-- Cubo - Próximamente -->
                   <div class="w-full p-4 bg-white/40 border border-slate-200/80 rounded-2xl opacity-60">
@@ -248,6 +257,7 @@ $headerShowLogo = true;
                 </div>
                 
                 <div class="space-y-2.5">
+                  <?php if ($accessRepo->hasGestureAccess($userId, 'write-article')): ?>
                   <button class="gesture-option w-full p-4 bg-white/60 hover:bg-white border border-slate-200/80 hover:border-[#23AAC5]/50 rounded-2xl transition-smooth text-left group hover:shadow-md" data-gesture="write-article">
                     <div class="flex items-center gap-3">
                       <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#23AAC5] to-[#115c6c] flex items-center justify-center flex-shrink-0 shadow-sm group-hover:scale-110 transition-smooth">
@@ -260,7 +270,9 @@ $headerShowLogo = true;
                       <i class="iconoir-arrow-right text-slate-300 group-hover:text-[#23AAC5] group-hover:translate-x-1 transition-smooth"></i>
                     </div>
                   </button>
+                  <?php endif; ?>
 
+                  <?php if ($accessRepo->hasGestureAccess($userId, 'social-media')): ?>
                   <button class="gesture-option w-full p-4 bg-white/60 hover:bg-white border border-slate-200/80 hover:border-violet-400/50 rounded-2xl transition-smooth text-left group hover:shadow-md" data-gesture="social-media">
                     <div class="flex items-center gap-3">
                       <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-600 flex items-center justify-center flex-shrink-0 shadow-sm group-hover:scale-110 transition-smooth">
@@ -273,7 +285,9 @@ $headerShowLogo = true;
                       <i class="iconoir-arrow-right text-slate-300 group-hover:text-violet-500 group-hover:translate-x-1 transition-smooth"></i>
                     </div>
                   </button>
+                  <?php endif; ?>
 
+                  <?php if ($accessRepo->hasGestureAccess($userId, 'podcast-from-article')): ?>
                   <button class="gesture-option w-full p-4 bg-white/60 hover:bg-white border border-slate-200/80 hover:border-rose-400/50 rounded-2xl transition-smooth text-left group hover:shadow-md" data-gesture="podcast-from-article">
                     <div class="flex items-center gap-3">
                       <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 to-orange-500 flex items-center justify-center flex-shrink-0 shadow-sm group-hover:scale-110 transition-smooth">
@@ -286,6 +300,7 @@ $headerShowLogo = true;
                       <i class="iconoir-arrow-right text-slate-300 group-hover:text-rose-500 group-hover:translate-x-1 transition-smooth"></i>
                     </div>
                   </button>
+                  <?php endif; ?>
 
                   
 
@@ -346,7 +361,7 @@ $headerShowLogo = true;
               <button type="button" id="attach-btn" class="p-2 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-lg transition-smooth" title="Adjuntar archivo (PDF o imagen)">
                 <i class="iconoir-attachment text-lg"></i>
               </button>
-              <button type="button" id="image-mode-btn" class="p-2 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-lg transition-smooth" title="Generar imagen con nanobanana 🍌">
+              <button type="button" id="image-mode-btn" class="<?php echo $hasImageGenAccess ? '' : 'hidden'; ?> p-2 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-lg transition-smooth" title="Generar imagen con nanobanana 🍌">
                 <i class="iconoir-media-image text-lg"></i>
               </button>
             </div>

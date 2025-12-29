@@ -232,4 +232,38 @@ $pageTitle = $pageTitle ?? 'Ebonia — IA Corporativa';
       40% { opacity: 1; transform: scale(1); }
     }
   </style>
+
+  <!-- Modal Error de Acceso -->
+  <div id="access-denied-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 text-center animate-float">
+      <div class="w-20 h-20 rounded-2xl bg-red-50 flex items-center justify-center mx-auto mb-6">
+        <i class="iconoir-warning-triangle text-4xl text-red-500"></i>
+      </div>
+      <h3 class="text-2xl font-bold text-slate-900 mb-3">Acceso restringido</h3>
+      <p class="text-slate-600 mb-8">
+        No tienes permiso para acceder a esta funcionalidad. Si crees que se trata de un error, contacta con <a href="mailto:it@ebone.es" class="text-[#23AAC5] font-semibold hover:underline">it@ebone.es</a>.
+      </p>
+      <button onclick="closeAccessModal()" class="w-full py-3.5 px-6 rounded-xl bg-slate-900 text-white font-semibold hover:bg-slate-800 transition-smooth shadow-lg">
+        Entendido
+      </button>
+    </div>
+  </div>
+
+  <script>
+    function closeAccessModal() {
+      const modal = document.getElementById('access-denied-modal');
+      modal.classList.add('hidden');
+      // Limpiar URL sin recargar
+      const url = new URL(window.location);
+      url.searchParams.delete('error');
+      window.history.replaceState({}, '', url);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('error') === 'no_access') {
+        document.getElementById('access-denied-modal').classList.remove('hidden');
+      }
+    });
+  </script>
 </head>

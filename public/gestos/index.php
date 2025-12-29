@@ -1,7 +1,9 @@
 <?php
 require_once __DIR__ . '/../../src/App/bootstrap.php';
+require_once __DIR__ . '/../../src/Repos/UserFeatureAccessRepo.php';
 
 use App\Session;
+use Repos\UserFeatureAccessRepo;
 
 Session::start();
 $user = Session::user();
@@ -9,6 +11,10 @@ if (!$user) {
     header('Location: /login.php');
     exit;
 }
+
+$accessRepo = new UserFeatureAccessRepo();
+$userId = (int)$user['id'];
+
 $csrfToken = $_SESSION['csrf_token'] ?? '';
 $activeTab = 'gestures';
 
