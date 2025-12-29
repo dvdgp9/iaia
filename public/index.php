@@ -1069,8 +1069,9 @@ $headerShowLogo = true;
               currentConversationId = null;
               messagesEl.innerHTML = '';
               updateConvTitle(null);
-              chatEmptyState?.classList.remove('hidden');
+              emptyState?.classList.remove('hidden');
               messagesEl.classList.add('hidden');
+              chatFooter.classList.add('hidden');
             }
             await loadFolders();
             await loadConversations();
