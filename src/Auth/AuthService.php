@@ -36,6 +36,7 @@ class AuthService {
             'department_id' => $row['department_id'] ? (int)$row['department_id'] : null,
             'department_name' => $row['department_name'] ?? null,
             'roles' => $roles,
+            'is_superadmin' => (bool)$row['is_superadmin'],
         ];
         Session::login($user);
         return $user;
