@@ -180,14 +180,22 @@ $generatedImages = $svc->getLastImages();
 $imagesToSave = null;
 $savedFileIds = [];
 if ($generatedImages && !empty($generatedImages)) {
-    // Deduplicar por URL
+    // Deduplicar por URL (normalizada)
     $seen = [];
     $unique = [];
     foreach ($generatedImages as $img) {
         $url = $img['image_url']['url'] ?? ($img['imageUrl']['url'] ?? null);
         if (!$url) continue;
-        if (isset($seen[$url])) continue;
-        $seen[$url] = true;
+        
+        // Normalizar URL para evitar duplicados por query strings o variaciones menores
+        $normalizedUrl = $url;
+        if (strpos($url, 'data:') !== 0) {
+            $parsed = parse_url($url);
+            $normalizedUrl = ($parsed['scheme'] ?? 'https') . '://' . ($parsed['host'] ?? '') . ($parsed['path'] ?? '');
+        }
+        
+        if (isset($seen[$normalizedUrl])) continue;
+        $seen[$normalizedUrl] = true;
         $unique[] = $url;
     }
 
@@ -195,7 +203,7 @@ if ($generatedImages && !empty($generatedImages)) {
     $imagesNormalized = [];
     $storagePath = ChatFilesRepo::getStoragePath();
     if (!is_dir($storagePath)) { @mkdir($storagePath, 0755, true); }
-    $seenHashes = []; // Deduplicar por contenido binario
+    $seenHashes = []; // Deduplicar por contenido binario real
     foreach ($unique as $idx => $url) {
         $binary = null; $mime = null; $ext = null; $origName = 'nanobanana-'.date('Ymd-His')."-$idx";
         if (strpos($url, 'data:') === 0) {
@@ -223,7 +231,7 @@ if ($generatedImages && !empty($generatedImages)) {
 
         if (!$binary) { continue; }
         
-        // Deduplicar por hash del contenido
+        // Deduplicar por hash del contenido real (imprescindible si OpenRouter devuelve URLs distintas para misma imagen)
         $hash = hash('sha256', $binary);
         if (isset($seenHashes[$hash])) { continue; }
         $seenHashes[$hash] = true;

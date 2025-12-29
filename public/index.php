@@ -1423,6 +1423,9 @@ $headerShowLogo = true;
         fileInputEmpty.value = '';
         filePreviewEmpty.classList.add('hidden');
       }
+      
+      // Si el usuario clica y ya hay texto, o para forzar el foco
+      inputEmptyEl.focus();
     });
 
     // Asegurar estado visual inicial correcto (texto) para los botones de imagen en empty state
