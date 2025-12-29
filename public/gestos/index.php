@@ -1,9 +1,7 @@
 <?php
 require_once __DIR__ . '/../../src/App/bootstrap.php';
-require_once __DIR__ . '/../../src/Repos/UserFeatureAccessRepo.php';
 
 use App\Session;
-use Repos\UserFeatureAccessRepo;
 
 Session::start();
 $user = Session::user();
@@ -11,10 +9,6 @@ if (!$user) {
     header('Location: /login.php');
     exit;
 }
-
-$accessRepo = new UserFeatureAccessRepo();
-$userId = (int)$user['id'];
-
 $csrfToken = $_SESSION['csrf_token'] ?? '';
 $activeTab = 'gestures';
 
@@ -54,6 +48,7 @@ $headerIconColor = 'from-cyan-500 to-teal-600';
           <!-- Gestos grid -->
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-8">
             
+            <?php if ($accessRepo->hasGestureAccess($userId, 'write-article')): ?>
             <!-- Gesto: Escribir contenido -->
             <a href="/gestos/escribir-articulo.php" class="glass-strong rounded-3xl p-6 border border-slate-200/50 card-hover block">
               <div class="flex items-start gap-4 mb-4">
@@ -78,7 +73,9 @@ $headerIconColor = 'from-cyan-500 to-teal-600';
                 </div>
               </div>
             </a>
+            <?php endif; ?>
 
+            <?php if ($accessRepo->hasGestureAccess($userId, 'social-media')): ?>
             <!-- Gesto: Redes Sociales -->
             <a href="/gestos/redes-sociales.php" class="glass-strong rounded-3xl p-6 border border-slate-200/50 card-hover block">
               <div class="flex items-start gap-4 mb-4">
@@ -103,7 +100,9 @@ $headerIconColor = 'from-cyan-500 to-teal-600';
                 </div>
               </div>
             </a>
+            <?php endif; ?>
 
+            <?php if ($accessRepo->hasGestureAccess($userId, 'podcast-from-article')): ?>
             <!-- Gesto: Podcast desde artículo -->
             <a href="/gestos/podcast-articulo.php" class="glass-strong rounded-3xl p-6 border border-slate-200/50 card-hover block">
               <div class="flex items-start gap-4 mb-4">
@@ -128,6 +127,7 @@ $headerIconColor = 'from-cyan-500 to-teal-600';
                 </div>
               </div>
             </a>
+            <?php endif; ?>
 
             <!-- Gesto: Analizar documento (próximamente) -->
             <div class="glass-strong rounded-3xl p-6 border border-slate-200/50 opacity-60">
