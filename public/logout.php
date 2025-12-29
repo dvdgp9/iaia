@@ -3,6 +3,6 @@ require_once __DIR__ . '/../src/App/bootstrap.php';
 use App\Session;
 
 Session::start();
-Session::destroy();
+Session::logout();
 header('Location: /login.php');
 exit;
