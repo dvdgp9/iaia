@@ -23,7 +23,7 @@
   
   const progressPanel = document.getElementById('progress-panel');
   const errorPanel = document.getElementById('error-panel');
-  const resultPlaceholder = document.getElementById('result-placeholder');
+  const podcastInputSection = document.getElementById('podcast-input-section');
   const podcastResult = document.getElementById('podcast-result');
   
   const progressText = document.getElementById('progress-text');
@@ -412,7 +412,7 @@
   function showResult() {
     if (progressPanel) progressPanel.classList.add('hidden');
     if (errorPanel) errorPanel.classList.add('hidden');
-    if (resultPlaceholder) resultPlaceholder.classList.add('hidden');
+    if (podcastInputSection) podcastInputSection.classList.add('hidden');
     if (podcastResult) podcastResult.classList.remove('hidden');
     if (generateBtn) {
       generateBtn.disabled = false;
@@ -423,6 +423,7 @@
   function showError(message) {
     if (progressPanel) progressPanel.classList.add('hidden');
     if (errorPanel) errorPanel.classList.remove('hidden');
+    if (podcastInputSection) podcastInputSection.classList.remove('hidden');
     if (errorMessage) errorMessage.textContent = message;
     if (generateBtn) {
       generateBtn.disabled = false;
@@ -433,7 +434,7 @@
   function resetUI() {
     if (progressPanel) progressPanel.classList.add('hidden');
     if (errorPanel) errorPanel.classList.add('hidden');
-    if (resultPlaceholder) resultPlaceholder.classList.remove('hidden');
+    if (podcastInputSection) podcastInputSection.classList.remove('hidden');
     if (podcastResult) podcastResult.classList.add('hidden');
     if (generateBtn) {
       generateBtn.disabled = false;
@@ -606,6 +607,11 @@
       podcastSummary.textContent = outputData.summary || '';
       podcastScript.innerHTML = mdToHtml(formatScript(outputData.script || ''));
       
+      // Resaltar en historial
+      document.querySelectorAll('.history-item').forEach(el => el.classList.remove('active'));
+      const activeItem = document.querySelector(`.history-item[data-id="${id}"]`);
+      if (activeItem) activeItem.classList.add('active');
+
       // Audio
       if (outputData.audio_url) {
         audioPlayer.src = outputData.audio_url;
@@ -705,4 +711,5 @@
     if (diffDays < 7) return `Hace ${diffDays}d`;
     return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
   }
+  window.resetUI = resetUI;
 })();

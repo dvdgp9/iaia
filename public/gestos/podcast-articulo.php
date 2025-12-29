@@ -45,12 +45,23 @@ $headerDrawerId = 'podcast-history-drawer';
     .audio-player-warm {
       background: linear-gradient(135deg, #7c2d12 0%, #c2410c 100%);
     }
+    .custom-audio-player::-webkit-media-controls-enclosure {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
     @keyframes pulse-wave {
-      0%, 100% { transform: scaleY(0.5); }
-      50% { transform: scaleY(1); }
+      0%, 100% { transform: scaleY(0.5); opacity: 0.5; }
+      50% { transform: scaleY(1); opacity: 1; }
     }
     .wave-bar {
       animation: pulse-wave 1s ease-in-out infinite;
+    }
+    .history-item.active {
+      background-color: rgba(249, 115, 22, 0.05);
+      border-left: 3px solid #f97316;
+    }
+    .history-item.active p {
+      color: #c2410c;
+      font-weight: 600;
     }
     .wave-bar:nth-child(2) { animation-delay: 0.1s; }
     .wave-bar:nth-child(3) { animation-delay: 0.2s; }
@@ -107,7 +118,7 @@ $headerDrawerId = 'podcast-history-drawer';
           </div>
 
           <!-- Input Section -->
-          <section class="glass-strong rounded-2xl p-6 border border-slate-200/50">
+          <section id="podcast-input-section" class="glass-strong rounded-2xl p-6 border border-slate-200/50">
             <form id="podcast-form" class="space-y-5">
               
               <!-- Fuente del artículo -->
@@ -202,43 +213,60 @@ $headerDrawerId = 'podcast-history-drawer';
           <!-- Result Section -->
           <section id="podcast-result" class="hidden space-y-4">
             
+            <!-- Result Header -->
+            <div class="flex items-center justify-between mb-2">
+              <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                <i class="iconoir-check-circle text-green-500"></i>
+                Podcast generado
+              </h2>
+              <button type="button" onclick="resetUI()" class="text-sm font-medium text-orange-600 hover:text-orange-700 flex items-center gap-1.5 px-3 py-1.5 bg-orange-50 rounded-lg transition-colors">
+                <i class="iconoir-plus"></i>
+                <span>Nuevo podcast</span>
+              </button>
+            </div>
+            
             <!-- Audio Player -->
-            <div class="audio-player-warm rounded-2xl p-6 text-white">
-              <div class="flex items-start gap-4 mb-4">
-                <div class="w-16 h-16 bg-white/10 rounded-xl flex items-center justify-center shrink-0">
+            <div class="audio-player-warm rounded-2xl p-6 text-white shadow-xl shadow-orange-900/10">
+              <div class="flex items-start gap-4 mb-6">
+                <div class="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center shrink-0 shadow-inner">
                   <i class="iconoir-podcast text-3xl"></i>
                 </div>
                 <div class="flex-1 min-w-0">
-                  <h3 id="podcast-title" class="font-semibold text-lg truncate">Podcast generado</h3>
-                  <p id="podcast-summary" class="text-sm text-white/70 line-clamp-2 mt-1"></p>
+                  <h3 id="podcast-title" class="font-bold text-xl truncate tracking-tight">Podcast generado</h3>
+                  <p id="podcast-summary" class="text-sm text-white/80 line-clamp-2 mt-1 font-medium leading-relaxed"></p>
                 </div>
               </div>
               
-              <audio id="audio-player" controls class="w-full mb-4" style="filter: invert(1) hue-rotate(180deg);"></audio>
+              <audio id="audio-player" controls class="w-full mb-6 custom-audio-player" style="filter: invert(1) hue-rotate(180deg) opacity(0.9);"></audio>
               
-              <div class="flex items-center justify-end text-sm">
-                <button id="download-btn" class="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors flex items-center gap-2">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2 text-xs text-white/60">
+                  <i class="iconoir-voice-square"></i>
+                  <span>Presentado por Iris y Bruno</span>
+                </div>
+                <button id="download-btn" class="px-5 py-2.5 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-xl transition-all flex items-center gap-2 font-semibold text-sm shadow-sm border border-white/10">
                   <i class="iconoir-download"></i> Descargar
                 </button>
               </div>
             </div>
 
             <!-- Script Section -->
-            <details class="glass-strong rounded-xl border border-slate-200/50 overflow-hidden">
-              <summary class="px-5 py-4 cursor-pointer hover:bg-slate-50 transition-colors flex items-center gap-2">
-                <i class="iconoir-page text-orange-500"></i>
-                <span class="font-medium text-slate-700">Ver guion del podcast</span>
+            <details class="glass-strong rounded-2xl border border-slate-200/50 overflow-hidden shadow-sm">
+              <summary class="px-6 py-4 cursor-pointer hover:bg-slate-50 transition-colors flex items-center justify-between group">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center">
+                    <i class="iconoir-page text-orange-600"></i>
+                  </div>
+                  <span class="font-bold text-slate-700">Transcripción y Guion</span>
+                </div>
+                <i class="iconoir-nav-arrow-down text-slate-400 group-hover:text-orange-500 transition-transform duration-300"></i>
               </summary>
-              <div class="px-5 pb-5 pt-2">
-                <pre id="podcast-script" class="text-sm text-slate-600 whitespace-pre-wrap font-sans leading-relaxed max-h-96 overflow-y-auto"></pre>
+              <div class="px-6 pb-6 pt-2">
+                <div class="bg-white/50 rounded-xl p-4 border border-slate-100">
+                  <pre id="podcast-script" class="text-sm text-slate-600 whitespace-pre-wrap font-sans leading-relaxed max-h-[500px] overflow-y-auto"></pre>
+                </div>
               </div>
             </details>
-
-            <!-- New Podcast Button -->
-            <button type="button" id="new-podcast-btn" class="w-full py-3 border-2 border-orange-200 text-orange-600 font-semibold rounded-xl hover:bg-orange-50 transition-all flex items-center justify-center gap-2">
-              <i class="iconoir-plus"></i>
-              <span>Crear otro podcast</span>
-            </button>
           </section>
 
         </div>
