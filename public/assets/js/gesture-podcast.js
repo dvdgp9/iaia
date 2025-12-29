@@ -296,19 +296,11 @@
       showError('No se recibió URL del audio');
       return;
     }
-
-    // Fetch blob para descarga
-    try {
-      const blobResp = await fetch(audioUrl, { credentials: 'include' });
-      lastAudioBlob = await blobResp.blob();
-    } catch (e) {
-      lastAudioBlob = null;
-    }
     
     lastAudioUrl = audioUrl;
     lastTitle = outputData.title || 'Podcast';
 
-    // Update UI
+    // Update UI inmediata
     audioPlayer.src = audioUrl;
     podcastTitle.textContent = outputData.title || 'Podcast generado';
     podcastSummary.textContent = outputData.summary || '';
@@ -319,6 +311,31 @@
     
     // Notificación toast
     showToast('🎙️ ¡Tu podcast está listo!', 'success');
+
+    // Fetch blob para descarga en background (no bloquea la UI)
+    if (downloadBtn) {
+      downloadBtn.disabled = true;
+      downloadBtn.classList.add('opacity-50', 'cursor-wait');
+      downloadBtn.innerHTML = '<i class="iconoir-refresh animate-spin text-xs"></i> Preparando...';
+    }
+
+    try {
+      const blobResp = await fetch(audioUrl, { credentials: 'include' });
+      lastAudioBlob = await blobResp.blob();
+      if (downloadBtn) {
+        downloadBtn.disabled = false;
+        downloadBtn.classList.remove('opacity-50', 'cursor-wait');
+        downloadBtn.innerHTML = '<i class="iconoir-download"></i> Descargar';
+      }
+    } catch (e) {
+      console.error('Error al precargar blob tras generación:', e);
+      lastAudioBlob = null;
+      if (downloadBtn) {
+        downloadBtn.disabled = false;
+        downloadBtn.classList.remove('opacity-50', 'cursor-wait');
+        downloadBtn.innerHTML = '<i class="iconoir-download"></i> Descargar';
+      }
+    }
   }
 
   // Mostrar hint de que puede navegar
@@ -618,18 +635,38 @@
         lastAudioUrl = outputData.audio_url;
         lastTitle = exec.title || 'Podcast';
         
-        // Fetch blob para descarga
-        try {
-          const blobResp = await fetch(outputData.audio_url, { credentials: 'include' });
-          lastAudioBlob = await blobResp.blob();
-        } catch (e) {
-          lastAudioBlob = null;
+        // Mostrar resultado inmediatamente mientras el audio carga en background
+        showResult();
+
+        // Fetch blob para descarga en background (no bloquea la UI)
+        if (downloadBtn) {
+          downloadBtn.disabled = true;
+          downloadBtn.classList.add('opacity-50', 'cursor-wait');
+          downloadBtn.innerHTML = '<i class="iconoir-refresh animate-spin text-xs"></i> Preparando...';
         }
+
+        fetch(outputData.audio_url, { credentials: 'include' })
+          .then(resp => resp.blob())
+          .then(blob => {
+            lastAudioBlob = blob;
+            if (downloadBtn) {
+              downloadBtn.disabled = false;
+              downloadBtn.classList.remove('opacity-50', 'cursor-wait');
+              downloadBtn.innerHTML = '<i class="iconoir-download"></i> Descargar';
+            }
+          })
+          .catch(e => {
+            console.error('Error al precargar blob:', e);
+            lastAudioBlob = null;
+            if (downloadBtn) {
+              downloadBtn.disabled = false;
+              downloadBtn.classList.remove('opacity-50', 'cursor-wait');
+              downloadBtn.innerHTML = '<i class="iconoir-download"></i> Descargar';
+            }
+          });
+      } else {
+        showResult();
       }
-
-      // Sin etiqueta de duración adicional
-
-      showResult();
     } catch (err) {
       alert('Error al cargar el podcast');
     }
