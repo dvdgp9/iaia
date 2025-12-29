@@ -1,7 +1,7 @@
 <?php
 namespace Repos;
 
-use App\Database;
+use App\DB;
 use PDO;
 
 class UserFeatureAccessRepo
@@ -10,7 +10,7 @@ class UserFeatureAccessRepo
 
     public function __construct()
     {
-        $this->pdo = Database::getInstance();
+        $this->pdo = DB::pdo();
     }
 
     /**
