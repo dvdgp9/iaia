@@ -161,14 +161,17 @@ $headerShowLogo = true;
                     </button>
                   </div>
                   
-                  <!-- Fila inferior: botones de acción -->
-                  <div class="flex items-center gap-1">
-                    <button type="button" id="attach-btn-empty" class="p-2 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-lg transition-smooth" title="Adjuntar archivo (PDF o imagen)">
-                      <i class="iconoir-attachment text-lg"></i>
-                    </button>
-                    <button type="button" id="image-mode-btn-empty" class="<?php echo $hasImageGenAccess ? '' : 'hidden'; ?> p-2 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-lg transition-smooth" title="Generar imagen con nanobanana 🍌">
-                      <i class="iconoir-media-image text-lg"></i>
-                    </button>
+                  <div class="flex items-center justify-between px-1">
+                    <!-- Fila inferior: botones de acción -->
+                    <div class="flex items-center gap-1">
+                      <button type="button" id="attach-btn-empty" class="p-2 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-lg transition-smooth" title="Adjuntar archivo (PDF o imagen)">
+                        <i class="iconoir-attachment text-lg"></i>
+                      </button>
+                      <button type="button" id="image-mode-btn-empty" class="<?php echo $hasImageGenAccess ? '' : 'hidden'; ?> p-2 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-lg transition-smooth" title="Generar imagen con nanobanana 🍌">
+                        <i class="iconoir-media-image text-lg"></i>
+                      </button>
+                    </div>
+                    <span class="text-[10px] text-slate-400 font-medium opacity-50 select-none pr-1">⌘ + Enter para enviar</span>
                   </div>
                 </form>
               </div>
@@ -356,14 +359,17 @@ $headerShowLogo = true;
               </button>
             </div>
             
-            <!-- Fila inferior: botones de acción -->
-            <div class="flex items-center gap-1">
-              <button type="button" id="attach-btn" class="p-2 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-lg transition-smooth" title="Adjuntar archivo (PDF o imagen)">
-                <i class="iconoir-attachment text-lg"></i>
-              </button>
-              <button type="button" id="image-mode-btn" class="<?php echo $hasImageGenAccess ? '' : 'hidden'; ?> p-2 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-lg transition-smooth" title="Generar imagen con nanobanana 🍌">
-                <i class="iconoir-media-image text-lg"></i>
-              </button>
+            <div class="flex items-center justify-between px-1">
+              <!-- Fila inferior: botones de acción -->
+              <div class="flex items-center gap-1">
+                <button type="button" id="attach-btn" class="p-2 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-lg transition-smooth" title="Adjuntar archivo (PDF o imagen)">
+                  <i class="iconoir-attachment text-lg"></i>
+                </button>
+                <button type="button" id="image-mode-btn" class="<?php echo $hasImageGenAccess ? '' : 'hidden'; ?> p-2 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-lg transition-smooth" title="Generar imagen con nanobanana 🍌">
+                  <i class="iconoir-media-image text-lg"></i>
+                </button>
+              </div>
+              <span class="text-[10px] text-slate-400 font-medium opacity-50 select-none pr-1">⌘ + Enter para enviar</span>
             </div>
           </div>
         </form>
@@ -440,8 +446,20 @@ $headerShowLogo = true;
     const chatFooter = document.getElementById('chat-footer');
     const inputEl = document.getElementById('chat-input');
     const inputEmptyEl = document.getElementById('chat-input-empty');
+
     const formEl = document.getElementById('chat-form');
     const formEmptyEl = document.getElementById('chat-form-empty');
+
+    function handleCommandEnter(e, form) {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault();
+        form.dispatchEvent(new Event('submit'));
+      }
+    }
+
+    inputEl.addEventListener('keydown', (e) => handleCommandEnter(e, formEl));
+    inputEmptyEl.addEventListener('keydown', (e) => handleCommandEnter(e, formEmptyEl));
+
     const logoutBtn = document.getElementById('logout-btn');
     const sessionUser = document.getElementById('session-user');
     const sessionMeta = document.getElementById('session-meta');
