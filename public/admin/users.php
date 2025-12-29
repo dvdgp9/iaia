@@ -34,6 +34,47 @@ if (!$isSuperadmin) {
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
     ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    /* Toggle switch moderno */
+    .toggle-switch {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      cursor: pointer;
+    }
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: #e2e8f0;
+      border-radius: 24px;
+      transition: all 0.2s ease;
+    }
+    .toggle-slider:before {
+      content: "";
+      position: absolute;
+      left: 2px;
+      top: 2px;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+    .toggle-switch input:checked + .toggle-slider {
+      background: linear-gradient(135deg, #23AAC5 0%, #115c6c 100%);
+    }
+    .toggle-switch input:checked + .toggle-slider:before {
+      transform: translateX(20px);
+    }
+    .toggle-switch input:disabled + .toggle-slider {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-900 overflow-hidden">
@@ -214,10 +255,89 @@ if (!$isSuperadmin) {
     </div>
   </div>
 
+  <!-- Modal permisos -->
+  <div id="permissions-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full p-6 max-h-[90vh] overflow-hidden flex flex-col">
+      <div class="flex items-center justify-between mb-6 flex-shrink-0">
+        <div class="flex items-center gap-4">
+          <div id="perm-user-avatar" class="h-12 w-12 rounded-full bg-gradient-to-br from-[#23AAC5] to-[#115c6c] flex items-center justify-center text-white font-bold text-lg"></div>
+          <div>
+            <h3 class="text-lg font-semibold text-slate-800" id="perm-user-name">Permisos de usuario</h3>
+            <p id="perm-user-email" class="text-sm text-slate-500"></p>
+          </div>
+        </div>
+        <button id="close-permissions-btn" class="p-1 text-slate-400 hover:text-slate-600 transition-colors">
+          <i class="iconoir-xmark text-xl"></i>
+        </button>
+      </div>
+
+      <div id="perm-superadmin-notice" class="hidden mb-6 text-sm text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 flex-shrink-0">
+        <i class="iconoir-info-circle mr-1"></i>
+        Los superadministradores tienen acceso a todas las funcionalidades automáticamente.
+      </div>
+
+      <div class="flex-1 overflow-y-auto pr-2 space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Gestos -->
+          <div class="bg-slate-50 rounded-xl p-4">
+            <div class="flex items-center justify-between mb-4">
+              <h4 class="font-bold text-slate-800 flex items-center gap-2">
+                <i class="iconoir-magic-wand text-[#23AAC5]"></i> Gestos
+              </h4>
+              <div class="flex gap-1">
+                <button onclick="toggleAllOfType('gesture', true)" class="text-[10px] px-1.5 py-0.5 bg-[#23AAC5]/10 text-[#23AAC5] rounded-md hover:bg-[#23AAC5]/20 font-medium">All</button>
+                <button onclick="toggleAllOfType('gesture', false)" class="text-[10px] px-1.5 py-0.5 bg-slate-200 text-slate-600 rounded-md hover:bg-slate-300 font-medium">None</button>
+              </div>
+            </div>
+            <div id="gestures-list" class="space-y-3"></div>
+          </div>
+
+          <!-- Voces -->
+          <div class="bg-slate-50 rounded-xl p-4">
+            <div class="flex items-center justify-between mb-4">
+              <h4 class="font-bold text-slate-800 flex items-center gap-2">
+                <i class="iconoir-voice-square text-violet-500"></i> Voces
+              </h4>
+              <div class="flex gap-1">
+                <button onclick="toggleAllOfType('voice', true)" class="text-[10px] px-1.5 py-0.5 bg-violet-100 text-violet-600 rounded-md hover:bg-violet-200 font-medium">All</button>
+                <button onclick="toggleAllOfType('voice', false)" class="text-[10px] px-1.5 py-0.5 bg-slate-200 text-slate-600 rounded-md hover:bg-slate-300 font-medium">None</button>
+              </div>
+            </div>
+            <div id="voices-list" class="space-y-3"></div>
+          </div>
+
+          <!-- Features -->
+          <div class="bg-slate-50 rounded-xl p-4">
+            <div class="mb-4">
+              <h4 class="font-bold text-slate-800 flex items-center gap-2">
+                <i class="iconoir-sparks text-amber-500"></i> Funcionalidades
+              </h4>
+            </div>
+            <div id="features-list" class="space-y-3"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 pt-4 border-t border-slate-100 flex justify-end flex-shrink-0">
+        <button id="close-perm-modal-btn" class="px-6 py-2 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 transition-colors text-sm">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast de guardado -->
+  <div id="save-toast" class="hidden fixed bottom-6 right-6 bg-slate-800 text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-3 z-[100]">
+    <div class="h-5 w-5 animate-spin rounded-full border-2 border-white border-r-transparent"></div>
+    <span class="text-sm font-medium">Guardando...</span>
+  </div>
+
   <script>
     const csrf = '<?php echo $_SESSION['csrf_token'] ?? ''; ?>';
     let allUsers = [];
     let allDepartments = [];
+    let allFeatures = { gesture: [], voice: [], feature: [] };
+    let selectedUser = null;
     let isEditMode = false;
     
     // API helper
@@ -234,6 +354,25 @@ if (!$isSuperadmin) {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data?.error?.message || res.statusText);
       return data;
+    }
+
+    // Cargar datos iniciales (usuarios, departamentos y catálogo de features)
+    async function init() {
+      await Promise.all([
+        loadUsers(),
+        loadDepartments(),
+        loadFeatures()
+      ]);
+    }
+
+    // Cargar catálogo de features
+    async function loadFeatures() {
+      try {
+        const data = await api('/api/admin/features/list.php');
+        allFeatures = data.features || { gesture: [], voice: [], feature: [] };
+      } catch (err) {
+        console.error('Error al cargar catálogo de features:', err);
+      }
     }
 
     // Cargar usuarios
@@ -333,6 +472,10 @@ if (!$isSuperadmin) {
             <td class="px-6 py-4 text-sm text-slate-600">${lastLogin}</td>
             <td class="px-6 py-4 text-right">
               <div class="flex items-center justify-end gap-2">
+                <button onclick="openPermissions(${u.id})" class="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors">
+                  <i class="iconoir-lock"></i>
+                  <span>Permisos</span>
+                </button>
                 <button onclick="editUser(${u.id})" class="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-[#23AAC5] hover:text-[#115c6c] hover:bg-[#23AAC5]/5 rounded-lg transition-colors">
                   <i class="iconoir-edit-pencil"></i>
                   <span>Editar</span>
@@ -511,9 +654,160 @@ if (!$isSuperadmin) {
       return div.innerHTML;
     }
 
+    // Permisos
+    window.openPermissions = function(userId) {
+      selectedUser = allUsers.find(u => u.id === userId);
+      if (!selectedUser) return;
+
+      document.getElementById('perm-user-avatar').textContent = 
+        (selectedUser.first_name[0] + selectedUser.last_name[0]).toUpperCase();
+      document.getElementById('perm-user-name').textContent = 
+        `${selectedUser.first_name} ${selectedUser.last_name}`;
+      document.getElementById('perm-user-email').textContent = selectedUser.email;
+
+      const isSuperadmin = !!selectedUser.is_superadmin;
+      document.getElementById('perm-superadmin-notice').classList.toggle('hidden', !isSuperadmin);
+
+      renderPermissionsList('gesture', 'gestures-list');
+      renderPermissionsList('voice', 'voices-list');
+      renderPermissionsList('feature', 'features-list');
+
+      document.getElementById('permissions-modal').classList.remove('hidden');
+    };
+
+    function renderPermissionsList(type, containerId) {
+      const container = document.getElementById(containerId);
+      const features = allFeatures[type] || [];
+      const isSuperadmin = !!selectedUser.is_superadmin;
+
+      if (features.length === 0) {
+        container.innerHTML = '<p class="text-xs text-slate-400 text-center py-2">No disponible</p>';
+        return;
+      }
+
+      // Cargar permisos específicos del usuario si no los tiene (esto asume que /api/admin/features/list.php devuelve access)
+      // Si el endpoint original de users no devuelve access, lo buscamos o esperamos que el repo lo traiga
+      
+      container.innerHTML = features.map(f => {
+        const key = `${type}:${f.feature_slug}`;
+        // Buscamos si el usuario tiene acceso habilitado en su mapa de acceso
+        // NOTA: Necesitamos asegurarnos de que allUsers traiga el mapa de 'access'
+        const isEnabled = isSuperadmin || (selectedUser.access && selectedUser.access[key] === true);
+        const disabled = isSuperadmin ? 'disabled' : '';
+
+        return `
+          <div class="flex items-center justify-between gap-3 p-2 bg-white rounded-lg border border-slate-100">
+            <div class="min-w-0">
+              <div class="text-xs font-semibold text-slate-800 truncate">${escapeHtml(f.name)}</div>
+            </div>
+            <label class="toggle-switch transform scale-75 origin-right">
+              <input type="checkbox" 
+                     data-type="${type}" 
+                     data-slug="${f.feature_slug}"
+                     ${isEnabled ? 'checked' : ''} 
+                     ${disabled}
+                     onchange="togglePermission(this)">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.togglePermission = async function(checkbox) {
+      if (!selectedUser) return;
+      
+      const type = checkbox.dataset.type;
+      const slug = checkbox.dataset.slug;
+      const enabled = checkbox.checked;
+      
+      showSaveToast();
+      checkbox.disabled = true;
+      
+      try {
+        await api('/api/admin/features/update.php', {
+          method: 'POST',
+          body: {
+            user_id: selectedUser.id,
+            feature_type: type,
+            feature_slug: slug,
+            enabled: enabled
+          }
+        });
+        
+        const key = `${type}:${slug}`;
+        if (!selectedUser.access) selectedUser.access = {};
+        selectedUser.access[key] = enabled;
+        
+        hideSaveToast(true);
+      } catch (err) {
+        checkbox.checked = !enabled;
+        hideSaveToast(false, err.message);
+      } finally {
+        checkbox.disabled = false;
+      }
+    };
+
+    window.toggleAllOfType = async function(type, enable) {
+      if (!selectedUser || selectedUser.is_superadmin) return;
+      
+      showSaveToast();
+      const checkboxes = document.querySelectorAll(`#permissions-modal input[data-type="${type}"]`);
+      checkboxes.forEach(cb => cb.disabled = true);
+      
+      try {
+        const result = await api('/api/admin/features/bulk-update.php', {
+          method: 'POST',
+          body: {
+            user_id: selectedUser.id,
+            feature_type: type,
+            action: enable ? 'enable_all' : 'disable_all'
+          }
+        });
+        
+        selectedUser.access = result.access || {};
+        checkboxes.forEach(cb => {
+          const key = `${type}:${cb.dataset.slug}`;
+          cb.checked = selectedUser.access[key] === true;
+        });
+        
+        hideSaveToast(true);
+      } catch (err) {
+        hideSaveToast(false, err.message);
+      } finally {
+        checkboxes.forEach(cb => cb.disabled = false);
+      }
+    };
+
+    function showSaveToast() {
+      const toast = document.getElementById('save-toast');
+      toast.innerHTML = `<div class="h-5 w-5 animate-spin rounded-full border-2 border-white border-r-transparent"></div><span class="text-sm font-medium">Guardando...</span>`;
+      toast.classList.remove('hidden', 'bg-green-600', 'bg-red-600');
+      toast.classList.add('bg-slate-800');
+    }
+
+    function hideSaveToast(success, message = '') {
+      const toast = document.getElementById('save-toast');
+      if (success) {
+        toast.innerHTML = `<i class="iconoir-check text-lg"></i><span class="text-sm font-medium">Guardado</span>`;
+        toast.classList.replace('bg-slate-800', 'bg-green-600');
+      } else {
+        toast.innerHTML = `<i class="iconoir-warning-circle text-lg"></i><span class="text-sm font-medium">Error: ${escapeHtml(message)}</span>`;
+        toast.classList.replace('bg-slate-800', 'bg-red-600');
+      }
+      setTimeout(() => toast.classList.add('hidden'), 2000);
+    }
+
+    // Modales
+    [document.getElementById('close-permissions-btn'), document.getElementById('close-perm-modal-btn')].forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.getElementById('permissions-modal').classList.add('hidden');
+        selectedUser = null;
+      });
+    });
+
     // Cargar datos al inicio
-    loadUsers();
-    loadDepartments();
+    init();
   </script>
   
   <!-- Bottom Navigation (móvil) -->
