@@ -93,16 +93,7 @@ class UsersRepo {
             ORDER BY u.created_at DESC
         ');
         $stmt->execute();
-        $users = $stmt->fetchAll() ?: [];
-
-        // Inyectar permisos para cada usuario
-        $accessRepo = new \Repos\UserFeatureAccessRepo();
-        foreach ($users as &$user) {
-            $user['access'] = $accessRepo->getUserAccess((int)$user['id']);
-            $user['is_superadmin'] = (bool)$user['is_superadmin'];
-        }
-
-        return $users;
+        return $stmt->fetchAll() ?: [];
     }
 
     public function findById(int $userId): ?array
