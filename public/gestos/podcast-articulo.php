@@ -1,7 +1,9 @@
 <?php
 require_once __DIR__ . '/../../src/App/bootstrap.php';
+require_once __DIR__ . '/../../src/Repos/UserFeatureAccessRepo.php';
 
 use App\Session;
+use Repos\UserFeatureAccessRepo;
 
 Session::start();
 $user = Session::user();
@@ -9,6 +11,14 @@ if (!$user) {
     header('Location: /login.php');
     exit;
 }
+
+// Verificar acceso a este gesto
+$accessRepo = new UserFeatureAccessRepo();
+if (!$accessRepo->hasGestureAccess((int)$user['id'], 'podcast-from-article')) {
+    header('Location: /gestos/?error=no_access');
+    exit;
+}
+
 $csrfToken = $_SESSION['csrf_token'] ?? '';
 if (!$csrfToken) {
     try {

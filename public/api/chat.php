@@ -11,6 +11,7 @@ require_once __DIR__ . '/../../src/Repos/ConversationsRepo.php';
 require_once __DIR__ . '/../../src/Repos/MessagesRepo.php';
 require_once __DIR__ . '/../../src/Repos/ChatFilesRepo.php';
 require_once __DIR__ . '/../../src/Repos/UsageLogRepo.php';
+require_once __DIR__ . '/../../src/Repos/UserFeatureAccessRepo.php';
 
 use App\Response;
 use App\Session;
@@ -21,6 +22,7 @@ use Repos\ConversationsRepo;
 use Repos\MessagesRepo;
 use Repos\ChatFilesRepo;
 use Repos\UsageLogRepo;
+use Repos\UserFeatureAccessRepo;
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     Response::error('method_not_allowed', 'Sólo POST', 405);
@@ -36,6 +38,14 @@ $conversationId = isset($input['conversation_id']) ? (int)$input['conversation_i
 $file = $input['file'] ?? null;
 $fileId = isset($input['file_id']) ? (int)$input['file_id'] : null;
 $imageMode = !empty($input['image_mode']); // Modo generación de imágenes (nanobanana)
+
+// Verificar permiso de generación de imágenes si está activado el modo imagen
+if ($imageMode) {
+    $accessRepo = new UserFeatureAccessRepo();
+    if (!$accessRepo->hasImageGenerationAccess((int)$user['id'])) {
+        Response::error('forbidden', 'No tienes acceso a la generación de imágenes', 403);
+    }
+}
 
 // Opcional: permitir elegir modelo desde el cliente (formato: provider/model)
 $modelName = isset($input['model']) && $input['model'] !== ''

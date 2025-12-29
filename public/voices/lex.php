@@ -1,7 +1,9 @@
 <?php
 require_once __DIR__ . '/../../src/App/bootstrap.php';
+require_once __DIR__ . '/../../src/Repos/UserFeatureAccessRepo.php';
 
 use App\Session;
+use Repos\UserFeatureAccessRepo;
 
 Session::start();
 $user = Session::user();
@@ -9,6 +11,14 @@ if (!$user) {
     header('Location: /login.php');
     exit;
 }
+
+// Verificar acceso a esta voz
+$accessRepo = new UserFeatureAccessRepo();
+if (!$accessRepo->hasVoiceAccess((int)$user['id'], 'lex')) {
+    header('Location: /?error=no_access');
+    exit;
+}
+
 $csrfToken = $_SESSION['csrf_token'] ?? '';
 $activeTab = 'voices';
 $userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
