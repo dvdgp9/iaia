@@ -225,7 +225,12 @@ if (!$isSuperadmin) {
           <label class="text-sm font-medium text-slate-700 block mb-2">
             <span id="password-label">Contraseña *</span>
           </label>
-          <input type="password" id="user-password" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-colors" minlength="8">
+          <div class="relative">
+            <input type="password" id="user-password" class="w-full pl-3 pr-10 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-colors" minlength="8">
+            <button type="button" id="toggle-password-btn" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
+              <i class="iconoir-eye text-lg" id="toggle-password-icon"></i>
+            </button>
+          </div>
           <p class="text-xs text-slate-500 mt-1" id="password-hint">Mínimo 8 caracteres</p>
         </div>
 
@@ -537,6 +542,31 @@ if (!$isSuperadmin) {
         document.getElementById('user-modal').classList.add('hidden');
       });
     });
+
+    // Toggle mostrar/ocultar contraseña
+    const togglePasswordBtn = document.getElementById('toggle-password-btn');
+    const passwordInput = document.getElementById('user-password');
+    const passwordIcon = document.getElementById('toggle-password-icon');
+
+    togglePasswordBtn?.addEventListener('click', () => {
+      const isPassword = passwordInput.type === 'password';
+      passwordInput.type = isPassword ? 'text' : 'password';
+      passwordIcon.className = isPassword ? 'iconoir-eye-off text-lg' : 'iconoir-eye text-lg';
+    });
+
+    // Resetear tipo de contraseña al abrir modal
+    document.getElementById('create-user-btn').addEventListener('click', () => {
+      passwordInput.type = 'password';
+      passwordIcon.className = 'iconoir-eye text-lg';
+    });
+
+    // También al editar
+    const originalEditUser = window.editUser;
+    window.editUser = function(userId) {
+      passwordInput.type = 'password';
+      passwordIcon.className = 'iconoir-eye text-lg';
+      originalEditUser(userId);
+    };
 
     // Submit formulario
     document.getElementById('user-form').addEventListener('submit', async (e) => {
