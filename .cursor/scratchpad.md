@@ -154,6 +154,7 @@ Los "gestos" son acciones predefinidas que los usuarios pueden ejecutar para tar
 - 2025-12-01: **CONTEXTO CORPORATIVO**: Implementado sistema de contexto unificado con ContextBuilder. Ebonia ahora recibe conocimiento base del Grupo Ebone mediante systemInstruction en todas las conversaciones. Carpeta `docs/context/` creada con `system_prompt.md` y `grupo_ebone_overview.md`.
 - 2025-12-01: **FOLDERS**: Implementada funcionalidad completa de carpetas para organizar conversaciones. Usuarios pueden crear, renombrar, eliminar carpetas y mover conversaciones entre ellas. Incluye FoldersRepo, 6 endpoints API (/folders/list, create, rename, delete, move, reorder) y UI completa en sidebar.
 - 2025-12-31: **CONSCIENCIA DE PLATAFORMA**: Actualizado `system_prompt.md` para que Ebonia sea consciente de sus capacidades (adjuntar archivos, modo nanobanana, gestos) y limitaciones (no generación de archivos descargables .pptx/.pdf, no acceso a Teams/M365). Evita promesas falsas de archivos.
+- 2025-12-31: **SOPORTE DE TABLAS EN CHAT**: Añadido soporte básico para renderizar tablas Markdown en el chat general (`public/index.php`). Incluye estilos CSS en `public/includes/head.php` y lógica de conversión en la función `mdToHtml`.
 
 ---
 

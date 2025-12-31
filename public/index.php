@@ -569,6 +569,22 @@ $headerShowLogo = true;
       s = s.replace(/\*(.+?)\*/g, '<em>$1<\/em>');
       // inline code
       s = s.replace(/`([^`]+)`/g, '<code class="px-1 py-0.5 bg-slate-100 rounded">$1<\/code>');
+      // tables
+      s = s.replace(/((?:\|.+\|(?:\n|$))+)/g, function(match) {
+        const lines = match.trim().split('\n');
+        if (lines.length < 2 || !lines[1].includes('---')) return match;
+        let html = '<div class="table-container"><table class="md-table">';
+        lines.forEach((line, idx) => {
+          if (line.includes('---')) return;
+          const cells = line.split('|').filter((c, i, a) => i > 0 && i < a.length - 1);
+          const tag = (idx === 0) ? 'th' : 'td';
+          const row = '<tr>' + cells.map(c => `<${tag}>${c.trim()}<\/${tag}>`).join('') + '<\/tr>';
+          if (idx === 0) html += '<thead>' + row + '<\/thead><tbody>';
+          else html += row;
+        });
+        html += '<\/tbody><\/table><\/div>';
+        return html;
+      });
       // line breaks
       s = s.replace(/\n/g, '<br>');
       return s;

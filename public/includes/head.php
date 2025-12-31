@@ -202,6 +202,33 @@ $pageTitle = $pageTitle ?? 'Ebonia — IA Corporativa';
       margin: 1rem 0;
     }
     
+    /* Tables in chat */
+    .table-container {
+      overflow-x: auto;
+      margin: 1rem 0;
+      border-radius: 0.75rem;
+      border: 1px solid #e2e8f0;
+    }
+    table.md-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9em;
+    }
+    table.md-table th {
+      background: #f8fafc;
+      padding: 0.75rem 1rem;
+      text-align: left;
+      font-weight: 600;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    table.md-table td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    table.md-table tr:last-child td {
+      border-bottom: none;
+    }
+    
     /* Toast animations */
     @keyframes slideIn {
       from { transform: translateX(100%); opacity: 0; }
