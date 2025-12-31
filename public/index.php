@@ -171,7 +171,7 @@ $headerShowLogo = true;
                         <i class="iconoir-media-image text-lg"></i>
                       </button>
                     </div>
-                    <span class="text-[10px] text-slate-400 font-medium opacity-50 select-none pr-1">⌘ + Enter para enviar</span>
+                    <span id="shortcut-hint-empty" class="text-[10px] text-slate-400 font-medium opacity-50 select-none pr-1">⌘ + Enter para enviar</span>
                   </div>
                 </form>
               </div>
@@ -369,7 +369,7 @@ $headerShowLogo = true;
                   <i class="iconoir-media-image text-lg"></i>
                 </button>
               </div>
-              <span class="text-[10px] text-slate-400 font-medium opacity-50 select-none pr-1">⌘ + Enter para enviar</span>
+              <span id="shortcut-hint-chat" class="text-[10px] text-slate-400 font-medium opacity-50 select-none pr-1">⌘ + Enter para enviar</span>
             </div>
           </div>
         </form>
@@ -1879,6 +1879,16 @@ $headerShowLogo = true;
   <script>
     // Sincronizar contenido del drawer móvil con sidebar desktop
     document.addEventListener('DOMContentLoaded', () => {
+      // Detectar OS y actualizar hints de teclado
+      const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
+      if (!isMac) {
+        const hints = ['shortcut-hint-empty', 'shortcut-hint-chat'];
+        hints.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.textContent = 'Ctrl + Enter para enviar';
+        });
+      }
+
       const desktopSidebar = document.getElementById('conversations-sidebar');
       const mobileDrawerContent = document.getElementById('conversations-drawer-content');
       
