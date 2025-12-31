@@ -155,7 +155,10 @@ Los "gestos" son acciones predefinidas que los usuarios pueden ejecutar para tar
 - 2025-12-01: **FOLDERS**: Implementada funcionalidad completa de carpetas para organizar conversaciones. Usuarios pueden crear, renombrar, eliminar carpetas y mover conversaciones entre ellas. Incluye FoldersRepo, 6 endpoints API (/folders/list, create, rename, delete, move, reorder) y UI completa en sidebar.
 - 2025-12-31: **CONSCIENCIA DE PLATAFORMA**: Actualizado `system_prompt.md` para que Ebonia sea consciente de sus capacidades (adjuntar archivos, modo nanobanana, gestos) y limitaciones (no generación de archivos descargables .pptx/.pdf, no acceso a Teams/M365). Evita promesas falsas de archivos.
 - 2025-12-31: **SOPORTE DE TABLAS EN CHAT**: Añadido soporte básico para renderizar tablas Markdown en el chat general (`public/index.php`). Incluye estilos CSS en `public/includes/head.php` y lógica de conversión en la función `mdToHtml`.
-- 2025-12-31: **FIX TABLAS**: Corregida la expresión regular en `mdToHtml` para capturar bloques de tablas multilínea de forma robusta, permitiendo que todas las filas se rendericen correctamente dentro de la misma tabla.
+- 2025-12-31: **FIX TABLAS**: Corregida la expresión regular en `mdToHtml` para capturar bloques de tablas multilínea de forma robusta.
+- 2025-12-31: **REVISIÓN DE COLISIONES EN BD**: Analizada la estructura de la base de datos para evitar colisiones de nombres entre usuarios. Creada la migración `docs/migrations/007_fix_name_collisions.sql` que añade claves únicas compuestas en `folders`, `voices` y `gestures`.
+- 2025-12-31: **MEJORAS UI ADMIN**: Añadido botón de mostrar/ocultar contraseña en la gestión de usuarios y detección de OS para atajos de teclado (CMD/Ctrl + Enter).
+- 2025-12-31: **SELECTOR DE MODELOS (SUPERADMIN)**: Implementado selector de modelos LLM al lado del botón de Nanobanana exclusivo para superadministradores. Incluye GLM 4.7, Gemini 3 Flash, Deepseek v3.2 y Xiaomi Mimo v2. Sincronización automática entre vistas y envío del modelo seleccionado al backend.
 
 ---
 

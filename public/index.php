@@ -170,6 +170,14 @@ $headerShowLogo = true;
                       <button type="button" id="image-mode-btn-empty" class="<?php echo $hasImageGenAccess ? '' : 'hidden'; ?> p-2 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-lg transition-smooth" title="Generar imagen con nanobanana 🍌">
                         <i class="iconoir-media-image text-lg"></i>
                       </button>
+                      <?php if ($user['is_superadmin']): ?>
+                      <select id="model-select-empty" class="ml-1 text-[10px] bg-slate-50 border border-slate-200 rounded-md px-2 py-1 text-slate-500 focus:outline-none focus:border-[#23AAC5] transition-colors" title="Seleccionar modelo (Solo Superadmin)">
+                        <option value="deepseek/deepseek-v3.2">Deepseek v3.2</option>
+                        <option value="google/gemini-3-flash-preview">Gemini 3 Flash</option>
+                        <option value="z-ai/glm-4.7">GLM 4.7</option>
+                        <option value="xiaomi/mimo-v2-flash:free">Xiaomi Mimo v2</option>
+                      </select>
+                      <?php endif; ?>
                     </div>
                     <span id="shortcut-hint-empty" class="text-[10px] text-slate-400 font-medium opacity-50 select-none pr-1">⌘ + Enter para enviar</span>
                   </div>
@@ -368,6 +376,14 @@ $headerShowLogo = true;
                 <button type="button" id="image-mode-btn" class="<?php echo $hasImageGenAccess ? '' : 'hidden'; ?> p-2 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-lg transition-smooth" title="Generar imagen con nanobanana 🍌">
                   <i class="iconoir-media-image text-lg"></i>
                 </button>
+                <?php if ($user['is_superadmin']): ?>
+                <select id="model-select-chat" class="ml-1 text-[10px] bg-slate-50 border border-slate-200 rounded-md px-2 py-1 text-slate-500 focus:outline-none focus:border-[#23AAC5] transition-colors" title="Seleccionar modelo (Solo Superadmin)">
+                  <option value="deepseek/deepseek-v3.2">Deepseek v3.2</option>
+                  <option value="google/gemini-3-flash-preview">Gemini 3 Flash</option>
+                  <option value="z-ai/glm-4.7">GLM 4.7</option>
+                  <option value="xiaomi/mimo-v2-flash:free">Xiaomi Mimo v2</option>
+                </select>
+                <?php endif; ?>
               </div>
               <span id="shortcut-hint-chat" class="text-[10px] text-slate-400 font-medium opacity-50 select-none pr-1">⌘ + Enter para enviar</span>
             </div>
@@ -1230,6 +1246,15 @@ $headerShowLogo = true;
           body.image_mode = true;
         }
 
+        // Si es superadmin, añadir el modelo seleccionado
+        const modelSelectEmpty = document.getElementById('model-select-empty');
+        const modelSelectChat = document.getElementById('model-select-chat');
+        if (modelSelectEmpty) {
+          body.model = modelSelectEmpty.value;
+        } else if (modelSelectChat) {
+          body.model = modelSelectChat.value;
+        }
+
         // Si hay archivo, subirlo primero para obtener file_id persistente
         if (file) {
           const base64 = await fileToBase64(file);
@@ -1886,6 +1911,18 @@ $headerShowLogo = true;
         hints.forEach(id => {
           const el = document.getElementById(id);
           if (el) el.textContent = 'Ctrl + Enter para enviar';
+        });
+      }
+
+      // Sincronizar selectores de modelos (Solo Superadmin)
+      const modelSelectEmpty = document.getElementById('model-select-empty');
+      const modelSelectChat = document.getElementById('model-select-chat');
+      if (modelSelectEmpty && modelSelectChat) {
+        modelSelectEmpty.addEventListener('change', () => {
+          modelSelectChat.value = modelSelectEmpty.value;
+        });
+        modelSelectChat.addEventListener('change', () => {
+          modelSelectEmpty.value = modelSelectChat.value;
         });
       }
 
