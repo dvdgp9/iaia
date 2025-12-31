@@ -999,8 +999,11 @@ $headerShowLogo = true;
         const newRootBtn = rootBtn.cloneNode(true);
         rootBtn.parentNode.replaceChild(newRootBtn, rootBtn);
         
+        // Resetear clases por si acaso
+        newRootBtn.classList.remove('border-[#23AAC5]', 'bg-[#23AAC5]/5');
+        
         // Marcar si está en raíz
-        if (!conversation.folder_id || conversation.folder_id === 0) {
+        if (!conversation.folder_id || conversation.folder_id === 0 || conversation.folder_id === "0") {
           newRootBtn.classList.add('border-[#23AAC5]', 'bg-[#23AAC5]/5');
         }
         
