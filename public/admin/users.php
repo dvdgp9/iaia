@@ -551,7 +551,7 @@ if (!$isSuperadmin) {
     togglePasswordBtn?.addEventListener('click', () => {
       const isPassword = passwordInput.type === 'password';
       passwordInput.type = isPassword ? 'text' : 'password';
-      passwordIcon.className = isPassword ? 'iconoir-eye-off text-lg' : 'iconoir-eye text-lg';
+      passwordIcon.className = isPassword ? 'iconoir-eye-closed text-lg' : 'iconoir-eye text-lg';
     });
 
     // Resetear tipo de contraseña al abrir modal
