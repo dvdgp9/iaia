@@ -570,17 +570,26 @@ $headerShowLogo = true;
       // inline code
       s = s.replace(/`([^`]+)`/g, '<code class="px-1 py-0.5 bg-slate-100 rounded">$1<\/code>');
       // tables
-      s = s.replace(/((?:\|.+\|(?:\n|$))+)/g, function(match) {
-        const lines = match.trim().split('\n');
-        if (lines.length < 2 || !lines[1].includes('---')) return match;
+      s = s.replace(/((?:\n|^)\|[^\n]+\|\r?\n\|[ :\-|]+\|\r?\n(?:\|[^\n]+\|(?:\r?\n|$))+)/g, function(match) {
+        const lines = match.trim().split(/\r?\n/);
         let html = '<div class="table-container"><table class="md-table">';
-        lines.forEach((line, idx) => {
-          if (line.includes('---')) return;
+        let hasHeader = false;
+        lines.forEach((line) => {
+          // Detectar línea de separación (contiene solo pipes, guiones, dos puntos y espacios)
+          if (line.match(/^\|[ :\-|]+\|$/)) return;
+          
           const cells = line.split('|').filter((c, i, a) => i > 0 && i < a.length - 1);
-          const tag = (idx === 0) ? 'th' : 'td';
+          if (cells.length === 0) return;
+          
+          const tag = !hasHeader ? 'th' : 'td';
           const row = '<tr>' + cells.map(c => `<${tag}>${c.trim()}<\/${tag}>`).join('') + '<\/tr>';
-          if (idx === 0) html += '<thead>' + row + '<\/thead><tbody>';
-          else html += row;
+          
+          if (!hasHeader) {
+            html += '<thead>' + row + '<\/thead><tbody>';
+            hasHeader = true;
+          } else {
+            html += row;
+          }
         });
         html += '<\/tbody><\/table><\/div>';
         return html;
