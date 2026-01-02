@@ -11,18 +11,18 @@ if (!$user) {
     exit;
 }
 
-// Verificar si es superadmin (soporta sesiones antiguas sin is_superadmin)
+// Verify if superadmin (supports old sessions without is_superadmin)
 $isSuperadmin = !empty($user['is_superadmin']) || in_array('admin', $user['roles'] ?? [], true);
 if (!$isSuperadmin) {
     header('Location: /');
     exit;
 }
 ?><!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Permisos de funcionalidades — Ebonia</title>
+  <title>Feature Permissions — IAIA</title>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="apple-touch-icon" href="/assets/images/isotipo.png">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -90,7 +90,7 @@ if (!$isSuperadmin) {
   <div class="min-h-screen flex h-screen">
     <?php 
     $activeTab = '';
-    $pageTitle = 'Permisos de funcionalidades';
+    $pageTitle = 'Feature Permissions';
     include __DIR__ . '/../includes/left-tabs.php'; 
     ?>
 
@@ -102,24 +102,24 @@ if (!$isSuperadmin) {
           <!-- Header -->
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 lg:mb-8 mt-4 lg:mt-6">
             <div>
-              <h1 class="text-2xl lg:text-3xl font-bold text-slate-800">Permisos de funcionalidades</h1>
-              <p class="text-slate-600 text-sm lg:text-base mt-1">Controla el acceso a gestos, voces y generación de imágenes por usuario</p>
+              <h1 class="text-2xl lg:text-3xl font-bold text-slate-800">Feature Permissions</h1>
+              <p class="text-slate-600 text-sm lg:text-base mt-1">Control access to gestures, voices, and image generation per user</p>
             </div>
           </div>
 
           <!-- Loading -->
           <div id="loading" class="text-center py-12">
             <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#23AAC5] border-r-transparent"></div>
-            <p class="text-sm text-slate-500 mt-3">Cargando permisos...</p>
+            <p class="text-sm text-slate-500 mt-3">Loading permissions...</p>
           </div>
 
           <!-- Contenido principal -->
           <div id="main-content" class="hidden space-y-6">
             <!-- Selector de usuario -->
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
-              <label class="text-sm font-medium text-slate-700 block mb-3">Selecciona un usuario para gestionar sus permisos</label>
+              <label class="text-sm font-medium text-slate-700 block mb-3">Select a user to manage their permissions</label>
               <select id="user-select" class="w-full max-w-md px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-colors text-base">
-                <option value="">-- Selecciona un usuario --</option>
+                <option value="">-- Select a user --</option>
               </select>
             </div>
 
@@ -139,7 +139,7 @@ if (!$isSuperadmin) {
                 </div>
                 <p id="superadmin-notice" class="hidden mt-4 text-sm text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
                   <i class="iconoir-info-circle mr-1"></i>
-                  Los superadministradores tienen acceso a todas las funcionalidades automáticamente.
+                  Superadmins have access to all features automatically.
                 </p>
               </div>
 
@@ -155,16 +155,16 @@ if (!$isSuperadmin) {
                           <i class="iconoir-magic-wand text-white text-lg"></i>
                         </div>
                         <div>
-                          <h3 class="font-semibold text-slate-800">Gestos</h3>
-                          <p class="text-xs text-slate-500">Acciones rápidas</p>
+                          <h3 class="font-semibold text-slate-800">Gestures</h3>
+                          <p class="text-xs text-slate-500">Quick actions</p>
                         </div>
                       </div>
                       <div class="flex gap-2">
                         <button onclick="toggleAllOfType('gesture', true)" class="text-xs px-2.5 py-1 bg-[#23AAC5]/10 text-[#23AAC5] rounded-lg hover:bg-[#23AAC5]/20 transition-colors font-medium">
-                          Todos
+                          All
                         </button>
                         <button onclick="toggleAllOfType('gesture', false)" class="text-xs px-2.5 py-1 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition-colors font-medium">
-                          Ninguno
+                          None
                         </button>
                       </div>
                     </div>
@@ -183,16 +183,16 @@ if (!$isSuperadmin) {
                           <i class="iconoir-voice-square text-white text-lg"></i>
                         </div>
                         <div>
-                          <h3 class="font-semibold text-slate-800">Voces</h3>
-                          <p class="text-xs text-slate-500">Asistentes especializados</p>
+                          <h3 class="font-semibold text-slate-800">Voices</h3>
+                          <p class="text-xs text-slate-500">Specialized assistants</p>
                         </div>
                       </div>
                       <div class="flex gap-2">
                         <button onclick="toggleAllOfType('voice', true)" class="text-xs px-2.5 py-1 bg-violet-100 text-violet-600 rounded-lg hover:bg-violet-200 transition-colors font-medium">
-                          Todos
+                          All
                         </button>
                         <button onclick="toggleAllOfType('voice', false)" class="text-xs px-2.5 py-1 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition-colors font-medium">
-                          Ninguno
+                          None
                         </button>
                       </div>
                     </div>
@@ -210,8 +210,8 @@ if (!$isSuperadmin) {
                         <i class="iconoir-sparks text-white text-lg"></i>
                       </div>
                       <div>
-                        <h3 class="font-semibold text-slate-800">Funcionalidades</h3>
-                        <p class="text-xs text-slate-500">Características especiales</p>
+                        <h3 class="font-semibold text-slate-800">Features</h3>
+                        <p class="text-xs text-slate-500">Special capabilities</p>
                       </div>
                     </div>
                   </div>
@@ -269,7 +269,7 @@ if (!$isSuperadmin) {
         document.getElementById('loading').classList.add('hidden');
         document.getElementById('main-content').classList.remove('hidden');
       } catch (err) {
-        document.getElementById('loading').innerHTML = `<p class="text-sm text-red-600">Error al cargar datos: ${err.message}</p>`;
+        document.getElementById('loading').innerHTML = `<p class="text-sm text-red-600">Error loading data: ${err.message}</p>`;
       }
     }
 
@@ -287,7 +287,7 @@ if (!$isSuperadmin) {
         .map(u => `<option value="${u.id}">👑 ${escapeHtml(u.first_name)} ${escapeHtml(u.last_name)} (Superadmin)</option>`)
         .join('');
       
-      select.innerHTML = '<option value="">-- Selecciona un usuario --</option>' + options + superadmins;
+      select.innerHTML = '<option value="">-- Select a user --</option>' + options + superadmins;
     }
 
     // Manejar selección de usuario
@@ -333,7 +333,7 @@ if (!$isSuperadmin) {
       const isSuperadmin = selectedUser?.is_superadmin;
       
       if (features.length === 0) {
-        container.innerHTML = '<p class="p-5 text-sm text-slate-400 text-center">No hay elementos disponibles</p>';
+        container.innerHTML = '<p class="p-5 text-sm text-slate-400 text-center">No items available</p>';
         return;
       }
       
@@ -443,7 +443,7 @@ if (!$isSuperadmin) {
       const toast = document.getElementById('save-toast');
       toast.innerHTML = `
         <div class="h-5 w-5 animate-spin rounded-full border-2 border-white border-r-transparent"></div>
-        <span class="text-sm font-medium">Guardando...</span>
+        <span class="text-sm font-medium">Saving...</span>
       `;
       toast.classList.remove('hidden', 'bg-green-600', 'bg-red-600');
       toast.classList.add('bg-slate-800');
@@ -455,7 +455,7 @@ if (!$isSuperadmin) {
       if (success) {
         toast.innerHTML = `
           <i class="iconoir-check text-lg"></i>
-          <span class="text-sm font-medium">Guardado</span>
+          <span class="text-sm font-medium">Saved</span>
         `;
         toast.classList.remove('bg-slate-800', 'bg-red-600');
         toast.classList.add('bg-green-600');

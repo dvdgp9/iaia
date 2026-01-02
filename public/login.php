@@ -9,7 +9,7 @@ if ($user) {
     exit;
 }
 ?><!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -58,7 +58,7 @@ if ($user) {
     
     <div class="text-white text-center max-w-md">
       <h2 class="text-4xl font-bold leading-tight">
-        El latido inteligente de un grupo que respira unido.
+        The intelligent heartbeat of a group that breathes as one.
       </h2>
     </div>
   </div>
@@ -77,7 +77,7 @@ if ($user) {
 
       <form id="login-form" class="space-y-6">
         <div>
-          <label class="block text-sm font-medium text-gray-900 mb-2">Nombre de usuario:</label>
+          <label class="block text-sm font-medium text-gray-900 mb-2">Username:</label>
           <input 
             id="email" 
             type="text" 
@@ -88,7 +88,7 @@ if ($user) {
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-900 mb-2">Contraseña</label>
+          <label class="block text-sm font-medium text-gray-900 mb-2">Password</label>
           <input 
             id="password" 
             type="password" 
@@ -106,7 +106,7 @@ if ($user) {
             checked
           />
           <label for="remember" class="ml-2 text-sm text-gray-700">
-            Recordar por 30 días
+            Remember me for 30 days
           </label>
         </div>
 
@@ -115,7 +115,7 @@ if ($user) {
           id="submit-btn"
           class="w-full btn-gradient text-white font-semibold py-3 rounded-full hover:opacity-90 transition-all duration-200 shadow-md hover:shadow-lg"
         >
-          Entrar ahora
+          Sign in
         </button>
 
         <p id="error" class="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2 hidden text-center"></p>
@@ -147,7 +147,7 @@ if ($user) {
       e.preventDefault();
       errorEl.classList.add('hidden');
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Entrando...';
+      submitBtn.textContent = 'Signing in...';
       
       try {
         await api('/api/auth/login.php', { 
@@ -164,7 +164,7 @@ if ($user) {
         errorEl.classList.remove('hidden');
       } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Entrar ahora';
+        submitBtn.textContent = 'Sign in';
       }
     });
 

@@ -11,12 +11,12 @@ $userId = $user ? (int)$user['id'] : 0;
 $accessRepo = new UserFeatureAccessRepo();
 
 /**
- * Partial: Barra lateral izquierda con tabs de navegación
- * Incluye menús hover expandibles para acceso rápido
+ * Partial: Left sidebar with navigation tabs
+ * Includes expandable hover menus for quick access
  * 
- * Variables esperadas:
- * - $activeTab (opcional): Tab activa ('conversations', 'voices', 'gestures'), default 'conversations'
- * - $useTabsJs (opcional): Si true, usa data-tab para manejo JS interno (index.php). Default false.
+ * Expected variables:
+ * - $activeTab (optional): Active tab ('conversations', 'voices', 'gestures'), default 'conversations'
+ * - $useTabsJs (optional): If true, uses data-tab for internal JS handling (index.php). Default false.
  */
 $activeTab = $activeTab ?? 'conversations';
 $useTabsJs = $useTabsJs ?? false;
@@ -26,41 +26,41 @@ $tabs = [
         'icon' => 'iconoir-chat-bubble',
         'label' => 'Chat',
         'href' => '/',
-        'title' => 'Conversaciones',
-        'hoverTitle' => 'Conversaciones recientes',
+        'title' => 'Conversations',
+        'hoverTitle' => 'Recent conversations',
         'hoverIcon' => 'iconoir-chat-bubble',
-        'newLabel' => 'Nueva conversación',
+        'newLabel' => 'New conversation',
         'newHref' => '/'
     ],
     'voices' => [
         'icon' => 'iconoir-voice-square',
-        'label' => 'Voces',
+        'label' => 'Voices',
         'href' => '/voices/',
-        'title' => 'Voces especializadas',
-        'hoverTitle' => 'Voces disponibles',
+        'title' => 'Specialized voices',
+        'hoverTitle' => 'Available voices',
         'hoverIcon' => 'iconoir-voice-square',
-        'newLabel' => 'Ver todas',
+        'newLabel' => 'View all',
         'newHref' => '/voices/'
     ],
     'gestures' => [
         'icon' => 'iconoir-magic-wand',
-        'label' => 'Gestos',
-        'href' => '/gestos/',
-        'title' => 'Flujos automatizados',
-        'hoverTitle' => 'Gestos disponibles',
+        'label' => 'Gestures',
+        'href' => '/gestures/',
+        'title' => 'Automated workflows',
+        'hoverTitle' => 'Available gestures',
         'hoverIcon' => 'iconoir-magic-wand',
-        'newLabel' => 'Ver todos',
-        'newHref' => '/gestos/'
+        'newLabel' => 'View all',
+        'newHref' => '/gestures/'
     ],
     'apps' => [
         'icon' => 'iconoir-view-grid',
         'label' => 'Apps',
-        'href' => '/aplicaciones/',
-        'title' => 'Aplicaciones Ebone',
-        'hoverTitle' => 'Aplicaciones',
+        'href' => '/apps/',
+        'title' => 'Ebone Applications',
+        'hoverTitle' => 'Applications',
         'hoverIcon' => 'iconoir-view-grid',
-        'newLabel' => 'Ver todas',
-        'newHref' => '/aplicaciones/'
+        'newLabel' => 'View all',
+        'newHref' => '/apps/'
     ]
 ];
 
@@ -68,24 +68,24 @@ $tabs = [
 $gesturesList = [
     [
         'type' => 'podcast-from-article',
-        'name' => 'Podcast desde artículo',
+        'name' => 'Podcast from article',
         'icon' => 'iconoir-podcast',
-        'href' => '/gestos/podcast-articulo.php',
-        'description' => 'Convierte texto en audio'
+        'href' => '/gestures/podcast-article.php',
+        'description' => 'Convert text to audio'
     ],
     [
         'type' => 'write-article',
-        'name' => 'Escribir artículo',
+        'name' => 'Write article',
         'icon' => 'iconoir-edit-pencil',
-        'href' => '/gestos/escribir-articulo.php',
-        'description' => 'Genera contenido escrito'
+        'href' => '/gestures/write-article.php',
+        'description' => 'Generate written content'
     ],
     [
         'type' => 'social-media',
-        'name' => 'Redes sociales',
+        'name' => 'Social media',
         'icon' => 'iconoir-share-android',
-        'href' => '/gestos/redes-sociales.php',
-        'description' => 'Crea posts para redes'
+        'href' => '/gestures/social-media.php',
+        'description' => 'Create social posts'
     ]
 ];
 
@@ -96,7 +96,7 @@ $voicesList = [
         'name' => 'Lex',
         'icon' => 'iconoir-book-stack',
         'href' => '/voices/lex.php',
-        'description' => 'Abogado experto'
+        'description' => 'Legal expert'
     ]
 ];
 
@@ -107,56 +107,56 @@ $appsList = [
         'name' => 'Campus',
         'icon' => 'iconoir-book',
         'href' => 'https://campus.ebone.es',
-        'description' => 'Formación online'
+        'description' => 'Online training'
     ],
     [
         'id' => 'firmas',
-        'name' => 'Firmas',
+        'name' => 'Signatures',
         'icon' => 'iconoir-mail',
         'href' => 'https://firmas.ebone.es',
-        'description' => 'Firmas de correo'
+        'description' => 'Email signatures'
     ],
     [
         'id' => 'happy',
         'name' => 'Happy',
         'icon' => 'iconoir-emoji',
         'href' => 'https://happy.ebone.es',
-        'description' => 'Encuestas'
+        'description' => 'Surveys'
     ],
     [
         'id' => 'loop',
         'name' => 'Loop',
         'icon' => 'iconoir-calendar',
         'href' => 'https://loop.ebone.es',
-        'description' => 'RRSS y Blogs'
+        'description' => 'Social & Blogs'
     ],
     [
         'id' => 'passwords',
         'name' => 'Passwords',
         'icon' => 'iconoir-lock',
         'href' => 'https://passwords.ebone.es/gestionar',
-        'description' => 'Gestor seguro'
+        'description' => 'Secure manager'
     ],
     [
         'id' => 'prisma',
         'name' => 'Prisma',
         'icon' => 'iconoir-folder',
         'href' => 'https://prisma.wthefox.com/solicitud.php?empresa=Ebone',
-        'description' => 'Cambios y mejoras'
+        'description' => 'Changes & improvements'
     ],
     [
         'id' => 'puri',
         'name' => 'Puri',
         'icon' => 'iconoir-check-circle',
         'href' => 'https://puri.ebone.es',
-        'description' => 'Control asistencia'
+        'description' => 'Attendance control'
     ],
     [
         'id' => 'resq',
         'name' => 'RESQ',
         'icon' => 'iconoir-swimming',
         'href' => 'https://resq.ebone.es',
-        'description' => 'Seguridad acuática'
+        'description' => 'Water safety'
     ]
 ];
 ?>
@@ -237,9 +237,9 @@ $appsList = [
                   <!-- Submenú con historial -->
                   <div class="hover-submenu">
                     <div class="hover-submenu-header">
-                      <span class="hover-submenu-title">Historial reciente</span>
+                      <span class="hover-submenu-title">Recent history</span>
                       <a href="<?php echo $gesture['href']; ?>" class="hover-submenu-new">
-                        <i class="iconoir-plus"></i> Crear
+                        <i class="iconoir-plus"></i> Create
                       </a>
                     </div>
                     <div class="hover-submenu-content">
@@ -285,9 +285,9 @@ $appsList = [
     $isAccountActive = ($activeTab === 'account');
     $accountClasses = $isAccountActive ? 'text-white' : 'text-white/60 hover:text-white/80';
   ?>
-  <a href="/account.php" class="tab-item w-full py-4 flex flex-col items-center gap-1.5 <?php echo $accountClasses; ?>" title="Mi cuenta">
+  <a href="/account.php" class="tab-item w-full py-4 flex flex-col items-center gap-1.5 <?php echo $accountClasses; ?>" title="My account">
     <i class="iconoir-user text-2xl"></i>
-    <span class="text-[10px] font-medium">Cuenta</span>
+    <span class="text-[10px] font-medium">Account</span>
   </a>
 </aside>
 

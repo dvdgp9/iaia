@@ -1,25 +1,25 @@
 <?php
 /**
- * Header unificado para todas las páginas
+ * Unified header for all pages
  * 
- * Variables opcionales:
- * - $headerBackUrl: URL de navegación hacia atrás (default: null = sin botón atrás)
- * - $headerBackText: Texto del botón atrás (default: 'Atrás')
- * - $headerTitle: Título principal de la página
- * - $headerSubtitle: Subtítulo opcional
- * - $headerIcon: Clase del icono (default: null)
- * - $headerIconColor: Clases de color del gradiente del icono (default: 'from-cyan-500 to-teal-600')
- * - $headerIconText: Texto del icono en lugar de icono (para voces como "L")
- * - $headerCustomButtons: HTML personalizado para botones adicionales antes del perfil
- * - $headerShowConvTitle: Si true, muestra el título de conversación dinámico (para chat)
- * - $headerShowSearch: Si true, muestra botón de búsqueda (default: false para gestos/voces)
- * - $headerShowFaq: Si true, muestra botón de FAQ (default: false para gestos/voces)
- * - $headerDrawerId: ID del drawer móvil a abrir con hamburger (default: null = sin hamburger)
- * - $headerShowLogo: Si true, muestra logo en móvil (default: false)
+ * Optional variables:
+ * - $headerBackUrl: Back navigation URL (default: null = no back button)
+ * - $headerBackText: Back button text (default: 'Back')
+ * - $headerTitle: Main page title
+ * - $headerSubtitle: Optional subtitle
+ * - $headerIcon: Icon class (default: null)
+ * - $headerIconColor: Icon gradient color classes (default: 'from-cyan-500 to-teal-600')
+ * - $headerIconText: Icon text instead of icon (for voices like "L")
+ * - $headerCustomButtons: Custom HTML for additional buttons before profile
+ * - $headerShowConvTitle: If true, shows dynamic conversation title (for chat)
+ * - $headerShowSearch: If true, shows search button (default: false for gestures/voices)
+ * - $headerShowFaq: If true, shows FAQ button (default: false for gestures/voices)
+ * - $headerDrawerId: Mobile drawer ID to open with hamburger (default: null = no hamburger)
+ * - $headerShowLogo: If true, shows logo on mobile (default: false)
  */
 
 $headerBackUrl = $headerBackUrl ?? null;
-$headerBackText = $headerBackText ?? 'Atrás';
+$headerBackText = $headerBackText ?? 'Back';
 $headerTitle = $headerTitle ?? ($pageTitle ?? '');
 $headerSubtitle = $headerSubtitle ?? null;
 $headerIcon = $headerIcon ?? null;
@@ -101,14 +101,14 @@ $headerStyle .= ' flex items-center justify-between shadow-sm shrink-0 sticky to
   <div class="flex items-center gap-1 lg:gap-3">
     <?php if ($headerShowSearch): ?>
       <!-- Búsqueda (solo desktop) -->
-      <button class="hidden lg:flex p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-colors" title="Buscar (próximamente)">
+      <button class="hidden lg:flex p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-colors" title="Search (coming soon)">
         <i class="iconoir-search text-xl"></i>
       </button>
     <?php endif; ?>
     
     <?php if ($headerShowFaq): ?>
       <!-- FAQ / Dudas rápidas (solo desktop) -->
-      <button id="faq-btn" class="hidden lg:flex p-2 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-lg transition-colors" title="Dudas rápidas">
+      <button id="faq-btn" class="hidden lg:flex p-2 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-lg transition-colors" title="Quick questions">
         <i class="iconoir-help-circle text-xl"></i>
       </button>
     <?php endif; ?>
@@ -141,7 +141,7 @@ $headerStyle .= ' flex items-center justify-between shadow-sm shrink-0 sticky to
               if (isset($user)) {
                 echo htmlspecialchars(($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? ''));
               } else {
-                echo 'Cargando...';
+                echo 'Loading...';
               }
             ?>
           </div>
@@ -151,23 +151,23 @@ $headerStyle .= ' flex items-center justify-between shadow-sm shrink-0 sticky to
         </div>
         <a href="/account.php" class="lg:hidden w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2">
           <i class="iconoir-user"></i>
-          <span>Mi cuenta</span>
+          <span>My account</span>
         </a>
         
         <?php if (isset($user) && in_array('admin', $user['roles'] ?? [], true)): ?>
           <a href="/admin/users.php" id="admin-link" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2 border-t border-slate-100">
             <i class="iconoir-settings"></i>
-            <span>Gestión de usuarios</span>
+            <span>User management</span>
           </a>
           <a href="/admin/stats.php" id="stats-link" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2">
             <i class="iconoir-graph-up"></i>
-            <span>Panel de control</span>
+            <span>Control panel</span>
           </a>
         <?php endif; ?>
         
         <button id="logout-btn" onclick="window.location.href='/logout.php'" class="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2 border-t border-slate-100">
           <i class="iconoir-log-out"></i>
-          <span>Cerrar sesión</span>
+          <span>Log out</span>
         </button>
       </div>
     </div>

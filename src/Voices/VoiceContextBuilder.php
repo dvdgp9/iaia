@@ -20,25 +20,25 @@ class VoiceContextBuilder
     private static array $voices = [
         'lex' => [
             'name' => 'Lex',
-            'role' => 'Asistente Legal del Grupo Ebone',
-            'description' => 'Experto en convenios colectivos, normativas laborales y documentación legal interna.',
-            'personality' => 'Profesional, preciso y claro. Cita fuentes cuando sea posible.',
+            'role' => 'Legal Assistant for Grupo Ebone',
+            'description' => 'Expert in collective agreements, labor regulations, and internal legal documentation.',
+            'personality' => 'Professional, precise, and clear. Cites sources when possible.',
             'folder' => 'lex',
-            'rag_enabled' => true,  // Usa RAG para esta voz
+            'rag_enabled' => true,  // Uses RAG for this voice
             'rag_collection' => 'lex_convenios'
         ],
         'cubo' => [
             'name' => 'Cubo',
-            'role' => 'Asistente de CUBOFIT',
-            'description' => 'Especialista en productos fitness, equipamiento deportivo y especificaciones técnicas.',
-            'personality' => 'Entusiasta, técnico y orientado al cliente.',
+            'role' => 'CUBOFIT Assistant',
+            'description' => 'Specialist in fitness products, sports equipment, and technical specifications.',
+            'personality' => 'Enthusiastic, technical, and customer-oriented.',
             'folder' => 'cubo'
         ],
         'uniges' => [
             'name' => 'Uniges',
-            'role' => 'Asistente de UNIGES-3',
-            'description' => 'Experto en gestión de instalaciones deportivas y servicios municipales.',
-            'personality' => 'Profesional, eficiente y orientado a soluciones.',
+            'role' => 'UNIGES-3 Assistant',
+            'description' => 'Expert in sports facility management and municipal services.',
+            'personality' => 'Professional, efficient, and solution-oriented.',
             'folder' => 'uniges'
         ]
     ];
@@ -77,24 +77,24 @@ class VoiceContextBuilder
         $voice = self::$voices[$this->voiceId];
         
         // System prompt base
-        $prompt = "# Identidad\n";
-        $prompt .= "Eres **{$voice['name']}**, {$voice['role']}.\n\n";
-        $prompt .= "## Descripción\n{$voice['description']}\n\n";
-        $prompt .= "## Personalidad\n{$voice['personality']}\n\n";
+        $prompt = "# Identity\n";
+        $prompt .= "You are **{$voice['name']}**, {$voice['role']}.\n\n";
+        $prompt .= "## Description\n{$voice['description']}\n\n";
+        $prompt .= "## Personality\n{$voice['personality']}\n\n";
         
-        // Instrucciones generales
-        $prompt .= "## Instrucciones\n";
-        $prompt .= "- Responde siempre en español\n";
-        $prompt .= "- Sé conciso pero completo\n";
-        $prompt .= "- Cuando cites documentos, indica la fuente\n";
-        $prompt .= "- Si no tienes información sobre algo, indícalo claramente\n";
-        $prompt .= "- Mantén un tono profesional y accesible\n\n";
+        // General instructions
+        $prompt .= "## Instructions\n";
+        $prompt .= "- Always respond in English\n";
+        $prompt .= "- Be concise but complete\n";
+        $prompt .= "- When citing documents, indicate the source\n";
+        $prompt .= "- If you don't have information about something, clearly indicate this\n";
+        $prompt .= "- Maintain a professional and approachable tone\n\n";
 
-        // Cargar documentos de contexto específicos
+        // Load specific context documents
         $contextDocs = $this->loadContextDocuments();
         if ($contextDocs) {
-            $prompt .= "## Documentación de referencia\n";
-            $prompt .= "A continuación tienes la documentación que debes usar para responder consultas:\n\n";
+            $prompt .= "## Reference documentation\n";
+            $prompt .= "Below is the documentation you should use to answer queries:\n\n";
             $prompt .= $contextDocs;
         }
 
@@ -118,7 +118,7 @@ class VoiceContextBuilder
             $fileContent = file_get_contents($file);
             
             if ($fileContent) {
-                $content .= "### Documento: " . ucfirst(str_replace('_', ' ', $filename)) . "\n";
+                $content .= "### Document: " . ucfirst(str_replace('_', ' ', $filename)) . "\n";
                 $content .= $fileContent . "\n\n";
             }
         }
@@ -231,24 +231,24 @@ class VoiceContextBuilder
         }
 
         // System prompt base
-        $prompt = "# Identidad\n";
-        $prompt .= "Eres **{$voice['name']}**, {$voice['role']}.\n\n";
-        $prompt .= "## Descripción\n{$voice['description']}\n\n";
-        $prompt .= "## Personalidad\n{$voice['personality']}\n\n";
+        $prompt = "# Identity\n";
+        $prompt .= "You are **{$voice['name']}**, {$voice['role']}.\n\n";
+        $prompt .= "## Description\n{$voice['description']}\n\n";
+        $prompt .= "## Personality\n{$voice['personality']}\n\n";
         
-        $prompt .= "## Documentación Disponible\n";
-        $prompt .= "Tienes acceso a los siguientes documentos y convenios colectivos:\n";
+        $prompt .= "## Available Documentation\n";
+        $prompt .= "You have access to the following documents and collective agreements:\n";
         $prompt .= $docListText . "\n";
 
-        // Instrucciones generales
-        $prompt .= "## Instrucciones\n";
-        $prompt .= "- Responde siempre en español\n";
-        $prompt .= "- Sé conciso pero completo\n";
-        $prompt .= "- **IMPORTANTE**: Cita siempre el nombre del documento exacto del que extraes la información.\n";
-        $prompt .= "- Si el usuario te pregunta qué documentos o convenios tienes, proporciónale la lista de arriba.\n";
-        $prompt .= "- Si no tienes información suficiente en los fragmentos recuperados, indícalo claramente.\n";
-        $prompt .= "- Mantén un tono profesional y accesible\n";
-        $prompt .= "- No inventes información que no esté en la documentación proporcionada\n\n";
+        // General instructions
+        $prompt .= "## Instructions\n";
+        $prompt .= "- Always respond in English\n";
+        $prompt .= "- Be concise but complete\n";
+        $prompt .= "- **IMPORTANT**: Always cite the exact document name from which you extract information.\n";
+        $prompt .= "- If the user asks what documents or agreements you have, provide them with the list above.\n";
+        $prompt .= "- If you don't have enough information in the retrieved fragments, clearly indicate this.\n";
+        $prompt .= "- Maintain a professional and approachable tone\n";
+        $prompt .= "- Do not invent information that is not in the provided documentation\n\n";
 
         // Obtener contexto relevante via RAG
         if ($this->retriever && $this->retriever->isReady()) {
@@ -259,16 +259,16 @@ class VoiceContextBuilder
             $ragContext = $this->retriever->formatForPrompt($chunks);
             $prompt .= $ragContext;
             
-            // Si se filtró por documento, indicarlo
+            // If filtered by document, indicate it
             if ($documentFilter) {
-                $prompt .= "\n*Búsqueda filtrada al documento: {$documentFilter}*\n";
+                $prompt .= "\n*Search filtered to document: {$documentFilter}*\n";
             }
         } else {
-            // Fallback a documentos estáticos si RAG no está disponible
+            // Fallback to static documents if RAG is not available
             $contextDocs = $this->loadContextDocuments();
             if ($contextDocs) {
-                $prompt .= "## Documentación de referencia\n";
-                $prompt .= "A continuación tienes la documentación que debes usar para responder consultas:\n\n";
+                $prompt .= "## Reference documentation\n";
+                $prompt .= "Below is the documentation you should use to answer queries:\n\n";
                 $prompt .= $contextDocs;
             }
         }

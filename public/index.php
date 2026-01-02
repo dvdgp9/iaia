@@ -19,7 +19,7 @@ $hasImageGenAccess = $accessRepo->hasImageGenerationAccess($userId);
 $csrfToken = $_SESSION['csrf_token'] ?? '';
 $activeTab = 'conversations';
 $useTabsJs = true;
-$userName = htmlspecialchars($user['first_name'] ?? 'Usuario');
+$userName = htmlspecialchars($user['first_name'] ?? 'User');
 
 // Configuración del header unificado
 $headerShowConvTitle = true;
@@ -28,65 +28,65 @@ $headerShowFaq = true;
 $headerDrawerId = 'conversations-drawer';
 $headerShowLogo = true;
 ?><!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <?php include __DIR__ . '/includes/head.php'; ?>
 <body class="bg-mesh text-slate-900 overflow-hidden">
   <div class="min-h-screen flex h-screen">
     <?php include __DIR__ . '/includes/left-tabs.php'; ?>
 
-    <!-- Sidebar conversaciones (solo desktop) -->
+    <!-- Conversations sidebar (desktop only) -->
     <aside id="conversations-sidebar" class="hidden lg:flex w-80 bg-white border-r border-slate-200 flex-col shadow-sm">
       <div class="p-5 border-b border-slate-200">
         <div class="flex items-center gap-3 mb-6">
           <img src="/assets/images/logo.png" alt="IAIA" class="h-9">
         </div>
         <button id="new-conv-btn" class="w-full py-2.5 px-4 rounded-lg gradient-brand-btn text-white font-medium shadow-md hover:shadow-lg hover:opacity-90 transition-all duration-200 flex items-center justify-center gap-2">
-          <span class="text-lg">+</span> Nueva conversación
+          <span class="text-lg">+</span> New conversation
         </button>
       </div>
       <div class="flex-1 overflow-y-auto p-3">
-        <!-- Sección Carpetas -->
+        <!-- Folders Section -->
         <div class="mb-4">
           <div class="flex items-center justify-between mb-2 px-2">
-            <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Carpetas</div>
-            <button id="new-folder-btn" class="p-1 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded transition-colors" title="Nueva carpeta">
+            <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Folders</div>
+            <button id="new-folder-btn" class="p-1 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded transition-colors" title="New folder">
               <i class="iconoir-folder-plus text-sm"></i>
             </button>
           </div>
           <ul id="folder-list" class="space-y-1">
-            <!-- Opción "Todas" siempre visible -->
+            <!-- "All" option always visible -->
             <li>
               <button data-folder-id="-1" class="folder-item w-full text-left p-2 rounded-lg transition-all duration-200 flex items-center gap-2 hover:bg-slate-50 group">
                 <i class="iconoir-folder text-[#23AAC5]"></i>
-                <span class="flex-1 text-sm text-slate-700">Todas</span>
+                <span class="flex-1 text-sm text-slate-700">All</span>
                 <span class="text-xs text-slate-400" id="all-count">0</span>
               </button>
             </li>
-            <!-- Opción "Sin carpeta" -->
+            <!-- "No folder" option -->
             <li>
               <button data-folder-id="0" class="folder-item w-full text-left p-2 rounded-lg transition-all duration-200 flex items-center gap-2 hover:bg-slate-50 group">
                 <i class="iconoir-folder text-[#23AAC5]"></i>
-                <span class="flex-1 text-sm text-slate-700">Sin carpeta</span>
+                <span class="flex-1 text-sm text-slate-700">No folder</span>
                 <span class="text-xs text-slate-400" id="root-count">0</span>
               </button>
             </li>
-            <!-- Carpetas dinámicas se insertarán aquí -->
+            <!-- Dynamic folders will be inserted here -->
           </ul>
         </div>
         
-        <!-- Sección Conversaciones -->
+        <!-- Conversations Section -->
         <div>
           <div class="flex items-center justify-between mb-2 px-2">
-            <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Conversaciones</div>
+            <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Conversations</div>
             <select id="sort-select" class="text-xs border border-slate-200 rounded px-2 py-1 bg-white focus:outline-none focus:border-[#23AAC5]">
-              <option value="updated_at">Recientes</option>
-              <option value="favorite">Favoritos</option>
-              <option value="created_at">Creación</option>
-              <option value="title">Alfabético</option>
+              <option value="updated_at">Recent</option>
+              <option value="favorite">Favorites</option>
+              <option value="created_at">Created</option>
+              <option value="title">Alphabetical</option>
             </select>
           </div>
           <ul id="conv-list" class="space-y-1">
-            <li class="text-slate-400 text-sm px-3 py-2">(vacío)</li>
+            <li class="text-slate-400 text-sm px-3 py-2">(empty)</li>
           </ul>
         </div>
       </div>
@@ -95,12 +95,12 @@ $headerShowLogo = true;
     <!-- Mobile Drawer para conversaciones -->
     <?php 
     $drawerId = 'conversations-drawer';
-    $drawerTitle = 'Conversaciones';
+    $drawerTitle = 'Conversations';
     $drawerIcon = 'iconoir-chat-bubble';
     $drawerIconColor = 'text-[#23AAC5]';
     $drawerShowNewButton = true;
     $drawerNewButtonId = 'mobile-new-conv-btn';
-    $drawerNewButtonText = 'Nueva conversación';
+    $drawerNewButtonText = 'New conversation';
     include __DIR__ . '/includes/mobile-drawer.php'; 
     ?>
 
@@ -112,8 +112,8 @@ $headerShowLogo = true;
         <div id="context-warning" class="hidden mx-6 mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
           <i class="iconoir-info-circle text-amber-600 text-lg mt-0.5"></i>
           <div class="flex-1 text-sm">
-            <div class="font-medium text-amber-900">Conversación muy larga</div>
-            <div class="text-amber-700 mt-0.5">Para optimizar el rendimiento, solo se envían los mensajes más recientes al asistente. El historial completo permanece guardado.</div>
+            <div class="font-medium text-amber-900">Very long conversation</div>
+            <div class="text-amber-700 mt-0.5">To optimize performance, only the most recent messages are sent to the assistant. The complete history remains saved.</div>
           </div>
         </div>
         <div id="empty-state" class="absolute inset-0 overflow-auto p-6 pb-36 lg:pb-6">
@@ -124,13 +124,13 @@ $headerShowLogo = true;
               <!-- Status indicator -->
               <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-slate-200/50 shadow-sm mb-6">
                 <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
-                <span class="text-sm text-slate-600">Lista para ayudarte</span>
+                <span class="text-sm text-slate-600">Ready to help you</span>
               </div>
               
               <h2 class="text-3xl font-bold text-slate-900 mb-3">
-                Hola, <span class="text-transparent bg-clip-text gradient-brand"><?php echo $userName; ?></span> 👋
+                Hello, <span class="text-transparent bg-clip-text gradient-brand"><?php echo $userName; ?></span> 👋
               </h2>
-              <p class="text-base text-slate-500 mb-8 max-w-lg mx-auto">¿En qué puedo ayudarte hoy? Escribe tu pregunta o elige una opción de abajo.</p>
+              <p class="text-base text-slate-500 mb-8 max-w-lg mx-auto">How can I help you today? Type your question or choose an option below.</p>
               
               <!-- Input principal con diseño moderno -->
               <div class="bg-white rounded-3xl p-4 lg:p-5 border border-slate-200 shadow-lg max-w-2xl mx-auto">
@@ -155,8 +155,8 @@ $headerShowLogo = true;
                   
                   <!-- Fila superior: textarea + botón enviar -->
                   <div class="flex items-start gap-3 mb-3">
-                    <textarea id="chat-input-empty" rows="1" class="flex-1 min-w-0 bg-transparent border-0 px-1 py-1 text-base text-slate-700 placeholder:text-slate-400 placeholder:italic focus:outline-none focus:ring-0 resize-none overflow-hidden" placeholder="Pregúntame lo que quieras" style="min-height: 28px; max-height: 120px;"></textarea>
-                    <button type="submit" class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-xl transition-smooth shrink-0" title="Enviar">
+                    <textarea id="chat-input-empty" rows="1" class="flex-1 min-w-0 bg-transparent border-0 px-1 py-1 text-base text-slate-700 placeholder:text-slate-400 placeholder:italic focus:outline-none focus:ring-0 resize-none overflow-hidden" placeholder="Ask me anything" style="min-height: 28px; max-height: 120px;"></textarea>
+                    <button type="submit" class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-xl transition-smooth shrink-0" title="Send">
                       <i class="iconoir-arrow-up text-xl"></i>
                     </button>
                   </div>
@@ -164,14 +164,14 @@ $headerShowLogo = true;
                   <div class="flex items-center justify-between px-1">
                     <!-- Fila inferior: botones de acción -->
                     <div class="flex items-center gap-1">
-                      <button type="button" id="attach-btn-empty" class="p-2 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-lg transition-smooth" title="Adjuntar archivo (PDF o imagen)">
+                      <button type="button" id="attach-btn-empty" class="p-2 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-lg transition-smooth" title="Attach file (PDF or image)">
                         <i class="iconoir-attachment text-lg"></i>
                       </button>
-                      <button type="button" id="image-mode-btn-empty" class="<?php echo $hasImageGenAccess ? '' : 'hidden'; ?> p-2 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-lg transition-smooth" title="Generar imagen con nanobanana 🍌">
+                      <button type="button" id="image-mode-btn-empty" class="<?php echo $hasImageGenAccess ? '' : 'hidden'; ?> p-2 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-lg transition-smooth" title="Generate image with nanobanana 🍌">
                         <i class="iconoir-media-image text-lg"></i>
                       </button>
                       <?php if ($user['is_superadmin']): ?>
-                      <select id="model-select-empty" class="ml-1 text-[10px] bg-slate-50 border border-slate-200 rounded-md px-2 py-1 text-slate-500 focus:outline-none focus:border-[#23AAC5] transition-colors" title="Seleccionar modelo (Solo Superadmin)">
+                      <select id="model-select-empty" class="ml-1 text-[10px] bg-slate-50 border border-slate-200 rounded-md px-2 py-1 text-slate-500 focus:outline-none focus:border-[#23AAC5] transition-colors" title="Select model (Superadmin only)">
                         <option value="deepseek/deepseek-v3.2">Deepseek v3.2</option>
                         <option value="google/gemini-3-flash-preview">Gemini 3 Flash</option>
                         <option value="z-ai/glm-4.7">GLM 4.7</option>
@@ -179,7 +179,7 @@ $headerShowLogo = true;
                       </select>
                       <?php endif; ?>
                     </div>
-                    <span id="shortcut-hint-empty" class="text-[10px] text-slate-400 font-medium opacity-50 select-none pr-1">⌘ + Enter para enviar</span>
+                    <span id="shortcut-hint-empty" class="text-[10px] text-slate-400 font-medium opacity-50 select-none pr-1">⌘ + Enter to send</span>
                   </div>
                 </form>
               </div>
@@ -188,22 +188,22 @@ $headerShowLogo = true;
             <!-- Divisor con "o" -->
             <div class="flex items-center gap-4 max-w-2xl mx-auto mb-8">
               <div class="flex-1 h-px bg-slate-200"></div>
-              <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">O elige una opción</span>
+              <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Or choose an option</span>
               <div class="flex-1 h-px bg-slate-200"></div>
             </div>
 
             <!-- Grid de opciones: Voces y Gestos -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-5xl mx-auto">
               
-              <!-- Sección Voces -->
+              <!-- Voices Section -->
               <div class="glass-strong rounded-3xl border border-slate-200/50 p-6 card-hover">
                 <div class="flex items-center gap-3 mb-5">
                   <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg animate-float" style="animation-delay: 0s">
                     <i class="iconoir-voice-square text-2xl text-white"></i>
                   </div>
                   <div>
-                    <h3 class="text-lg font-bold text-slate-900">Voces</h3>
-                    <p class="text-sm text-slate-500">Saben todo lo que necesitas</p>
+                    <h3 class="text-lg font-bold text-slate-900">Voices</h3>
+                    <p class="text-sm text-slate-500">They know everything you need</p>
                   </div>
                 </div>
                 
@@ -215,7 +215,7 @@ $headerShowLogo = true;
                       <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-sm group-hover:scale-110 transition-smooth">L</div>
                       <div class="flex-1 min-w-0">
                         <div class="font-semibold text-slate-800 group-hover:text-rose-600 transition-smooth">Lex</div>
-                        <div class="text-xs text-slate-500">Tu asistente legal de Ebone</div>
+                        <div class="text-xs text-slate-500">Your Ebone legal assistant</div>
                       </div>
                       <i class="iconoir-arrow-right text-slate-300 group-hover:text-rose-500 group-hover:translate-x-1 transition-smooth"></i>
                     </div>
@@ -228,7 +228,7 @@ $headerShowLogo = true;
                       <div class="w-10 h-10 rounded-xl bg-slate-200 flex items-center justify-center text-slate-400 font-bold text-sm flex-shrink-0">C</div>
                       <div class="flex-1 min-w-0">
                         <div class="font-semibold text-slate-500">Cubo</div>
-                        <div class="text-xs text-slate-400">Próximamente</div>
+                        <div class="text-xs text-slate-400">Coming soon</div>
                       </div>
                       <span class="px-2 py-0.5 text-xs bg-slate-100 text-slate-400 rounded-full">Soon</span>
                     </div>
@@ -240,7 +240,7 @@ $headerShowLogo = true;
                       <div class="w-10 h-10 rounded-xl bg-slate-200 flex items-center justify-center text-slate-400 font-bold text-sm flex-shrink-0">U</div>
                       <div class="flex-1 min-w-0">
                         <div class="font-semibold text-slate-500">Uniges</div>
-                        <div class="text-xs text-slate-400">Próximamente</div>
+                        <div class="text-xs text-slate-400">Coming soon</div>
                       </div>
                       <span class="px-2 py-0.5 text-xs bg-slate-100 text-slate-400 rounded-full">Soon</span>
                     </div>
@@ -248,22 +248,22 @@ $headerShowLogo = true;
 
                   <button id="view-all-voices" class="w-full p-3 mt-1 hover:bg-violet-50 border-2 border-dashed border-slate-200 hover:border-violet-300 rounded-2xl transition-smooth text-center group">
                     <div class="flex items-center justify-center gap-2 text-sm font-medium text-slate-500 group-hover:text-violet-600 transition-smooth">
-                      <span>Ver todas las voces</span>
+                      <span>View all voices</span>
                       <i class="iconoir-arrow-right group-hover:translate-x-1 transition-smooth"></i>
                     </div>
                   </button>
                 </div>
               </div>
 
-              <!-- Sección Gestos -->
+              <!-- Gestures Section -->
               <div class="glass-strong rounded-3xl border border-slate-200/50 p-6 card-hover">
                 <div class="flex items-center gap-3 mb-5">
                   <div class="w-12 h-12 rounded-2xl gradient-brand flex items-center justify-center shadow-lg animate-float" style="animation-delay: 0.5s">
                     <i class="iconoir-magic-wand text-2xl text-white"></i>
                   </div>
                   <div>
-                    <h3 class="text-lg font-bold text-slate-900">Gestos</h3>
-                    <p class="text-sm text-slate-500">Acciones rápidas optimizadas</p>
+                    <h3 class="text-lg font-bold text-slate-900">Gestures</h3>
+                    <p class="text-sm text-slate-500">Optimized quick actions</p>
                   </div>
                 </div>
                 
@@ -275,8 +275,8 @@ $headerShowLogo = true;
                         <i class="iconoir-page-edit text-lg text-white"></i>
                       </div>
                       <div class="flex-1 min-w-0">
-                        <div class="font-semibold text-slate-800 group-hover:text-[#115c6c] transition-smooth">Escribir artículo</div>
-                        <div class="text-xs text-slate-500">Blogs, noticias, notas de prensa</div>
+                        <div class="font-semibold text-slate-800 group-hover:text-[#115c6c] transition-smooth">Write article</div>
+                        <div class="text-xs text-slate-500">Blogs, news, press releases</div>
                       </div>
                       <i class="iconoir-arrow-right text-slate-300 group-hover:text-[#23AAC5] group-hover:translate-x-1 transition-smooth"></i>
                     </div>
@@ -290,8 +290,8 @@ $headerShowLogo = true;
                         <i class="iconoir-send-diagonal text-lg text-white"></i>
                       </div>
                       <div class="flex-1 min-w-0">
-                        <div class="font-semibold text-slate-800 group-hover:text-violet-600 transition-smooth">Redes sociales</div>
-                        <div class="text-xs text-slate-500">Publicaciones para RRSS</div>
+                        <div class="font-semibold text-slate-800 group-hover:text-violet-600 transition-smooth">Social media</div>
+                        <div class="text-xs text-slate-500">Posts for social networks</div>
                       </div>
                       <i class="iconoir-arrow-right text-slate-300 group-hover:text-violet-500 group-hover:translate-x-1 transition-smooth"></i>
                     </div>
@@ -305,8 +305,8 @@ $headerShowLogo = true;
                         <i class="iconoir-podcast text-lg text-white"></i>
                       </div>
                       <div class="flex-1 min-w-0">
-                        <div class="font-semibold text-slate-800 group-hover:text-rose-600 transition-smooth">Podcast desde artículo</div>
-                        <div class="text-xs text-slate-500">Audio con 2 voces IA</div>
+                        <div class="font-semibold text-slate-800 group-hover:text-rose-600 transition-smooth">Podcast from article</div>
+                        <div class="text-xs text-slate-500">Audio with 2 AI voices</div>
                       </div>
                       <i class="iconoir-arrow-right text-slate-300 group-hover:text-rose-500 group-hover:translate-x-1 transition-smooth"></i>
                     </div>
@@ -317,7 +317,7 @@ $headerShowLogo = true;
 
                   <button id="view-all-gestures" class="w-full p-3 mt-1 hover:bg-[#23AAC5]/5 border-2 border-dashed border-slate-200 hover:border-[#23AAC5]/50 rounded-2xl transition-smooth text-center group">
                     <div class="flex items-center justify-center gap-2 text-sm font-medium text-slate-500 group-hover:text-[#23AAC5] transition-smooth">
-                      <span>Ver todos los gestos</span>
+                      <span>View all gestures</span>
                       <i class="iconoir-arrow-right group-hover:translate-x-1 transition-smooth"></i>
                     </div>
                   </button>
@@ -361,8 +361,8 @@ $headerShowLogo = true;
             
             <!-- Fila superior: textarea + botón enviar -->
             <div class="flex items-start gap-3 mb-2">
-              <textarea id="chat-input" rows="1" class="flex-1 min-w-0 bg-transparent border-0 px-1 py-1 text-base text-slate-700 placeholder:text-slate-400 placeholder:italic focus:outline-none focus:ring-0 resize-none overflow-hidden" placeholder="Escribe un mensaje..." style="min-height: 28px; max-height: 120px;"></textarea>
-              <button type="submit" class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-xl transition-smooth shrink-0" title="Enviar">
+              <textarea id="chat-input" rows="1" class="flex-1 min-w-0 bg-transparent border-0 px-1 py-1 text-base text-slate-700 placeholder:text-slate-400 placeholder:italic focus:outline-none focus:ring-0 resize-none overflow-hidden" placeholder="Write a message..." style="min-height: 28px; max-height: 120px;"></textarea>
+              <button type="submit" class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-xl transition-smooth shrink-0" title="Send">
                 <i class="iconoir-arrow-up text-xl"></i>
               </button>
             </div>
@@ -370,14 +370,14 @@ $headerShowLogo = true;
             <div class="flex items-center justify-between px-1">
               <!-- Fila inferior: botones de acción -->
               <div class="flex items-center gap-1">
-                <button type="button" id="attach-btn" class="p-2 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-lg transition-smooth" title="Adjuntar archivo (PDF o imagen)">
+                <button type="button" id="attach-btn" class="p-2 text-slate-400 hover:text-[#23AAC5] hover:bg-[#23AAC5]/10 rounded-lg transition-smooth" title="Attach file (PDF or image)">
                   <i class="iconoir-attachment text-lg"></i>
                 </button>
-                <button type="button" id="image-mode-btn" class="<?php echo $hasImageGenAccess ? '' : 'hidden'; ?> p-2 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-lg transition-smooth" title="Generar imagen con nanobanana 🍌">
+                <button type="button" id="image-mode-btn" class="<?php echo $hasImageGenAccess ? '' : 'hidden'; ?> p-2 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-lg transition-smooth" title="Generate image with nanobanana 🍌">
                   <i class="iconoir-media-image text-lg"></i>
                 </button>
                 <?php if ($user['is_superadmin']): ?>
-                <select id="model-select-chat" class="ml-1 text-[10px] bg-slate-50 border border-slate-200 rounded-md px-2 py-1 text-slate-500 focus:outline-none focus:border-[#23AAC5] transition-colors" title="Seleccionar modelo (Solo Superadmin)">
+                <select id="model-select-chat" class="ml-1 text-[10px] bg-slate-50 border border-slate-200 rounded-md px-2 py-1 text-slate-500 focus:outline-none focus:border-[#23AAC5] transition-colors" title="Select model (Superadmin only)">
                   <option value="deepseek/deepseek-v3.2">Deepseek v3.2</option>
                   <option value="google/gemini-3-flash-preview">Gemini 3 Flash</option>
                   <option value="z-ai/glm-4.7">GLM 4.7</option>
@@ -385,7 +385,7 @@ $headerShowLogo = true;
                 </select>
                 <?php endif; ?>
               </div>
-              <span id="shortcut-hint-chat" class="text-[10px] text-slate-400 font-medium opacity-50 select-none pr-1">⌘ + Enter para enviar</span>
+              <span id="shortcut-hint-chat" class="text-[10px] text-slate-400 font-medium opacity-50 select-none pr-1">⌘ + Enter to send</span>
             </div>
           </div>
         </form>
@@ -398,7 +398,7 @@ $headerShowLogo = true;
     <button onclick="closeLightbox()" class="absolute top-4 right-4 p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-colors">
       <i class="iconoir-xmark text-2xl"></i>
     </button>
-    <img id="lightbox-img" src="" alt="Imagen ampliada" class="max-w-full max-h-full object-contain rounded-lg shadow-2xl" onclick="event.stopPropagation()">
+    <img id="lightbox-img" src="" alt="Enlarged image" class="max-w-full max-h-full object-contain rounded-lg shadow-2xl" onclick="event.stopPropagation()">
   </div>
   
   <!-- Modal Mover a Carpeta -->
@@ -411,8 +411,8 @@ $headerShowLogo = true;
             <i class="iconoir-folder-settings text-xl text-white"></i>
           </div>
           <div>
-            <h3 class="text-lg font-semibold text-slate-900">Mover conversación</h3>
-            <p class="text-xs text-slate-500" id="move-conv-title">Selecciona la carpeta de destino</p>
+            <h3 class="text-lg font-semibold text-slate-900">Move conversation</h3>
+            <p class="text-xs text-slate-500" id="move-conv-title">Select destination folder</p>
           </div>
         </div>
         <button id="close-move-modal" class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
@@ -430,8 +430,8 @@ $headerShowLogo = true;
                 <i class="iconoir-folder-minus text-xl text-slate-500 group-hover:text-[#23AAC5]"></i>
               </div>
               <div class="flex-1 min-w-0">
-                <div class="font-semibold text-slate-800 group-hover:text-[#23AAC5] transition-colors">Sin carpeta</div>
-                <div class="text-xs text-slate-500">Mover a la raíz</div>
+                <div class="font-semibold text-slate-800 group-hover:text-[#23AAC5] transition-colors">No folder</div>
+                <div class="text-xs text-slate-500">Move to root</div>
               </div>
               <i class="iconoir-nav-arrow-right text-slate-300 group-hover:text-[#23AAC5] transition-colors"></i>
             </div>
@@ -442,14 +442,14 @@ $headerShowLogo = true;
         
         <div id="empty-folders" class="hidden text-center py-8 text-slate-400 text-sm">
           <i class="iconoir-folder text-4xl mb-2"></i>
-          <p>No tienes carpetas creadas</p>
+          <p>You have no folders created</p>
         </div>
       </div>
       
       <!-- Footer -->
       <div class="p-6 border-t border-slate-200 flex gap-3">
         <button id="cancel-move" class="flex-1 px-4 py-2.5 border-2 border-slate-200 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-colors">
-          Cancelar
+          Cancel
         </button>
       </div>
     </div>

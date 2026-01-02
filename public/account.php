@@ -12,11 +12,11 @@ if (!$user) {
     exit;
 }
 ?><!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mi cuenta — Ebonia</title>
+  <title>My Account — IAIA</title>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="apple-touch-icon" href="/assets/images/isotipo.png">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -34,7 +34,7 @@ if (!$user) {
   <div class="min-h-screen flex h-screen">
     <?php 
     $activeTab = 'account';
-    $pageTitle = 'Mi Cuenta';
+    $pageTitle = 'My Account';
     include __DIR__ . '/includes/left-tabs.php'; 
     ?>
 
@@ -55,24 +55,24 @@ if (!$user) {
                   ?>
                 </div>
                 <div>
-                  <h2 class="text-xl font-bold text-slate-800">Información personal</h2>
-                  <p class="text-slate-500 text-sm">Gestiona tus datos y preferencias</p>
+                  <h2 class="text-xl font-bold text-slate-800">Personal information</h2>
+                  <p class="text-slate-500 text-sm">Manage your data and preferences</p>
                 </div>
               </div>
               <button id="edit-toggle-btn" class="text-sm text-[#23AAC5] hover:text-[#115c6c] font-medium flex items-center gap-1">
                 <i class="iconoir-edit-pencil"></i>
-                <span>Editar</span>
+                <span>Edit</span>
               </button>
             </div>
             
             <!-- Vista normal -->
             <div id="profile-view" class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label class="text-xs font-medium text-slate-500 uppercase tracking-wider">Nombre</label>
+          <label class="text-xs font-medium text-slate-500 uppercase tracking-wider">First name</label>
           <div class="mt-1 text-slate-800 font-medium" id="display-first-name"><?php echo htmlspecialchars($user['first_name']); ?></div>
         </div>
         <div>
-          <label class="text-xs font-medium text-slate-500 uppercase tracking-wider">Apellidos</label>
+          <label class="text-xs font-medium text-slate-500 uppercase tracking-wider">Last name</label>
           <div class="mt-1 text-slate-800 font-medium" id="display-last-name"><?php echo htmlspecialchars($user['last_name']); ?></div>
         </div>
         <div>
@@ -80,8 +80,8 @@ if (!$user) {
           <div class="mt-1 text-slate-800 font-medium"><?php echo htmlspecialchars($user['email']); ?></div>
         </div>
         <div>
-          <label class="text-xs font-medium text-slate-500 uppercase tracking-wider">Departamento</label>
-          <div class="mt-1 text-slate-800 font-medium"><?php echo htmlspecialchars($user['department_name'] ?? 'Sin asignar'); ?></div>
+          <label class="text-xs font-medium text-slate-500 uppercase tracking-wider">Department</label>
+          <div class="mt-1 text-slate-800 font-medium"><?php echo htmlspecialchars($user['department_name'] ?? 'Not assigned'); ?></div>
         </div>
       </div>
 
@@ -89,11 +89,11 @@ if (!$user) {
       <form id="profile-edit-form" class="hidden space-y-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="text-xs font-medium text-slate-500 uppercase tracking-wider block mb-2">Nombre</label>
+            <label class="text-xs font-medium text-slate-500 uppercase tracking-wider block mb-2">First name</label>
             <input type="text" id="edit-first-name" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-colors" required>
           </div>
           <div>
-            <label class="text-xs font-medium text-slate-500 uppercase tracking-wider block mb-2">Apellidos</label>
+            <label class="text-xs font-medium text-slate-500 uppercase tracking-wider block mb-2">Last name</label>
             <input type="text" id="edit-last-name" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-colors" required>
           </div>
           <div>
@@ -101,22 +101,22 @@ if (!$user) {
             <input type="email" value="<?php echo htmlspecialchars($user['email']); ?>" class="w-full px-3 py-2 border border-slate-200 rounded-lg bg-slate-50 text-slate-600 cursor-not-allowed" disabled>
           </div>
           <div>
-            <label class="text-xs font-medium text-slate-500 uppercase tracking-wider block mb-2">Departamento</label>
-            <input type="text" value="<?php echo htmlspecialchars($user['department_name'] ?? 'Sin asignar'); ?>" class="w-full px-3 py-2 border border-slate-200 rounded-lg bg-slate-50 text-slate-600 cursor-not-allowed" disabled>
+            <label class="text-xs font-medium text-slate-500 uppercase tracking-wider block mb-2">Department</label>
+            <input type="text" value="<?php echo htmlspecialchars($user['department_name'] ?? 'Not assigned'); ?>" class="w-full px-3 py-2 border border-slate-200 rounded-lg bg-slate-50 text-slate-600 cursor-not-allowed" disabled>
           </div>
         </div>
         <div class="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 flex items-start gap-3">
           <i class="iconoir-info-circle text-blue-600 text-lg flex-shrink-0 mt-0.5"></i>
           <p class="text-sm text-blue-800">
-            Si necesitas modificar tu email o departamento, contacta con <a href="mailto:it@ebone.es" class="font-semibold underline hover:text-blue-900">it@ebone.es</a>
+            If you need to change your email or department, contact <a href="mailto:it@ebone.es" class="font-semibold underline hover:text-blue-900">it@ebone.es</a>
           </p>
         </div>
         <div class="flex gap-3 pt-2">
           <button type="submit" class="px-4 py-2 bg-gradient-to-r from-[#23AAC5] to-[#115c6c] text-white rounded-lg font-medium hover:opacity-90 transition-all text-sm shadow-md">
-            Guardar cambios
+            Save changes
           </button>
           <button type="button" id="cancel-edit-btn" class="px-4 py-2 border border-slate-200 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-colors text-sm">
-            Cancelar
+            Cancel
           </button>
         </div>
       </form>
@@ -124,26 +124,26 @@ if (!$user) {
 
     <!-- Seguridad -->
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
-      <h2 class="text-lg font-semibold text-slate-800 mb-6">Seguridad</h2>
+      <h2 class="text-lg font-semibold text-slate-800 mb-6">Security</h2>
       
       <div class="flex items-center justify-between py-3">
         <div>
-          <div class="font-medium text-slate-800">Contraseña</div>
+          <div class="font-medium text-slate-800">Password</div>
           <div class="text-sm text-slate-500 mt-0.5">••••••••</div>
         </div>
         <button id="change-password-btn" class="px-4 py-2 text-sm font-medium text-slate-700 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
-          Cambiar contraseña
+          Change password
         </button>
       </div>
     </div>
 
     <!-- Actividad -->
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-      <h2 class="text-lg font-semibold text-slate-800 mb-6">Actividad reciente</h2>
+      <h2 class="text-lg font-semibold text-slate-800 mb-6">Recent activity</h2>
       
       <div id="activity-loading" class="text-center py-8">
         <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#23AAC5] border-r-transparent"></div>
-        <p class="text-sm text-slate-500 mt-3">Cargando estadísticas...</p>
+        <p class="text-sm text-slate-500 mt-3">Loading statistics...</p>
       </div>
 
       <div id="activity-content" class="hidden space-y-4">
@@ -152,10 +152,10 @@ if (!$user) {
             <i class="iconoir-chat-bubble text-[#23AAC5]"></i>
           </div>
           <div class="flex-1 min-w-0">
-            <div class="text-sm font-medium text-slate-800">Conversaciones creadas</div>
+            <div class="text-sm font-medium text-slate-800">Conversations created</div>
             <div class="text-sm text-slate-500 mt-0.5">
-              <span id="stats-conversations-week" class="font-semibold text-slate-800">0</span> esta semana · 
-              <span id="stats-conversations-total" class="text-slate-600">0</span> en total
+              <span id="stats-conversations-week" class="font-semibold text-slate-800">0</span> this week · 
+              <span id="stats-conversations-total" class="text-slate-600">0</span> total
             </div>
           </div>
         </div>
@@ -165,10 +165,10 @@ if (!$user) {
             <i class="iconoir-message-text text-indigo-600"></i>
           </div>
           <div class="flex-1 min-w-0">
-            <div class="text-sm font-medium text-slate-800">Mensajes enviados</div>
+            <div class="text-sm font-medium text-slate-800">Messages sent</div>
             <div class="text-sm text-slate-500 mt-0.5">
-              <span id="stats-messages-week" class="font-semibold text-slate-800">0</span> esta semana · 
-              <span id="stats-messages-total" class="text-slate-600">0</span> en total
+              <span id="stats-messages-week" class="font-semibold text-slate-800">0</span> this week · 
+              <span id="stats-messages-total" class="text-slate-600">0</span> total
             </div>
           </div>
         </div>
@@ -178,14 +178,14 @@ if (!$user) {
             <i class="iconoir-clock text-emerald-600"></i>
           </div>
           <div class="flex-1 min-w-0">
-            <div class="text-sm font-medium text-slate-800">Último acceso</div>
+            <div class="text-sm font-medium text-slate-800">Last access</div>
             <div class="text-sm text-slate-500 mt-0.5">
               <?php 
                 if ($user['last_login_at']) {
                   $date = new DateTime($user['last_login_at']);
                   echo $date->format('d/m/Y H:i');
                 } else {
-                  echo 'Primera sesión';
+                  echo 'First session';
                 }
               ?>
             </div>
@@ -197,7 +197,7 @@ if (!$user) {
             <i class="iconoir-calendar text-blue-600"></i>
           </div>
           <div class="flex-1 min-w-0">
-            <div class="text-sm font-medium text-slate-800">Cuenta creada</div>
+            <div class="text-sm font-medium text-slate-800">Account created</div>
             <div class="text-sm text-slate-500 mt-0.5">
               <?php 
                 $created = new DateTime($user['created_at']);
@@ -211,7 +211,7 @@ if (!$user) {
 
     <!-- Footer -->
     <div class="mt-8 text-center text-sm text-slate-500">
-      <p>© 2025 Grupo Ebone. Todos los derechos reservados.</p>
+      <p>© 2025 Grupo Ebone. All rights reserved.</p>
     </div>
   </div>
 </div>
@@ -225,7 +225,7 @@ if (!$user) {
   <div id="password-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
     <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
       <div class="flex items-center justify-between mb-6">
-        <h3 class="text-lg font-semibold text-slate-800">Cambiar contraseña</h3>
+        <h3 class="text-lg font-semibold text-slate-800">Change password</h3>
         <button id="close-modal-btn" class="p-1 text-slate-400 hover:text-slate-600 transition-colors">
           <i class="iconoir-xmark text-xl"></i>
         </button>
@@ -233,18 +233,18 @@ if (!$user) {
 
       <form id="password-form" class="space-y-4">
         <div>
-          <label class="text-sm font-medium text-slate-700 block mb-2">Contraseña actual</label>
+          <label class="text-sm font-medium text-slate-700 block mb-2">Current password</label>
           <input type="password" id="current-password" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-colors" required>
         </div>
 
         <div>
-          <label class="text-sm font-medium text-slate-700 block mb-2">Nueva contraseña</label>
+          <label class="text-sm font-medium text-slate-700 block mb-2">New password</label>
           <input type="password" id="new-password" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-colors" required minlength="8">
-          <p class="text-xs text-slate-500 mt-1">Mínimo 8 caracteres</p>
+          <p class="text-xs text-slate-500 mt-1">Minimum 8 characters</p>
         </div>
 
         <div>
-          <label class="text-sm font-medium text-slate-700 block mb-2">Confirmar contraseña</label>
+          <label class="text-sm font-medium text-slate-700 block mb-2">Confirm password</label>
           <input type="password" id="confirm-password" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-[#23AAC5] focus:ring-2 focus:ring-[#23AAC5]/20 transition-colors" required>
         </div>
 
@@ -253,10 +253,10 @@ if (!$user) {
 
         <div class="flex gap-3 pt-2">
           <button type="submit" class="flex-1 px-4 py-2 bg-gradient-to-r from-[#23AAC5] to-[#115c6c] text-white rounded-lg font-medium hover:opacity-90 transition-all text-sm shadow-md">
-            Cambiar contraseña
+            Change password
           </button>
           <button type="button" id="cancel-password-btn" class="px-4 py-2 border border-slate-200 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-colors text-sm">
-            Cancelar
+            Cancel
           </button>
         </div>
       </form>
@@ -294,7 +294,7 @@ if (!$user) {
         document.getElementById('activity-loading').classList.add('hidden');
         document.getElementById('activity-content').classList.remove('hidden');
       } catch (err) {
-        document.getElementById('activity-loading').innerHTML = '<p class="text-sm text-red-600">Error al cargar estadísticas</p>';
+        document.getElementById('activity-loading').innerHTML = '<p class="text-sm text-red-600">Error loading statistics</p>';
       }
     }
 
@@ -326,7 +326,7 @@ if (!$user) {
       e.preventDefault();
       const submitBtn = profileForm.querySelector('button[type="submit"]');
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Guardando...';
+      submitBtn.textContent = 'Saving...';
 
       try {
         const data = await api('/api/account/update_profile.php', {
@@ -347,10 +347,10 @@ if (!$user) {
         profileView.classList.remove('hidden');
         profileForm.classList.add('hidden');
       } catch (err) {
-        alert('Error al actualizar perfil: ' + err.message);
+        alert('Error updating profile: ' + err.message);
       } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Guardar cambios';
+        submitBtn.textContent = 'Save changes';
       }
     });
 
@@ -387,14 +387,14 @@ if (!$user) {
       const confirm = document.getElementById('confirm-password').value;
 
       if (newPass !== confirm) {
-        passwordError.textContent = 'Las contraseñas no coinciden';
+        passwordError.textContent = 'Passwords do not match';
         passwordError.classList.remove('hidden');
         return;
       }
 
       const submitBtn = passwordForm.querySelector('button[type="submit"]');
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Cambiando...';
+      submitBtn.textContent = 'Changing...';
 
       try {
         await api('/api/account/change_password.php', {
@@ -406,7 +406,7 @@ if (!$user) {
           }
         });
 
-        passwordSuccess.textContent = 'Contraseña actualizada correctamente';
+        passwordSuccess.textContent = 'Password updated successfully';
         passwordSuccess.classList.remove('hidden');
         passwordForm.reset();
 
@@ -419,7 +419,7 @@ if (!$user) {
         passwordError.classList.remove('hidden');
       } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Cambiar contraseña';
+        submitBtn.textContent = 'Change password';
       }
     });
 

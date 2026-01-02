@@ -1,7 +1,7 @@
 {
   "name": "IAIA",
   "short_name": "IAIA",
-  "description": "Asistente IA inteligente para el Grupo Ebone",
+  "description": "Intelligent AI assistant for Grupo Ebone",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
