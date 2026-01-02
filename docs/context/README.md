@@ -1,6 +1,6 @@
-# Contexto Corporativo de Ebonia
+# Contexto Corporativo de IAIA
 
-Esta carpeta contiene los archivos de conocimiento base que Ebonia utiliza en todas las conversaciones.
+Esta carpeta contiene los archivos de conocimiento base que IAIA utiliza en todas las conversaciones.
 
 ## Cómo funciona
 
@@ -11,7 +11,7 @@ Esta carpeta contiene los archivos de conocimiento base que Ebonia utiliza en to
 
 ## Archivos actuales
 
-- **system_prompt.md**: Instrucciones base del sistema, rol de Ebonia, directrices de conversación
+- **system_prompt.md**: Instrucciones base del sistema, rol de IAIA, directrices de conversación
 - **grupo_ebone_overview.md**: Información general del Grupo Ebone (PENDIENTE - subir documento)
 
 ## Cómo añadir nuevo contexto

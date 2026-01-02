@@ -81,6 +81,6 @@ class ContextBuilder
      */
     private function getDefaultPrompt(): string
     {
-        return "Eres Ebonia, un asistente de IA corporativa profesional y útil.";
+        return "Eres IAIA, un asistente de IA corporativa profesional y útil.";
     }
 }

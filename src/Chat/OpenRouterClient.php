@@ -152,8 +152,8 @@ class OpenRouterClient {
             CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json',
                 'Authorization: Bearer ' . $this->apiKey,
-                'HTTP-Referer: ' . (Env::get('APP_URL') ?? 'https://ebonia.es'),
-                'X-Title: Ebonia'
+                'HTTP-Referer: ' . (Env::get('APP_URL') ?? 'https://iaia.wthefox.com'),
+                'X-Title: IAIA'
             ],
             CURLOPT_POSTFIELDS => json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
             CURLOPT_TIMEOUT => 180, // 3 minutos máximo
@@ -323,8 +323,8 @@ class OpenRouterClient {
             CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json',
                 'Authorization: Bearer ' . $this->apiKey,
-                'HTTP-Referer: ' . (Env::get('APP_URL') ?? 'https://ebonia.es'),
-                'X-Title: Ebonia',
+                'HTTP-Referer: ' . (Env::get('APP_URL') ?? 'https://iaia.wthefox.com'),
+                'X-Title: IAIA',
                 'Accept: text/event-stream'
             ],
             CURLOPT_POSTFIELDS => json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),

@@ -324,8 +324,8 @@ class ContentExtractor
             'Content-Type: application/json',
             'Content-Length: ' . strlen($jsonPayload),
             'Authorization: Bearer ' . $apiKey,
-            'HTTP-Referer: ' . (\App\Env::get('APP_URL') ?? 'https://ebonia.es'),
-            'X-Title: Ebonia'
+            'HTTP-Referer: ' . (\App\Env::get('APP_URL') ?? 'https://iaia.wthefox.com'),
+            'X-Title: IAIA'
         ]);
         curl_setopt($ch, CURLOPT_TIMEOUT, 300);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);

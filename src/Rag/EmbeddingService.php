@@ -76,8 +76,8 @@ class EmbeddingService
             CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json',
                 'Authorization: Bearer ' . $this->apiKey,
-                'HTTP-Referer: https://ebonia.app',
-                'X-Title: Ebonia RAG'
+                'HTTP-Referer: https://iaia.wthefox.com',
+                'X-Title: IAIA RAG'
             ]
         ]);
 

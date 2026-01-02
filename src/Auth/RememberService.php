@@ -11,7 +11,7 @@ use App\DB;
  */
 class RememberService
 {
-    private const COOKIE_NAME = 'ebonia_remember';
+    private const COOKIE_NAME = 'iaia_remember';
     private const TOKEN_DAYS = 30;
     
     /**

@@ -13,7 +13,7 @@ if ($user) {
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Ebonia — Login</title>
+  <title>IAIA — Login</title>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="apple-touch-icon" href="/assets/images/isotipo.png">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -66,9 +66,9 @@ if ($user) {
   <!-- Lado derecho - Formulario -->
   <div class="w-full lg:w-1/2 flex items-center justify-center p-8">
     <div class="w-full max-w-md">
-      <!-- Logo Ebonia -->
+      <!-- Logo IAIA -->
       <div class="text-center mb-8">
-        <img src="/assets/images/logo.png" alt="Ebonia" class="h-24 mx-auto" />
+        <img src="/assets/images/logo.png" alt="IAIA" class="h-24 mx-auto" />
       </div>
       
       <div class="text-center mb-8">

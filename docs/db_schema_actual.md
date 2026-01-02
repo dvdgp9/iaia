@@ -1,7 +1,7 @@
 # Ebonia - Esquema de Base de Datos (Estado Real)
 
 **Fecha de auditoría:** 2025-12-01  
-**Base de datos:** `ebonia_db`  
+**Base de datos:** `iaia_db`  
 **Servidor:** localhost:3306  
 **Charset:** utf8mb4 / utf8mb4_unicode_ci
 
@@ -9,7 +9,7 @@
 
 ## Resumen Ejecutivo
 
-Este documento refleja el **estado real** de la base de datos de Ebonia tras la aplicación de migraciones:
+Este documento refleja el **estado real** de la base de datos de IAIA tras la aplicación de migraciones:
 - ✅ **Migración 001_init.sql** aplicada (estructura base)
 - ✅ **Migración 002_seed_core.sql** aplicada (datos iniciales)
 - ✅ **Migración 003_add_favorites.sql** aplicada (campo is_favorite)

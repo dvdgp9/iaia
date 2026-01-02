@@ -35,11 +35,11 @@ Para mejorar la presentación en el instalador, puedes añadir en `public/assets
 
 Si no subes screenshots, elimina la sección "screenshots" del `manifest.json`.
 
-## 🎨 Recomendaciones de diseño
+## Recomendaciones de diseño
 
 ### Para iconos estándar:
 - Fondo: Color brand (#23AAC5) o blanco
-- Logo: Isotipo de Ebonia centrado
+- Logo: Isotipo de IAIA centrado
 - Bordes redondeados opcionales (el sistema los aplicará)
 
 ### Para iconos maskable:

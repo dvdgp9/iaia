@@ -3,10 +3,10 @@
  * Partial: <head> común para todas las páginas
  * 
  * Variables esperadas:
- * - $pageTitle (opcional): Título de la página, default "Ebonia — IA Corporativa"
+ * - $pageTitle (opcional): Título de la página, default "IAIA — IA Corporativa"
  * - $csrfToken: Token CSRF de la sesión
  */
-$pageTitle = $pageTitle ?? 'Ebonia — IA Corporativa';
+$pageTitle = $pageTitle ?? 'IAIA — IA Corporativa';
 ?>
 <head>
   <meta charset="utf-8" />
@@ -19,7 +19,7 @@ $pageTitle = $pageTitle ?? 'Ebonia — IA Corporativa';
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Ebonia">
+  <meta name="apple-mobile-web-app-title" content="IAIA">
   
   <!-- Icons -->
   <link rel="icon" type="image/x-icon" href="/favicon.ico">

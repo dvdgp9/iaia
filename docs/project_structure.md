@@ -1,6 +1,6 @@
-# Ebonia - Estructura de Proyecto (Propuesta MVP)
+# IAIA - Estructura de Proyecto (Propuesta MVP)
 
-Objetivo: estructura simple y escalable sin dependencias externas (sin Composer en MVP). El front usa Tailwind CDN y JS vanilla. El backend expone endpoints PHP simples en `/api/*` con sesiones.
+IAIA (antes Ebonia) es una plataforma...uctura simple y escalable sin dependencias externas (sin Composer en MVP). El front usa Tailwind CDN y JS vanilla. El backend expone endpoints PHP simples en `/api/*` con sesiones.
 
 ## Árbol propuesto
 
@@ -60,7 +60,7 @@ Notas:
 - PHP 8.2+.
 - Estricto con tipos donde aplique.
 - Respuestas JSON en API con `Content-Type: application/json; charset=utf-8`.
-- Sesión: cookie `HttpOnly`, `Secure`, `SameSite=Lax`, nombre `ebonia_session`.
+- Sesión: cookie `HttpOnly`, `Secure`, `SameSite=Lax`, nombre `iaia_session`.
 - CSRF: token por sesión; header `X-CSRF-Token` en peticiones mutadoras (login, chat, etc.).
 - Errores JSON: `{ "error": { "code":"...", "message":"..." } }`.
 - Timezone: UTC (convertir en UI si se requiere).
@@ -68,10 +68,10 @@ Notas:
 ## Variables de entorno (`.env`)
 - `APP_ENV=local|production`
 - `APP_DEBUG=0|1`
-- `APP_URL=https://ebonia.es` (o http://localhost:8000 en dev)
+- `APP_URL=https://iaia.wthefox.com` (o http://localhost:8000 en dev)
 - `DB_HOST=localhost`
 - `DB_PORT=3306`
-- `DB_NAME=ebonia`
+- `DB_NAME=iaia_db`
 - `DB_USER=...`
 - `DB_PASS=...`
 - `GEMINI_API_KEY=...` (no se versiona)

@@ -55,7 +55,7 @@ $headerStyle .= ' flex items-center justify-between shadow-sm shrink-0 sticky to
     
     <?php if ($headerShowLogo): ?>
       <!-- Logo (móvil) -->
-      <img src="/assets/images/logo.png" alt="Ebonia" class="h-7 lg:hidden">
+      <img src="/assets/images/logo.png" alt="IAIA" class="h-7 lg:hidden">
     <?php endif; ?>
     
     <?php if ($headerShowConvTitle): ?>

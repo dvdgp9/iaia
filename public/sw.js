@@ -3,7 +3,7 @@
  * Estrategia: Network-first con caché mínimo solo para instalabilidad
  */
 
-const CACHE_VERSION = 'ebonia-v1';
+const CACHE_VERSION = 'iaia-v1';
 const MINIMAL_CACHE = [
   '/',
   '/manifest.json',

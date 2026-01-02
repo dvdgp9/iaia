@@ -26,7 +26,7 @@ try {
         echo "= Usuario admin ya existe: $adminEmail (id=$existing)\n";
     } else {
         $ins = $pdo->prepare('INSERT INTO users (company_id, department_id, email, password_hash, first_name, last_name, is_superadmin, status, created_at, updated_at) VALUES (NULL, NULL, ?, ?, ?, ?, 1, "active", ?, ?)');
-        $ins->execute([$adminEmail, $hash, 'Admin', 'Ebonia', $now, $now]);
+        $ins->execute([$adminEmail, $hash, 'Admin', 'IAIA', $now, $now]);
         $userId = (int)$pdo->lastInsertId();
         echo "+ Usuario admin creado: $adminEmail (id=$userId)\n";
 
