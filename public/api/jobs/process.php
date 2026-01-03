@@ -155,7 +155,7 @@ function processPodcastJob(int $jobId, array $inputData, int $userId, Background
     $sourcePdf = $inputData['pdf_base64'] ?? '';
     
     // === PASO 1: Extraer contenido ===
-    $repo->updateProgress($jobId, 'Extrayendo contenido del artículo...');
+    $repo->updateProgress($jobId, 'Extracting article content...');
     
     $extractor = new ContentExtractor();
     $content = null;
@@ -165,11 +165,11 @@ function processPodcastJob(int $jobId, array $inputData, int $userId, Background
     switch ($sourceType) {
         case 'url':
             if (empty($sourceUrl)) {
-                throw new \Exception('URL no proporcionada');
+                throw new \Exception('URL not provided');
             }
             $result = $extractor->extractFromUrl($sourceUrl);
             if (!$result['success']) {
-                throw new \Exception('Error extrayendo URL: ' . $result['error']);
+                throw new \Exception('Error extracting URL: ' . $result['error']);
             }
             $content = $result['content'];
             $title = $result['title'];
@@ -178,11 +178,11 @@ function processPodcastJob(int $jobId, array $inputData, int $userId, Background
             
         case 'pdf':
             if (empty($sourcePdf)) {
-                throw new \Exception('PDF no proporcionado');
+                throw new \Exception('PDF not provided');
             }
             $result = $extractor->extractFromPdf($sourcePdf);
             if (!$result['success']) {
-                throw new \Exception('Error extrayendo PDF: ' . $result['error']);
+                throw new \Exception('Error extracting PDF: ' . $result['error']);
             }
             $content = $result['content'];
             $title = $result['title'];
@@ -191,11 +191,11 @@ function processPodcastJob(int $jobId, array $inputData, int $userId, Background
             
         case 'text':
             if (empty($sourceText)) {
-                throw new \Exception('Texto no proporcionado');
+                throw new \Exception('Text not provided');
             }
             $result = $extractor->extractFromText($sourceText);
             if (!$result['success']) {
-                throw new \Exception('Error procesando texto: ' . $result['error']);
+                throw new \Exception('Error processing text: ' . $result['error']);
             }
             $content = $result['content'];
             $title = $result['title'];
@@ -203,17 +203,17 @@ function processPodcastJob(int $jobId, array $inputData, int $userId, Background
             break;
             
         default:
-            throw new \Exception("Tipo de fuente no soportado: {$sourceType}");
+            throw new \Exception("Source type not supported: {$sourceType}");
     }
     
     // === PASO 2: Generar guion ===
-    $repo->updateProgress($jobId, 'Generando guion del podcast...');
+    $repo->updateProgress($jobId, 'Generating podcast script...');
     
     $scriptGenerator = new PodcastScriptGenerator();
     $scriptResult = $scriptGenerator->generate($content, $title, 15);
     
     if (!$scriptResult['success']) {
-        throw new \Exception('Error generando guion: ' . $scriptResult['error']);
+        throw new \Exception('Error generating script: ' . $scriptResult['error']);
     }
     
     $script = $scriptResult['script'];
@@ -223,11 +223,11 @@ function processPodcastJob(int $jobId, array $inputData, int $userId, Background
     $estimatedDuration = $scriptResult['estimated_duration'];
     
     // === PASO 3: Generar audio ===
-    $repo->updateProgress($jobId, 'Sintetizando audio con IA (esto puede tardar hasta 5 minutos)...');
+    $repo->updateProgress($jobId, 'Synthesizing audio with AI (this may take up to 5 minutes)...');
     
     $geminiKey = Env::get('GEMINI_API_KEY');
     if (empty($geminiKey)) {
-        throw new \Exception('Falta GEMINI_API_KEY para generar audio');
+        throw new \Exception('Missing GEMINI_API_KEY for audio generation');
     }
     
     $ttsClient = new GeminiTtsClient();
@@ -242,7 +242,7 @@ function processPodcastJob(int $jobId, array $inputData, int $userId, Background
     );
     
     if (!$audioResult['success']) {
-        throw new \Exception('Error generando audio: ' . $audioResult['error']);
+        throw new \Exception('Error generating audio: ' . $audioResult['error']);
     }
     
     // Convertir PCM a WAV y guardar
@@ -259,7 +259,7 @@ function processPodcastJob(int $jobId, array $inputData, int $userId, Background
     $wavUrl = '/tmp/' . $fileName;
     
     // === PASO 4: Guardar en historial de gestos ===
-    $repo->updateProgress($jobId, 'Guardando resultado...');
+    $repo->updateProgress($jobId, 'Saving result...');
     
     $gesturesRepo = new GestureExecutionsRepo();
     $executionId = $gesturesRepo->create([

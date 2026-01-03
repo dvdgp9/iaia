@@ -12,7 +12,7 @@ class ContentExtractor
     public function extractFromUrl(string $url): array
     {
         if (!filter_var($url, FILTER_VALIDATE_URL)) {
-            return ['success' => false, 'error' => 'URL no válida'];
+            return ['success' => false, 'error' => 'Invalid URL'];
         }
 
         $ctx = stream_context_create([
@@ -30,7 +30,7 @@ class ContentExtractor
         $html = @file_get_contents($url, false, $ctx);
 
         if ($html === false) {
-            return ['success' => false, 'error' => 'No se pudo acceder a la URL'];
+            return ['success' => false, 'error' => 'Could not access URL'];
         }
 
         // Extraer título
@@ -43,7 +43,7 @@ class ContentExtractor
         $content = $this->extractMainContent($html);
 
         if (empty($content)) {
-            return ['success' => false, 'error' => 'No se pudo extraer contenido del artículo'];
+            return ['success' => false, 'error' => 'Could not extract content from article'];
         }
 
         return [
@@ -64,7 +64,7 @@ class ContentExtractor
         $pdfData = base64_decode($base64Data);
         
         if ($pdfData === false) {
-            return ['success' => false, 'error' => 'Datos PDF inválidos'];
+            return ['success' => false, 'error' => 'Invalid PDF data'];
         }
 
         // Guardar temporalmente el PDF
@@ -88,7 +88,7 @@ class ContentExtractor
             unlink($tempFile);
 
             if (empty($text)) {
-                return ['success' => false, 'error' => 'No se pudo extraer texto del PDF'];
+                return ['success' => false, 'error' => 'Could not extract text from PDF'];
             }
 
             // Extraer título de las primeras líneas del contenido
@@ -103,7 +103,7 @@ class ContentExtractor
             ];
         } catch (\Exception $e) {
             @unlink($tempFile);
-            return ['success' => false, 'error' => 'Error procesando PDF: ' . $e->getMessage()];
+            return ['success' => false, 'error' => 'Error processing PDF: ' . $e->getMessage()];
         }
     }
 
@@ -115,7 +115,7 @@ class ContentExtractor
         $text = trim($text);
         
         if (empty($text)) {
-            return ['success' => false, 'error' => 'El texto está vacío'];
+            return ['success' => false, 'error' => 'Text is empty'];
         }
 
         $title = $this->extractTitleFromText($text);
@@ -137,7 +137,7 @@ class ContentExtractor
         $lines = array_values(array_filter(array_map('trim', explode("\n", $text))));
         
         if (empty($lines)) {
-            return 'Documento sin título';
+            return 'Untitled Document';
         }
 
         // Buscar la primera línea significativa (no vacía, más de 10 caracteres)
@@ -262,14 +262,14 @@ class ContentExtractor
     {
         $apiKey = \App\Env::get('OPENROUTER_API_KEY');
         if (empty($apiKey)) {
-            throw new \Exception('Falta OPENROUTER_API_KEY para extraer PDF');
+            throw new \Exception('Missing OPENROUTER_API_KEY to extract PDF');
         }
 
         // Verificar tamaño del PDF
         $pdfSizeBytes = strlen(base64_decode($base64Data));
         $pdfSizeMB = $pdfSizeBytes / (1024 * 1024);
         if ($pdfSizeMB > 20) {
-            throw new \Exception("El PDF es demasiado grande (" . round($pdfSizeMB, 1) . "MB). Máximo 20MB.");
+            throw new \Exception("PDF is too large (" . round($pdfSizeMB, 1) . "MB). Maximum 20MB.");
         }
 
         $url = 'https://openrouter.ai/api/v1/chat/completions';
@@ -290,7 +290,7 @@ class ContentExtractor
                         ],
                         [
                             'type' => 'text',
-                            'text' => 'Extrae TODO el contenido de texto de este documento PDF. Devuelve SOLO el texto extraído, sin introducción, explicación ni formato adicional. Mantén la estructura de párrafos y secciones.'
+                            'text' => 'Extract ALL the text content from this PDF document. Return ONLY the extracted text, without introduction, explanation or additional formatting. Maintain paragraph and section structure.'
                         ]
                     ]
                 ]
@@ -308,12 +308,12 @@ class ContentExtractor
         $jsonPayload = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         
         if ($jsonPayload === false) {
-            throw new \Exception('Error codificando PDF a JSON: ' . json_last_error_msg());
+            throw new \Exception('Error encoding PDF to JSON: ' . json_last_error_msg());
         }
         
         $payloadSizeMB = strlen($jsonPayload) / (1024 * 1024);
         if ($payloadSizeMB > 25) {
-            throw new \Exception("El payload es demasiado grande (" . round($payloadSizeMB, 1) . "MB).");
+            throw new \Exception("Payload is too large (" . round($payloadSizeMB, 1) . "MB).");
         }
 
         $ch = curl_init($url);
@@ -336,33 +336,33 @@ class ContentExtractor
         curl_close($ch);
 
         if ($curlError) {
-            throw new \Exception('Error de conexión: ' . $curlError);
+            throw new \Exception('Connection error: ' . $curlError);
         }
 
         if (!$response) {
-            throw new \Exception('No se recibió respuesta de OpenRouter');
+            throw new \Exception('No response received from OpenRouter');
         }
 
         $data = json_decode($response, true);
 
         if (isset($data['error'])) {
-            $errorMsg = $data['error']['message'] ?? 'Error desconocido';
-            throw new \Exception('Error de OpenRouter: ' . $errorMsg);
+            $errorMsg = $data['error']['message'] ?? 'Unknown error';
+            throw new \Exception('OpenRouter error: ' . $errorMsg);
         }
 
         if ($httpCode !== 200) {
-            throw new \Exception("Error HTTP {$httpCode} de OpenRouter");
+            throw new \Exception("HTTP Error {$httpCode} from OpenRouter");
         }
 
         if (isset($data['choices'][0]['message']['content'])) {
             $text = trim($data['choices'][0]['message']['content']);
             if (empty($text)) {
-                throw new \Exception('OpenRouter devolvió respuesta vacía');
+                throw new \Exception('OpenRouter returned empty response');
             }
             return $text;
         }
 
-        throw new \Exception('Respuesta inesperada de OpenRouter');
+        throw new \Exception('Unexpected response from OpenRouter');
     }
 
     /**
